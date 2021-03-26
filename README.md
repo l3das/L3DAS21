@@ -1,5 +1,5 @@
 # L3DAS21 challenge supporting API
-This repository supports the L3DAS challenge and is aimed at downloading the dataset, pre-processing the sound files and the metadata, training the baseline models and submitting the final results.
+This repository supports the L3DAS challenge and is aimed at downloading the dataset, pre-processing the sound files and the metadata, training the baseline models and submitting the final results. 
 We provide easy-to-use instruction to produce the results included in our paper.
 Moreover, we extensively commented our base API (contained in the L3DAS folder) for easy customization/re-use of our code.
 
