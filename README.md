@@ -13,13 +13,14 @@ Required packages:
 * torch 1.4.0
 * zipp 2.2.0
 * librosa 0.8.0
-* scipy 1.2.0
+* scipy 1.4.1
 * pandas 1.0.3
 * numpy 1.18.1
 * tqdm 4.45.0
 * jiwer 2.2.0
 * pystoi 0.3.3
 * transformers 4.4.2
+* h5py 2.10.0
 
 To install all dependencies run:
 ```bash
