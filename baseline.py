@@ -33,7 +33,7 @@ class GinNet(nn.Module):
         out_conv3=self.conv3(out_conv2)
 
         gru_input=reshape(out_conv3,(out_conv3.shape[0],out_conv3.shape[1],out_conv3.shape[2]*out_conv3.shape[3]))
-        self.gru=nn.GRU(gru_input.shape[-1],lstm_h,num_layers=1,bidirectional=False,batch_first=True)
+        
         gru_out, _ =self.gru(gru_input)
 
         time_distributed_batch_y1 = []
