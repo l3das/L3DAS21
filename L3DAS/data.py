@@ -159,6 +159,7 @@ class Dataset:
             audio_filesB = [f for f in audio_files if 'B' in f]
             label_files = [f for f in listdir(self.DATASET_PATH+self.TASK_DIR+self.set_type+self.OUTPUT_PATH) if isfile(join(self.DATASET_PATH+self.TASK_DIR+self.set_type+self.OUTPUT_PATH, f))]
             count=1
+            print('LOADING SAMPLES...')
             with tqdm(total=self.num_samples) as pbar:
                 for audioA, audioB, label  in (zip(sorted(audio_filesA),sorted(audio_filesB), sorted(label_files))):
                     self.input1.append(self.get_input(self.DATASET_PATH+self.TASK_DIR+self.set_type+self.INPUT_PATH+audioA))
