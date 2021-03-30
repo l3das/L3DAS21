@@ -24,6 +24,7 @@ def preprocessing_task1(args):
     target_train = []
     target_validation = []
     target_test = []
+    count = 0
     for folder in sets:
         main_folder = os.path.join(args.input_path, folder)
         contents = os.listdir(main_folder)
@@ -52,8 +53,8 @@ def preprocessing_task1(args):
                     else:
                         predictors_train.append(samples)
                         target_train.append(samples_target)
-
-                    if args.num_data != 0 and len(predictors_train) >= args.num_data and (predictors_test) >= args.num_data:
+                    count += 1
+                    if args.num_data != 0 and count >= args.num_data and count >= args.num_data:
                         break
 
     #split train set into train and development
