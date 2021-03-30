@@ -6,7 +6,7 @@ Command line inputs define which task to process and its parameters
 '''
 
 
-def preprocessing_task1():
+def preprocessing_task1(args):
     sr_task1 = 16000
     train100_folder = 'train'
     train360_folder = 'train360'
@@ -21,7 +21,7 @@ def preprocessing_task1():
     #create pytorch dataset with the preprocessed data
     #seve it to args.output_directory
 
-def preprocessing_task2():
+def preprocessing_task2(args):
     sr_task2 = 32000
     #create pytorch dataset with the preprocessed data
     #seve it to args.output_directory
