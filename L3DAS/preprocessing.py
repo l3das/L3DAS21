@@ -94,8 +94,8 @@ if __name__ == '__main__':
                         help='perc split between train and validation sets')
     parser.add_argument('--num_mics', type=int, default=1,
                         help='how many ambisonics mics (1 or 2)')
-    parser.add_argument('--num_data', type=int, default=1,
-                        help='how many sounds per set. 0 means all available data')
+    parser.add_argument('--num_data', type=int, default=100,
+                        help='how many datapoints per set. 0 means all available data')
     parser.add_argument('--stft_nparseg', type=int, default=256,
                         help='num of stft frames')
     parser.add_argument('--stft_noverlap', type=int, default=128,
