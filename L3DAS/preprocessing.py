@@ -36,7 +36,7 @@ if __name__ == '__main__':
                         help='task to be pre-processed')
     parser.add_argument('--input_path', type=str,
                         help='directory where the dataset has been downloaded')
-    parser.add_argument('--output_path', type=str, default='processed'
+    parser.add_argument('--output_path', type=str, default='processed',
                         help='where to save the numpy matrices')
     #processing type
     parser.add_argument('--processsing_type', type=str, default='stft'
