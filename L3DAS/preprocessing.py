@@ -41,12 +41,12 @@ if __name__ == '__main__':
     #processing type
     parser.add_argument('--processsing_type', type=str, default='stft',
                         help='stft or waveform')
-                        
+
     parser.add_argument('--stft_nparseg', type=int, default=256,
                         help='num of stft frames')
     parser.add_argument('--stft_noverlap', type=int, default=128,
                         help='num of overlapping samples for stft')
-    parser.add_argument('--stft_noverlap', type=str, default='hamming',
+    parser.add_argument('--stft_window', type=str, default='hamming',
                         help='stft window_type')
 
     args = parser.parse_args()
