@@ -37,8 +37,8 @@ def preprocessing_task1(args):
                     samples, sr = librosa.load(sound_path, sr_task1, mono=False)
                     if args.num_mics == 2:  # if bot ambisonics mics are wanted
                         B_sound_path = sound_path.replace('A', 'B')
-                        samples_B = librosa.load(sound_path, sr_task1, mono=False)
-                        samples, sr = np.vstack((samples,samples_B))
+                        samples_B, sr = librosa.load(sound_path, sr_task1, mono=False)
+                        samples = np.vstack((samples,samples_B))
 
 
                     print (samples.shape)
