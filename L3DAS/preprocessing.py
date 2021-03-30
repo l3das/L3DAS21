@@ -31,7 +31,7 @@ def preprocessing_task1(args):
                 data_path = os.path.join(lower_folder, 'data')
                 target_path = os.path.join(lower_folder, 'target')
                 data = os.listdir(data_path)
-
+                data = [i for i in data if i.split('.')[0].split('_')[-1]=='A']
                 print (data)
 
 
