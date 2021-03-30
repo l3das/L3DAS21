@@ -29,17 +29,19 @@ def preprocessing_task1(args):
             for lower in contents_sub:
                 lower_folder = os.path.join(sub_folder, lower)
                 data_path = os.path.join(lower_folder, 'data')
-                target_path = os.path.join(lower_folder, 'target')
                 data = os.listdir(data_path)
                 data = [i for i in data if i.split('.')[0].split('_')[-1]=='A']  #filter files with mic B
                 for sound in data:
                     sound_path = os.path.join(data_path, sound)
-                    samples = librosa.load(sound_path, sr_task1)
-                    if args.num_mics == 2:
+                    target_path = sound_path.replace('data', 'target')
+                    samples = librosa.load(sound_path, sr_task1, mono=False)
+                    if args.num_mics == 2:  # if bot ambisonics mics are wanted
                         B_sound_path = sound_path.replace('A', 'B')
-                        samples_B = librosa.load(sound_path, sr_task1)
-                        print (sound_path)
-                        print (B_sound_path)
+                        samples_B = librosa.load(sound_path, sr_task1, mono=False)
+                        samples = np.vstack((samples,samples_B))
+
+
+                    print (samples.shape)
 
 
     #create pytorch dataset with the preprocessed data
