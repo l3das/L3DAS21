@@ -53,8 +53,9 @@ def preprocessing_task1(args):
                         predictors_train.append(samples)
                         target_train.append(samples_target)
 
-                    if len(predictors_train) >= args.num_datalen and (predictors_test) >= args.num_data:
+                    if args.num_sounds != 0 and len(predictors_train) >= args.num_sounds and (predictors_test) >= args.num_data:
                         break
+
     #split train set into train and development
     split_point = int(len(predictors_train) * args.train_val_split)
     predictors_train = np.array(predictors_train[:split_point])
@@ -93,6 +94,8 @@ if __name__ == '__main__':
                         help='perc split between train and validation sets')
     parser.add_argument('--num_mics', type=int, default=1,
                         help='how many ambisonics mics (1 or 2)')
+    parser.add_argument('--num_sounds', type=int, default=1,
+                        help='how many sounds per set. 0 means all available data')
     parser.add_argument('--stft_nparseg', type=int, default=256,
                         help='num of stft frames')
     parser.add_argument('--stft_noverlap', type=int, default=128,
