@@ -5,7 +5,7 @@ import librosa
 import pickle
 '''
 Take as input the downloaded dataset (audio files and target data)
-and output pytorch datasets for task1 and task2, separately.
+and output pickle lists for task1 and task2, separately.
 Command line inputs define which task to process and its parameters
 '''
 
