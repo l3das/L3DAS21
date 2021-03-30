@@ -63,18 +63,20 @@ def preprocessing_task1(args):
     predictors_validation = predictors_validation[split_point:]
     target_validation = target_validation[split_point:]
 
-
-    with open('predictors_train.npy', 'wb') as f:
+    if not os.path.isdir(args.output_path):
+        os.mkdir(args.output_path)
+        
+    with open(os.path.join(args.output_path,'predictors_train.pkl'), 'wb') as f:
         pickle.dump(predictors_train, f)
-    with open('predictors_validation.npy', 'wb') as f:
+    with open(os.path.join(args.output_path,'predictors_validation.pkl', 'wb') as f:
         pickle.dump(predictors_validation, f)
-    with open('predictors_test.npy', 'wb') as f:
+    with open(os.path.join(args.output_path,'predictors_test.pkl'), 'wb') as f:
         pickle.dump(predictors_test, f)
-    with open('target_train.npy', 'wb') as f:
+    with open(os.path.join(args.output_path,'target_train.pkl'), 'wb') as f:
         pickle.dump(target_train, f)
-    with open('target_validation.npy', 'wb') as f:
+    with open(os.path.join(args.output_path,'target_validation.pkl'), 'wb') as f:
         pickle.dump(target_validation, f)
-    with open('target_test.npy', 'wb') as f:
+    with open(os.path.join(args.output_path,'target_test.pkl'), 'wb') as f:
         pickle.dump(target_test, f)
 
     #create pytorch dataset with the preprocessed data
