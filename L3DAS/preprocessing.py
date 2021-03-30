@@ -19,9 +19,11 @@ def preprocessing_task1(args):
 
     sets = [train100_folder, dev_folder]
 
-    for main_folder in sets:
+    for folder in sets:
+        main_folder = os.path.join(args.input_path, folder)
         contents = os.listdir(main_folder)
         print (contents)
+
 
     #create pytorch dataset with the preprocessed data
     #seve it to args.output_directory
