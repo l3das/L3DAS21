@@ -58,6 +58,7 @@ def preprocessing_task1(args):
                         break
 
     #split train set into train and development
+    print (predictors_train.shape)
     split_point = int(len(predictors_train) * args.train_val_split)
     predictors_train = np.array(predictors_train[:split_point])
     target_train = np.array(target_train[:split_point])
