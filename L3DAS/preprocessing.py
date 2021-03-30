@@ -34,7 +34,12 @@ def preprocessing_task1(args):
                 data = [i for i in data if i.split('.')[0].split('_')[-1]=='A']  #filter files with mic B
                 for sound in data:
                     sound_path = os.path.join(data_path, sound)
+                    samples = librosa.load(sound_path, sr_task1)
+                    if args.num_mics == 2:
+                        B_sound_path = sound_path.replace('A', 'B')
+                        samples_B = librosa.load(sound_path, sr_task1)
                     print (sound_path)
+                    print (B_sound_path)
 
 
     #create pytorch dataset with the preprocessed data
@@ -60,7 +65,9 @@ if __name__ == '__main__':
     #processing type
     parser.add_argument('--processsing_type', type=str, default='stft',
                         help='stft or waveform')
-
+    #processing type
+    parser.add_argument('--num_mics', type=int, default=1,
+                        help='how many ambisonics mics (1 or 2)')
     parser.add_argument('--stft_nparseg', type=int, default=256,
                         help='num of stft frames')
     parser.add_argument('--stft_noverlap', type=int, default=128,
