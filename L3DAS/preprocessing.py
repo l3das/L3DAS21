@@ -28,8 +28,11 @@ def preprocessing_task1(args):
             contents_sub = os.listdir(sub_folder)
             for lower in contents_sub:
                 lower_folder = os.path.join(sub_folder, lower)
-                contents_lower = os.listdir(lower_folder)
-                print (contents_lower)
+                data_path = os.path.join(lower_folder, 'data')
+                target_path = os.path.join(lower_folder, 'target')
+                data = os.listdir(data_path)
+
+                print (data)
 
 
     #create pytorch dataset with the preprocessed data
