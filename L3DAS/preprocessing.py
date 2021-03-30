@@ -31,8 +31,10 @@ def preprocessing_task1(args):
                 data_path = os.path.join(lower_folder, 'data')
                 target_path = os.path.join(lower_folder, 'target')
                 data = os.listdir(data_path)
-                data = [i for i in data if i.split('.')[0].split('_')[-1]=='A']
-                print (data)
+                data = [i for i in data if i.split('.')[0].split('_')[-1]=='A']  #filter files with mic B
+                for sound in data:
+                    sound_path = os.path.join(data_path, sound)
+                    print (sound_path)
 
 
     #create pytorch dataset with the preprocessed data
