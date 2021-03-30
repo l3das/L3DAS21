@@ -15,14 +15,21 @@ def preprocessing_task1(args):
     sr_task1 = 16000
     train100_folder = 'train'
     train360_folder = 'train360'
-    dev_folder = 'dev'
+    dev_folder = 'test'
 
     sets = [train100_folder, dev_folder]
-
+    predictors = []
+    target = []
     for folder in sets:
         main_folder = os.path.join(args.input_path, folder)
         contents = os.listdir(main_folder)
-        print (contents)
+        for sub in contents:
+            sub_folder = os.path.join(main_folder, sub)
+            contents_sub = os.listdir(sub_folder)
+            for lower in contents_sub:
+                lower_folder = os.path.join(sub_folder, lower)
+                contents_lower = os.listdir(lower_folder)
+                print (contents_lower)
 
 
     #create pytorch dataset with the preprocessed data
