@@ -71,7 +71,7 @@ def preprocessing_task1(args):
 
     with open(os.path.join(args.output_path,'predictors_train.pkl'), 'wb') as f:
         pickle.dump(predictors_train, f)
-    with open(os.path.join(args.output_path,'predictors_validation.pkl', 'wb') as f:
+    with open(os.path.join(args.output_path,'predictors_validation.pkl'), 'wb') as f:
         pickle.dump(predictors_validation, f)
     with open(os.path.join(args.output_path,'predictors_test.pkl'), 'wb') as f:
         pickle.dump(predictors_test, f)
