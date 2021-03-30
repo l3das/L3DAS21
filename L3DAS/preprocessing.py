@@ -3,6 +3,7 @@ import os
 import numpy as np
 import librosa
 import pickle
+import utility_functions as uf
 '''
 Take as input the downloaded dataset (audio files and target data)
 and output pytorch datasets for task1 and task2, separately.
@@ -25,6 +26,7 @@ def preprocessing_task1(args):
     target_test = []
     count = 0
     for folder in sets:
+        print ('Processing ' + folder + ' folder...')
         main_folder = os.path.join(args.input_path, folder)
         contents = os.listdir(main_folder)
         for sub in contents:
@@ -53,6 +55,7 @@ def preprocessing_task1(args):
                         predictors_train.append(samples)
                         target_train.append(samples_target)
                     count += 1
+
                     if args.num_data != 0 and count >= args.num_data and count >= args.num_data:
                         break
 
@@ -65,7 +68,7 @@ def preprocessing_task1(args):
 
     if not os.path.isdir(args.output_path):
         os.mkdir(args.output_path)
-        
+
     with open(os.path.join(args.output_path,'predictors_train.pkl'), 'wb') as f:
         pickle.dump(predictors_train, f)
     with open(os.path.join(args.output_path,'predictors_validation.pkl', 'wb') as f:
