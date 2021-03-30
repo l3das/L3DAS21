@@ -18,8 +18,12 @@ def preprocessing_task1(args):
     dev_folder = 'test'
 
     sets = [train100_folder, dev_folder]
-    predictors = []
-    target = []
+    predictors_train = []
+    predictors_validation = []
+    predictors_test = []
+    target_train = []
+    target_validation = []
+    target_test = []
     for folder in sets:
         main_folder = os.path.join(args.input_path, folder)
         contents = os.listdir(main_folder)
@@ -41,9 +45,24 @@ def preprocessing_task1(args):
                         samples_B, sr = librosa.load(sound_path, sr_task1, mono=False)
                         samples = np.vstack((samples,samples_B))
                     samples_target, sr = librosa.load(target_path, sr_task1, mono=False)
+                    #append to final arrays
+                    if folder == dev_folder:
+                        predictors_test.append(samples)
+                        target_test.append(samples_target)
+                    else:
+                        predictors_train.append(samples)
+                        target_train.append(samples_target)
 
-                    print (samples.shape, samples_target.shape)
-
+                    if len(predictors_train) >= args.num_datalen and (predictors_test) >= args.num_data:
+                        break
+    #split train set into train and development
+    split_point = int(len(predictors_train) * args.train_val_split)
+    predictors_train = np.array(predictors_train[:split_point])
+    target_train = np.array(target_train[:split_point])
+    predictors_validation = np.array(predictors_validation[split_point:])
+    target_validation = np.array(target_validation[split_point:])
+    predictors_test = np.array(predictors_test)
+    target_test = np.array(target_test)
 
 
     #create pytorch dataset with the preprocessed data
@@ -66,10 +85,12 @@ if __name__ == '__main__':
                         help='directory where the dataset has been downloaded')
     parser.add_argument('--output_path', type=str, default='processed',
                         help='where to save the numpy matrices')
+
     #processing type
     parser.add_argument('--processsing_type', type=str, default='stft',
                         help='stft or waveform')
-    #processing type
+    parser.add_argument('--train_val_split', type=float, default=0.7,
+                        help='perc split between train and validation sets')
     parser.add_argument('--num_mics', type=int, default=1,
                         help='how many ambisonics mics (1 or 2)')
     parser.add_argument('--stft_nparseg', type=int, default=256,
