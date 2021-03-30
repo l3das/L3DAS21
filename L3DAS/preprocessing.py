@@ -35,13 +35,15 @@ def preprocessing_task1(args):
                     sound_path = os.path.join(data_path, sound)
                     target_path = sound_path.replace('data', 'target')
                     samples, sr = librosa.load(sound_path, sr_task1, mono=False)
-                    if args.num_mics == 2:  # if bot ambisonics mics are wanted
+                    if args.num_mics == 2:  # if both ambisonics mics are wanted
+                        #stack the additional 4 channels to get a (8, samples) shape
                         B_sound_path = sound_path.replace('A', 'B')
                         samples_B, sr = librosa.load(sound_path, sr_task1, mono=False)
                         samples = np.vstack((samples,samples_B))
+                    samples_target, sr = librosa.load(target_path, sr_task1, mono=False)
 
+                    print (samples.shape, samples_target.shape)
 
-                    print (samples.shape)
 
 
     #create pytorch dataset with the preprocessed data
