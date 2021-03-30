@@ -33,7 +33,7 @@ def preprocessing_task1(args):
                 data = [i for i in data if i.split('.')[0].split('_')[-1]=='A']  #filter files with mic B
                 for sound in data:
                     sound_path = os.path.join(data_path, sound)
-                    target_path = sound_path.replace('data', 'target').replace('_A', '')
+                    target_path = sound_path.replace('data', 'labels').replace('_A', '')
                     samples, sr = librosa.load(sound_path, sr_task1, mono=False)
                     if args.num_mics == 2:  # if both ambisonics mics are wanted
                         #stack the additional 4 channels to get a (8, samples) shape
