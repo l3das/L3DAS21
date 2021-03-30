@@ -99,7 +99,7 @@ class Dataset:
             else:
                 self.set_type=self.set_type+'/'
 
-            self.download_dataset()
+            #self.download_dataset()
             self.file_size=60.0
             audio_files = [f for f in listdir(self.DATASET_PATH+self.TASK_DIR+self.set_type+self.INPUT_PATH) if isfile(join(self.DATASET_PATH+self.TASK_DIR+self.set_type+self.INPUT_PATH, f))]
             audio_filesA = [f for f in audio_files if 'A' in f]
