@@ -65,6 +65,7 @@ def preprocessing_task1(args):
     predictors_validation = predictors_validation[split_point:]
     target_validation = target_validation[split_point:]
 
+    print ('Saving pickle files')
     if not os.path.isdir(args.output_path):
         os.mkdir(args.output_path)
 
