@@ -39,13 +39,12 @@ if __name__ == '__main__':
     parser.add_argument('--output_path', type=str, default='processed',
                         help='where to save the numpy matrices')
     #processing type
-    parser.add_argument('--processsing_type', type=str, default='stft'
+    parser.add_argument('--processsing_type', type=str, default='stft',
                         help='stft or waveform')
-    parser.add_argument('--stft_', type=str,
-                        help='stft or waveform')
-    parser.add_argument('--stft_nparseg', type=int, default=256
+                        
+    parser.add_argument('--stft_nparseg', type=int, default=256,
                         help='num of stft frames')
-    parser.add_argument('--stft_noverlap', type=int, default=128
+    parser.add_argument('--stft_noverlap', type=int, default=128,
                         help='num of overlapping samples for stft')
     parser.add_argument('--stft_noverlap', type=str, default='hamming',
                         help='stft window_type')
