@@ -2,8 +2,7 @@ import argparse
 import os
 import numpy as np
 import librosa
-
-
+import pickle
 '''
 Take as input the downloaded dataset (audio files and target data)
 and output pytorch datasets for task1 and task2, separately.
@@ -64,12 +63,19 @@ def preprocessing_task1(args):
     predictors_validation = predictors_validation[split_point:]
     target_validation = target_validation[split_point:]
 
-    np.save(args.output_path + 'predictors_train.npy', predictors_train)
-    np.save(args.output_path + 'predictors_validation.npy', predictors_validation)
-    np.save(args.output_path + 'predictors_test.npy', predictors_test)
-    np.save(args.output_path + 'predictors_train.npy', target_train)
-    np.save(args.output_path + 'predictors_validation.npy', target_validation)
-    np.save(args.output_path + 'predictors_test.npy', target_test)
+
+    with open('predictors_train.npy', 'wb') as f:
+        pickle.dump(predictors_train, f)
+    with open('predictors_validation.npy', 'wb') as f:
+        pickle.dump(predictors_validation, f)
+    with open('predictors_test.npy', 'wb') as f:
+        pickle.dump(predictors_test, f)
+    with open('target_train.npy', 'wb') as f:
+        pickle.dump(target_train, f)
+    with open('target_validation.npy', 'wb') as f:
+        pickle.dump(target_validation, f)
+    with open('target_test.npy', 'wb') as f:
+        pickle.dump(target_test, f)
 
     #create pytorch dataset with the preprocessed data
     #seve it to args.output_directory
