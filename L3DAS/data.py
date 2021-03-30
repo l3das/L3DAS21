@@ -152,7 +152,7 @@ class Dataset:
                 self.set_type=self.set_type+'/'
 
             self.classes=['Chink_and_clink','Computer_keyboard','Cupboard_open_or_close','Drawer_open_or_close','Female_speech_and_woman_speaking','Finger_snapping','Keys_jangling','Knock','Laughter','Male_speech_and_man_speaking','Printer','Scissors','Telephone','Writing']
-            self.download_dataset()
+            #self.download_dataset()
             self.file_size=60.0
             audio_files = [f for f in listdir(self.DATASET_PATH+self.TASK_DIR+self.set_type+self.INPUT_PATH) if isfile(join(self.DATASET_PATH+self.TASK_DIR+self.set_type+self.INPUT_PATH, f))]
             audio_filesA = [f for f in audio_files if 'A' in f]
