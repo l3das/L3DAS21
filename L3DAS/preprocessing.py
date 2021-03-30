@@ -38,8 +38,8 @@ def preprocessing_task1(args):
                     if args.num_mics == 2:
                         B_sound_path = sound_path.replace('A', 'B')
                         samples_B = librosa.load(sound_path, sr_task1)
-                    print (sound_path)
-                    print (B_sound_path)
+                        print (sound_path)
+                        print (B_sound_path)
 
 
     #create pytorch dataset with the preprocessed data
