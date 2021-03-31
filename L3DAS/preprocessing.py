@@ -13,6 +13,13 @@ Command line inputs define which task to process and its parameters
 def preprocessing_task1(args):
     sr_task1 = 16000
     len = 10 * sr_task1
+
+    def pad(samples, len=len):  #zeropadding to 10 seconds
+        curr_len = samples.shape[-1]
+        pad = np.zeros((samples.shape[0], len))
+        pad [:,:curr_len] = samples
+        return pad
+
     train100_folder = 'train'
     train360_folder = 'train360'
     dev_folder = 'test'
@@ -41,11 +48,12 @@ def preprocessing_task1(args):
                     sound_path = os.path.join(data_path, sound)
                     target_path = sound_path.replace('data', 'labels').replace('_A', '')
                     samples, sr = librosa.load(sound_path, sr_task1, mono=False)
-                    print ('hiiiiiii', samples.shape)
+                    samples = pad(samples)
                     if args.num_mics == 2:  # if both ambisonics mics are wanted
                         #stack the additional 4 channels to get a (8, samples) shape
                         B_sound_path = sound_path.replace('A', 'B')
                         samples_B, sr = librosa.load(sound_path, sr_task1, mono=False)
+                        samples_B = pad(samples_B)
                         samples = np.vstack((samples,samples_B))
                     samples_target, sr = librosa.load(target_path, sr_task1, mono=False)
                     #append to final arrays
@@ -67,10 +75,18 @@ def preprocessing_task1(args):
     predictors_validation = predictors_validation[split_point:]
     target_validation = target_validation[split_point:]
 
-    print ('Saving pickle files')
+    print ('Saving files')
     if not os.path.isdir(args.output_path):
         os.mkdir(args.output_path)
+    '''
+    np.save(args.output_path,'task1_predictors_train.npy', predictors_train)
+    np.save(args.output_path,'task1_predictors_validation.npy', predictors_validation)
+    np.save(args.output_path,'task1_predictors_test.npy', predictors_test)
+    np.save(args.output_path,'task1_target_train.npy', target_train)
+    np.save(args.output_path,'task1_target_validation.npy', target_validation)
+    np.save(args.output_path,'task1_target_test.npy', target_test)
 
+    '''
     with open(os.path.join(args.output_path,'task1_predictors_train.pkl'), 'wb') as f:
         pickle.dump(predictors_train, f)
     with open(os.path.join(args.output_path,'task1_predictors_validation.pkl'), 'wb') as f:
@@ -83,7 +99,7 @@ def preprocessing_task1(args):
         pickle.dump(target_validation, f)
     with open(os.path.join(args.output_path,'task1_target_test.pkl'), 'wb') as f:
         pickle.dump(target_test, f)
-
+    
     #create pytorch dataset with the preprocessed data
     #seve it to args.output_directory
 
@@ -108,6 +124,7 @@ if __name__ == '__main__':
     #processing type
     parser.add_argument('--processsing_type', type=str, default='stft',
                         help='stft or waveform')
+
     parser.add_argument('--train_val_split', type=float, default=0.7,
                         help='perc split between train and validation sets')
     parser.add_argument('--num_mics', type=int, default=1,

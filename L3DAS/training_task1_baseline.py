@@ -7,6 +7,8 @@ import torch
 import torch.nn as nn
 from torch import optim
 import torch.utils.data as utils
+from waveunet_model.waveunet import Waveunet
+
 
 parser = argparse.ArgumentParser()
 #saving parameters
@@ -20,23 +22,72 @@ parser.add_argument('--validation_predictors_path', type=str, default='../prova_
 parser.add_argument('--validation_target_path', type=str, default='../prova_pickle/validation_target.pkl')
 parser.add_argument('--test_predictors_path', type=str, default='../prova_pickle/test_predictors.pkl')
 parser.add_argument('--test_target_path', type=str, default='../prova_pickle/test_target.pkl')
-
 #training parameters
 parser.add_argument('--gpu_id', type=int, default=1)
-parser.add_argument('--use_cuda', type=str, default='True')
+parser.add_argument('--use_cuda', type=str, default='False')
 parser.add_argument('--num_epochs', type=int, default=200)
-parser.add_argument('--batch_size', type=int, default=100)
 parser.add_argument('--learning_rate', type=float, default=0.00005)
 parser.add_argument('--regularization_lambda', type=float, default=0.)
 parser.add_argument('--early_stopping', type=str, default='True')
 parser.add_argument('--save_model_metric', type=str, default='total_loss')
-parser.add_argument('--patience', type=int, default=5)
 parser.add_argument('--load_pretrained', type=str, default=None)
 parser.add_argument('--num_folds', type=int, default=1)
 parser.add_argument('--num_fold', type=int, default=1)
 parser.add_argument('--fixed_seed', type=str, default='True')
-
 #model parameters
+parser.add_argument('--instruments', type=str, nargs='+', default=["bass", "drums", "other", "vocals"],
+                    help="List of instruments to separate (default: \"bass drums other vocals\")")
+parser.add_argument('--num_workers', type=int, default=1,
+                    help='Number of data loader worker threads (default: 1)')
+parser.add_argument('--features', type=int, default=32,
+                    help='Number of feature channels per layer')
+parser.add_argument('--log_dir', type=str, default='logs/waveunet',
+                    help='Folder to write logs into')
+parser.add_argument('--dataset_dir', type=str, default="/mnt/windaten/Datasets/MUSDB18HQ",
+                    help='Dataset path')
+parser.add_argument('--hdf_dir', type=str, default="hdf",
+                    help='Dataset path')
+parser.add_argument('--checkpoint_dir', type=str, default='checkpoints/waveunet',
+                    help='Folder to write checkpoints into')
+parser.add_argument('--load_model', type=str, default=None,
+                    help='Reload a previously trained model (whole task model)')
+parser.add_argument('--lr', type=float, default=1e-3,
+                    help='Initial learning rate in LR cycle (default: 1e-3)')
+parser.add_argument('--min_lr', type=float, default=5e-5,
+                    help='Minimum learning rate in LR cycle (default: 5e-5)')
+parser.add_argument('--cycles', type=int, default=2,
+                    help='Number of LR cycles per epoch')
+parser.add_argument('--batch_size', type=int, default=4,
+                    help="Batch size")
+parser.add_argument('--levels', type=int, default=6,
+                    help="Number of DS/US blocks")
+parser.add_argument('--depth', type=int, default=1,
+                    help="Number of convs per block")
+parser.add_argument('--sr', type=int, default=44100,
+                    help="Sampling rate")
+parser.add_argument('--channels', type=int, default=2,
+                    help="Number of input audio channels")
+parser.add_argument('--kernel_size', type=int, default=5,
+                    help="Filter width of kernels. Has to be an odd number")
+parser.add_argument('--output_size', type=float, default=2.0,
+                    help="Output duration")
+parser.add_argument('--strides', type=int, default=4,
+                    help="Strides in Waveunet")
+parser.add_argument('--patience', type=int, default=20,
+                    help="Patience for early stopping on validation set")
+parser.add_argument('--example_freq', type=int, default=200,
+                    help="Write an audio summary into Tensorboard logs every X training iterations")
+parser.add_argument('--loss', type=str, default="L1",
+                    help="L1 or L2")
+parser.add_argument('--conv_type', type=str, default="gn",
+                    help="Type of convolution (normal, BN-normalised, GN-normalised): normal/bn/gn")
+parser.add_argument('--res', type=str, default="fixed",
+                    help="Resampling strategy: fixed sinc-based lowpass filtering or learned conv layer: fixed/learned")
+parser.add_argument('--separate', type=int, default=1,
+                    help="Train separate model for each source (1) or only one (0)")
+parser.add_argument('--feature_growth', type=str, default="double",
+                    help="How the features in each layer should grow, either (add) the initial number of features each time, or multiply by 2 (double)")
+
 #PUT PARAMETERS FOR WAVE U NET
 
 
@@ -62,84 +113,84 @@ if args.fixed_seed:
         torch.cuda.manual_seed_all(seed)
 
 
-print ('\n Loading dataset')
+print ('\nLoading dataset')
 
 
 #load dataset
-with open(args.training_target_path, 'rb') as f:
+
+with open(args.training_predictors_path, 'rb') as f:
     training_predictors = pickle.load(f)
 with open(args.training_target_path, 'rb') as f:
     training_target = pickle.load(f)
-with open(args.validation_target_path, 'rb') as f:
+with open(args.validation_predictors_path, 'rb') as f:
     validation_predictors = pickle.load(f)
 with open(args.validation_target_path, 'rb') as f:
     validation_target = pickle.load(f)
-with open(args.test_target_path, 'rb') as f:
+with open(args.test_predictors_path, 'rb') as f:
     test_predictors = pickle.load(f)
 with open(args.test_target_path, 'rb') as f:
     test_target = pickle.load(f)
+'''
+training_predictors = np.load(args.training_predictors_path, allow_pickle=True)
+training_target = np.load(args.training_target_path, allow_pickle=True)
+validation_predictors = np.load(args.validation_predictors_path, allow_pickle=True)
+validation_target = np.load(args.validation_target_path, allow_pickle=True)
+test_predictors = np.load(args.test_predictors_path, allow_pickle=True)
+test_target = np.load(args.test_target_path, allow_pickle=True)
 
-
+'''
+training_predictors = np.array(training_predictors)
+training_target = np.array(training_target)
+validation_predictors = np.array(validation_predictors)
+validation_target = np.array(validation_target)
+test_predictors = np.array(test_predictors)
+test_target = np.array(test_target)
 '''
 #reshaping
 training_predictors = training_predictors.reshape(training_predictors.shape[0], 1, training_predictors.shape[1],training_predictors.shape[2])
 validation_predictors = validation_predictors.reshape(validation_predictors.shape[0], 1, validation_predictors.shape[1], validation_predictors.shape[2])
 test_predictors = test_predictors.reshape(test_predictors.shape[0], 1, test_predictors.shape[1], test_predictors.shape[2])
+'''
 
-
-print ('\nPadded dims:')
+print ('\nShapes:')
 print ('Training predictors: ', training_predictors.shape)
 print ('Validation predictors: ', validation_predictors.shape)
 print ('Test predictors: ', test_predictors.shape)
-'''
+
 
 
 #convert to tensor
-
 training_predictors = torch.tensor(training_predictors).float()
 validation_predictors = torch.tensor(validation_predictors).float()
 test_predictors = torch.tensor(test_predictors).float()
 training_target = torch.tensor(training_target).float()
 validation_target = torch.tensor(validation_target).float()
 test_target = torch.tensor(test_target).float()
-
 #build dataset from tensors
 tr_dataset = utils.TensorDataset(training_predictors, training_target)
 val_dataset = utils.TensorDataset(validation_predictors, validation_target)
 test_dataset = utils.TensorDataset(test_predictors, test_target)
-sys.exit(0)
 #build data loader from dataset
 tr_data = utils.DataLoader(tr_dataset, args.batch_size, shuffle=True, pin_memory=True)
 val_data = utils.DataLoader(val_dataset, args.batch_size, shuffle=False, pin_memory=True)
 test_data = utils.DataLoader(test_dataset, args.batch_size, shuffle=False, pin_memory=True)  #no batch here!!
 
-#load model
-if args.model_name == 'simple_autoencoder':
-    model = locals()[args.model_name](latent_dim=args.model_latent_dim)
 
-elif args.model_name == 'emo_ae':
-    model = locals()[args.model_name](structure=eval(args.model_cnn_structure),
-                   classifier_structure=eval(args.model_classifier_structure),
-                   latent_dim=args.model_latent_dim,
-                   verbose=args.verbose,
-                   quat=args.model_quat)
 
-elif args.model_name == 'simple_cnn_ae':
-    model = locals()[args.model_name](structure=eval(args.model_cnn_structure),
-                   classifier_structure=eval(args.model_classifier_structure),
-                   latent_dim=args.model_latent_dim,
-                   verbose=args.verbose,
-                   quat=args.model_quat)
+#LOAD MODEL
+num_features = [args.features*i for i in range(1, args.levels+1)] if args.feature_growth == "add" else \
+               [args.features*2**i for i in range(0, args.levels)]
+target_outputs = int(args.output_size * args.sr)
+model = Waveunet(args.channels, num_features, args.channels, args.instruments, kernel_size=args.kernel_size,
+                 target_output_size=target_outputs, depth=args.depth, strides=args.strides,
+                 conv_type=args.conv_type, res=args.res, separate=args.separate)
 
-elif args.model_name == 'emo_ae_vgg':
-    model = locals()[args.model_name](architecture=args.model_architecture,
-                   latent_dim=args.model_latent_dim,
-                   classifier_dropout=args.classifier_dropout,
-                   batchnorm=args.model_batchnorm,
-                   verbose=args.verbose
-                   )
-
+if args.use_cuda:
+    model = model_utils.DataParallel(model)
+    print("move model to gpu")
 model = model.to(device)
+sys.exit(0)
+
 
 #print (model)
 

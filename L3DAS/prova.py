@@ -16,6 +16,7 @@ for i in range(20):
     l.append(sig)
 
 
+
 output_path = '../prova_pickle'
 if not os.path.isdir(output_path):
     os.mkdir(output_path)
@@ -32,7 +33,14 @@ with open(os.path.join(output_path,'test_predictors.pkl'), 'wb') as f:
     pickle.dump(l, f)
 with open(os.path.join(output_path,'test_target.pkl'), 'wb') as f:
     pickle.dump(target, f)
-
+'''
+np.save(os.path.join(output_path,'training_predictors.npy'), l)
+np.save(os.path.join(output_path,'training_target.npy'), l)
+np.save(os.path.join(output_path,'validation_predictors.npy'), l)
+np.save(os.path.join(output_path,'validation_target.npy'), l)
+np.save(os.path.join(output_path,'test_predictors.npy'), l)
+np.save(os.path.join(output_path,'test_target.npy'), l)
+'''
 
 with open(os.path.join(output_path,'training_predictors.pkl'), 'rb') as f:
     data = pickle.load(f)
