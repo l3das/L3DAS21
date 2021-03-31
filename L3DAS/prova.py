@@ -8,8 +8,8 @@ import os
 l = []
 target = []
 for i in range(20):
-    n = 169641
-    n_target = 160089
+    n = 160000
+    n_target = 160000
     sig = np.random.sample(n)
     sig_target = np.random.sample(n_target).reshape((1, n_target))
     target.append(sig_target)

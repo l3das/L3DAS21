@@ -103,6 +103,7 @@ args.use_cuda = eval(args.use_cuda)
 args.early_stopping = eval(args.early_stopping)
 args.fixed_seed = eval(args.fixed_seed)
 
+
 #UTILS
 def worker_init_fn(worker_id): # This is apparently needed to ensure workers have different random seeds and draw different examples!
     np.random.seed(np.random.get_state()[1][0] + worker_id)
@@ -122,6 +123,13 @@ def set_cyclic_lr(optimizer, it, epoch_it, cycles, min_lr, max_lr):
     new_lr = min_lr + 0.5*(max_lr - min_lr)*(1 + np.cos((float(curr_it) / float(cycle_length)) * np.pi))
     set_lr(optimizer, new_lr)
 
+def dyn_pad(x, y, size_x=169641, size_y=160089):
+
+    pad_x = torch.zeros(x.shape[0],x.shape[1], size_x)
+    pad_y = torch.zeros(y.shape[0],y.shape[1], size_y)
+    pad_x[:,:,:x.shape[-1]] = x
+    pad_y[:,:,:y.shape[-1]] = y
+    return pad_x, pad_y
 
 if args.use_cuda:
     device = 'cuda:' + str(args.gpu_id)
@@ -155,15 +163,7 @@ with open(args.test_predictors_path, 'rb') as f:
     test_predictors = pickle.load(f)
 with open(args.test_target_path, 'rb') as f:
     test_target = pickle.load(f)
-'''
-training_predictors = np.load(args.training_predictors_path, allow_pickle=True)
-training_target = np.load(args.training_target_path, allow_pickle=True)
-validation_predictors = np.load(args.validation_predictors_path, allow_pickle=True)
-validation_target = np.load(args.validation_target_path, allow_pickle=True)
-test_predictors = np.load(args.test_predictors_path, allow_pickle=True)
-test_target = np.load(args.test_target_path, allow_pickle=True)
 
-'''
 training_predictors = np.array(training_predictors)
 training_target = np.array(training_target)
 validation_predictors = np.array(validation_predictors)
@@ -171,12 +171,6 @@ validation_target = np.array(validation_target)
 test_predictors = np.array(test_predictors)
 test_target = np.array(test_target)
 
-'''
-#reshaping
-training_predictors = training_predictors.reshape(training_predictors.shape[0], 1, training_predictors.shape[1],training_predictors.shape[2])
-validation_predictors = validation_predictors.reshape(validation_predictors.shape[0], 1, validation_predictors.shape[1], validation_predictors.shape[2])
-test_predictors = test_predictors.reshape(test_predictors.shape[0], 1, test_predictors.shape[1], test_predictors.shape[2])
-'''
 
 print ('\nShapes:')
 print ('Training predictors: ', training_predictors.shape)
@@ -243,14 +237,7 @@ if args.load_model is not None:
     print("Continuing training full model from checkpoint " + str(args.load_model))
     state = model_utils.load_model(model, optimizer, args.load_model, args.cuda)
 
-def pad(x, y, size=169641):
 
-    print ('culo', x.shape, y.shape)
-    pad_x = torch.zeros(x.shape[0],x.shape[1], size)
-    pad_y = torch.zeros(x.shape[0], size)
-    pad_x[:,:,:pad_x.shape[-1]] = x
-    pad_y[:,:pad_y.shape[-1]] = y
-    return pad_x, pad_y
 
 print('TRAINING START')
 while state["worse_epochs"] < args.patience:
@@ -261,6 +248,7 @@ while state["worse_epochs"] < args.patience:
         np.random.seed()
         #for example_num, (x, targets) in enumerate(dataloader):
         for example_num, (x, target) in enumerate(tr_data):
+            x, target = dyn_pad(x, target)
             target = target.to(device)
             x = x.to(device)
             t = time.time()
