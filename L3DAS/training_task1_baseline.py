@@ -2,12 +2,16 @@ import sys, os
 import time
 import pickle
 import argparse
+from tqdm import tqdm
 import numpy as np
 import torch
 import torch.nn as nn
 from torch import optim
+from torch.optim import Adam
 import torch.utils.data as utils
+from torch.utils.tensorboard import SummaryWriter
 from waveunet_model.waveunet import Waveunet
+import waveunet_model.utils as model_utils
 
 
 parser = argparse.ArgumentParser()
@@ -35,19 +39,19 @@ parser.add_argument('--num_folds', type=int, default=1)
 parser.add_argument('--num_fold', type=int, default=1)
 parser.add_argument('--fixed_seed', type=str, default='True')
 #model parameters
-parser.add_argument('--instruments', type=str, nargs='+', default=["bass", "drums", "other", "vocals"],
-                    help="List of instruments to separate (default: \"bass drums other vocals\")")
+parser.add_argument('--instruments', type=str, nargs='+', default=["vocals"],
+                    help="List of instruments to separate (default: \"vocals\")")
 parser.add_argument('--num_workers', type=int, default=1,
                     help='Number of data loader worker threads (default: 1)')
 parser.add_argument('--features', type=int, default=32,
                     help='Number of feature channels per layer')
 parser.add_argument('--log_dir', type=str, default='logs/waveunet',
                     help='Folder to write logs into')
-parser.add_argument('--dataset_dir', type=str, default="/mnt/windaten/Datasets/MUSDB18HQ",
+parser.add_argument('--dataset_dir', type=str, default="../waveunet_logs",
                     help='Dataset path')
 parser.add_argument('--hdf_dir', type=str, default="hdf",
                     help='Dataset path')
-parser.add_argument('--checkpoint_dir', type=str, default='checkpoints/waveunet',
+parser.add_argument('--checkpoint_dir', type=str, default='waveunet_checkpoints',
                     help='Folder to write checkpoints into')
 parser.add_argument('--load_model', type=str, default=None,
                     help='Reload a previously trained model (whole task model)')
@@ -63,9 +67,9 @@ parser.add_argument('--levels', type=int, default=6,
                     help="Number of DS/US blocks")
 parser.add_argument('--depth', type=int, default=1,
                     help="Number of convs per block")
-parser.add_argument('--sr', type=int, default=44100,
+parser.add_argument('--sr', type=int, default=16000,
                     help="Sampling rate")
-parser.add_argument('--channels', type=int, default=2,
+parser.add_argument('--channels', type=int, default=4,
                     help="Number of input audio channels")
 parser.add_argument('--kernel_size', type=int, default=5,
                     help="Filter width of kernels. Has to be an odd number")
@@ -98,6 +102,26 @@ args.use_cuda = eval(args.use_cuda)
 args.early_stopping = eval(args.early_stopping)
 args.fixed_seed = eval(args.fixed_seed)
 
+#UTILS
+def worker_init_fn(worker_id): # This is apparently needed to ensure workers have different random seeds and draw different examples!
+    np.random.seed(np.random.get_state()[1][0] + worker_id)
+
+def get_lr(optim):
+    return optim.param_groups[0]["lr"]
+
+def set_lr(optim, lr):
+    for g in optim.param_groups:
+        g['lr'] = lr
+
+def set_cyclic_lr(optimizer, it, epoch_it, cycles, min_lr, max_lr):
+    cycle_length = epoch_it // cycles
+    curr_cycle = min(it // cycle_length, cycles-1)
+    curr_it = it - cycle_length * curr_cycle
+
+    new_lr = min_lr + 0.5*(max_lr - min_lr)*(1 + np.cos((float(curr_it) / float(cycle_length)) * np.pi))
+    set_lr(optimizer, new_lr)
+
+
 if args.use_cuda:
     device = 'cuda:' + str(args.gpu_id)
 else:
@@ -112,7 +136,7 @@ if args.fixed_seed:
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
 
-
+writer = SummaryWriter(args.log_dir)
 print ('\nLoading dataset')
 
 
@@ -145,6 +169,7 @@ validation_predictors = np.array(validation_predictors)
 validation_target = np.array(validation_target)
 test_predictors = np.array(test_predictors)
 test_target = np.array(test_target)
+
 '''
 #reshaping
 training_predictors = training_predictors.reshape(training_predictors.shape[0], 1, training_predictors.shape[1],training_predictors.shape[2])
@@ -173,7 +198,7 @@ test_dataset = utils.TensorDataset(test_predictors, test_target)
 #build data loader from dataset
 tr_data = utils.DataLoader(tr_dataset, args.batch_size, shuffle=True, pin_memory=True)
 val_data = utils.DataLoader(val_dataset, args.batch_size, shuffle=False, pin_memory=True)
-test_data = utils.DataLoader(test_dataset, args.batch_size, shuffle=False, pin_memory=True)  #no batch here!!
+test_data = utils.DataLoader(test_dataset, args.batch_size, shuffle=False, pin_memory=True)
 
 
 
@@ -189,278 +214,54 @@ if args.use_cuda:
     model = model_utils.DataParallel(model)
     print("move model to gpu")
 model = model.to(device)
-sys.exit(0)
-
-
-#print (model)
 
 #compute number of parameters
 model_params = sum([np.prod(p.size()) for p in model.parameters()])
 print ('Total paramters: ' + str(model_params))
 
-#define optimizer and loss
-optimizer = optim.Adam(model.parameters(), lr=args.learning_rate,
-                              weight_decay=args.regularization_lambda)
-loss_function = locals()[args.loss_function]
 
-#init history
-train_loss_hist = []
-val_loss_hist = []
+# Set up the loss function
+if args.loss == "L1":
+    criterion = nn.L1Loss()
+elif args.loss == "L2":
+    criterion = nn.MSELoss()
+else:
+    raise NotImplementedError("Couldn't find this loss!")
 
-loading_time = float(time.perf_counter()) - float(loading_start)
-print ('\nLoading time: ' + str(np.round(float(loading_time), decimals=1)) + ' seconds')
+# Set up optimiser
+optimizer = Adam(params=model.parameters(), lr=args.lr)
+
+# Set up training state dict that will also be saved into checkpoints
+state = {"step" : 0,
+         "worse_epochs" : 0,
+         "epochs" : 0,
+         "best_loss" : np.Inf}
+
+# LOAD MODEL CHECKPOINT IF DESIRED
+if args.load_model is not None:
+    print("Continuing training full model from checkpoint " + str(args.load_model))
+    state = model_utils.load_model(model, optimizer, args.load_model, args.cuda)
 
 
-criterion = nn.MSELoss()
+print('TRAINING START')
+while state["worse_epochs"] < args.patience:
+    print("Training one epoch from iteration " + str(state["step"]))
+    avg_time = 0.
+    model.train()
+    with tqdm(total=len(tr_dataset) // args.batch_size) as pbar:
+        np.random.seed()
+        #for example_num, (x, targets) in enumerate(dataloader):
+        for example_num, (x, target) in enumerate(tr_data):
+            x = x.to(device)
+            target = target.to(device)
+            t = time.time()
 
-def train_model():
-    for epoch in range(args.num_epochs):
-        epoch_start = time.perf_counter()
-        model.train()
-        print ('\n')
-        string = 'Epoch: [' + str(epoch+1) + '/' + str(args.num_epochs) + '] '
-        #iterate batches
-        for i, (sounds, truth) in enumerate(tr_data):
+            # Set LR for this iteration
+            set_cyclic_lr(optimizer, example_num, len(tr_dataset) // args.batch_size, args.cycles, args.min_lr, args.lr)
+            writer.add_scalar("lr", get_lr(optimizer), state["step"])
+
+            # Compute loss for each instrument/model
             optimizer.zero_grad()
-            sounds = sounds.to(device)
-            truth = truth.to(device)
-
-            recon, v, a, d = model(sounds)
-            loss = loss_function(sounds, recon, truth, v, a, d, args.loss_beta)
-
-            l = criterion(sounds,recon)
-            l.backward()
-            #loss['total'].backward(retain_graph=True)
-            #lotal_loss.backward()
-            #print ('criterion:')
-            optimizer.step()
-            #loss['total'] = loss['total'].detach()
-            #print progress
-            perc = int(i / len(tr_data) * 20)
-            inv_perc = int(20 - perc - 1)
-            loss_print_t = str(np.round(loss['total'].detach().item(), decimals=5))
-            #loss_print_t = str(np.round(loss.detach().item(), decimals=5))
-
-            string_progress = string + '[' + '=' * perc + '>' + '.' * inv_perc + ']' + ' loss: ' + loss_print_t
-            print ('\r', string_progress, end='')
-            #del loss
-
-        #create history
-        train_batch_losses = []
-        val_batch_losses = []
-        with torch.no_grad():
-            model.eval()
-            #training data
-            for i, (sounds, truth) in enumerate(tr_data):
-                sounds = sounds.to(device)
-                truth = truth.to(device)
-
-                recon, v, a, d = model(sounds)
-                loss = loss_function(sounds, recon, truth, v, a, d, args.loss_beta)
-
-                train_batch_losses.append(loss)
-            #validation data
-            for i, (sounds, truth) in enumerate(val_data):
-                sounds = sounds.to(device)
-                truth = truth.to(device)
-
-                recon, v, a, d = model(sounds)
-                loss = loss_function(sounds, recon, truth, v, a, d, args.loss_beta)
-
-                val_batch_losses.append(loss)
-        #append to history and print
-        train_epoch_loss = {'total':[], 'emo':[], 'recon':[],
-                            'valence':[],'arousal':[], 'dominance':[]}
-        val_epoch_loss = {'total':[], 'emo':[], 'recon':[],
-                          'valence':[],'arousal':[], 'dominance':[]}
-
-        for i in train_batch_losses:
-            for j in i:
-                name = j
-                value = i[j]
-                train_epoch_loss[name].append(value.item())
-        for i in val_batch_losses:
-            for j in i:
-                name = j
-                value = i[j]
-                val_epoch_loss[name].append(value.item())
-
-        for i in train_epoch_loss:
-            train_epoch_loss[i] = np.mean(train_epoch_loss[i])
-            val_epoch_loss[i] = np.mean(val_epoch_loss[i])
-        print ('\n EPOCH LOSSES:')
-        print ('\n Training:')
-        print (train_epoch_loss)
-        print ('\n Validation:')
-        print (val_epoch_loss)
-
-
-        train_loss_hist.append(train_epoch_loss)
-        val_loss_hist.append(val_epoch_loss)
-
-        #print ('\n  Train loss: ' + str(np.round(train_epoch_loss.item(), decimals=5)) + ' | Val loss: ' + str(np.round(val_epoch_loss.item(), decimals=5)))
-
-        #compute epoch time
-        epoch_time = float(time.perf_counter()) - float(epoch_start)
-        print ('\n Epoch time: ' + str(np.round(float(epoch_time), decimals=1)) + ' seconds')
-
-        #save best model (metrics = validation loss)
-        if epoch == 0:
-            torch.save(model.state_dict(), args.model_path)
-            print ('\nModel saved')
-            saved_epoch = epoch + 1
-        else:
-            if args.save_model_metric == 'total_loss':
-                best_loss = min([i['total'] for i in val_loss_hist[:-1]])
-                #best_loss = min(val_loss_hist['total'].item()[:-1])  #not looking at curr_loss
-                curr_loss = val_loss_hist[-1]['total']
-                if curr_loss < best_loss:
-                    torch.save(model.state_dict(), args.model_path)
-                    print ('\nModel saved')  #SUBSTITUTE WITH SAVE MODEL FUNC
-                    saved_epoch = epoch + 1
-
-
-            else:
-                raise ValueError('Wrong metric selected')
-        '''
-        if args.num_experiment != 0:
-            #print info on dataset, experiment and instance if performing a grid search
-            utilstring = 'dataset: ' + str(args.dataset) + ', exp: ' + str(args.num_experiment) + ', run: ' + str(args.num_run) + ', fold: ' + str(args.num_fold)
-            print ('')
-            print (utilstring)
-        '''
-
-        if args.early_stopping and epoch >= args.patience+1:
-            patience_vec = [i['total'] for i in val_loss_hist[-args.patience+1:]]
-            #patience_vec = val_loss_hist[-args.patience+1:]
-            best_l = np.argmin(patience_vec)
-            if best_l == 0:
-                print ('Training early-stopped')
-                break
-
-
-    #COMPUTE
-    model.load_state_dict(torch.load(args.model_path), strict=False)  #load best model
-    train_batch_losses = []
-    val_batch_lesses = []
-    test_batch_losses = []
-
-    model.eval()
-    with torch.no_grad():
-        #TRAINING DATA
-        for i, (sounds, truth) in enumerate(tr_data):
-            sounds = sounds.to(device)
-            truth = truth.to(device)
-
-            recon, v, a, d = model(sounds)
-            loss = loss_function(sounds, recon, truth, v, a, d, args.loss_beta)
-
-            train_batch_losses.append(loss)
-
-        #VALIDATION DATA
-        for i, (sounds, truth) in enumerate(val_data):
-            sounds = sounds.to(device)
-            truth = truth.to(device)
-
-            recon, v, a, d = model(sounds)
-            loss = loss_function(sounds, recon, truth, v, a, d, args.loss_beta)
-
-            val_batch_losses.append(loss)
-
-        #TEST DATA
-        for i, (sounds, truth) in enumerate(test_data):
-            sounds = sounds.to(device)
-            truth = truth.to(device)
-
-            recon, v, a, d = model(sounds)
-            loss = loss_function(sounds, recon, truth, v, a, d, args.loss_beta)
-
-            test_batch_losses.append(loss)
-
-    #compute final mean of batch losses for train, validation and test set
-    train_loss = {'total':[], 'emo':[], 'recon':[],
-                  'valence':[], 'arousal':[], 'dominance':[]}
-    val_loss = {'total':[], 'emo':[], 'recon':[],
-                'valence':[],'arousal':[], 'dominance':[]}
-    test_loss = {'total':[], 'emo':[], 'recon':[],
-                 'valence':[],'arousal':[], 'dominance':[]}
-    for i in train_batch_losses:
-        for j in i:
-            name = j
-            value = i[j]
-            train_loss[name].append(value.item())
-    for i in val_batch_losses:
-        for j in i:
-            name = j
-            value = i[j]
-            val_loss[name].append(value.item())
-    for i in test_batch_losses:
-        for j in i:
-            name = j
-            value = i[j]
-            test_loss[name].append(value.item())
-
-    for i in train_loss:
-        train_loss[i] = np.mean(train_loss[i])
-        val_loss[i] = np.mean(val_loss[i])
-        test_loss[i] = np.mean(test_loss[i])
-
-
-    #save results in temp dict file
-    temp_results = {}
-
-    #save loss
-    temp_results['train_loss_total'] = train_loss['total']
-    temp_results['val_loss_total'] = val_loss['total']
-    temp_results['test_loss_total'] = test_loss['total']
-
-    temp_results['train_loss_recon'] = train_loss['recon']
-    temp_results['val_loss_recon'] = val_loss['recon']
-    temp_results['test_loss_recon'] = test_loss['recon']
-
-    temp_results['train_loss_emo'] = train_loss['emo']
-    temp_results['val_loss_emo'] = val_loss['emo']
-    temp_results['test_loss_emo'] = test_loss['emo']
-
-    temp_results['train_loss_valence'] = train_loss['valence']
-    temp_results['val_loss_valence'] = val_loss['valence']
-    temp_results['test_loss_valence'] = test_loss['valence']
-
-    temp_results['train_loss_arousal'] = train_loss['arousal']
-    temp_results['val_loss_arousal'] = val_loss['arousal']
-    temp_results['test_loss_arousal'] = test_loss['arousal']
-
-    temp_results['train_loss_dominance'] = train_loss['dominance']
-    temp_results['val_loss_dominance'] = val_loss['dominance']
-    temp_results['test_loss_dominance'] = test_loss['dominance']
-
-    temp_results['train_loss_hist'] = train_loss_hist
-    temp_results['val_loss_hist'] = train_loss_hist
-    temp_results['parameters'] = vars(args)
-
-
-    np.save(args.results_path, temp_results)
-
-    #print  results
-    print ('\nRESULTS:')
-    keys = list(temp_results.keys())
-    keys.remove('parameters')
-    keys.remove('train_loss_hist')
-    keys.remove('val_loss_hist')
-
-    train_keys = [i for i in keys if 'train' in i]
-    val_keys = [i for i in keys if 'val' in i]
-    test_keys = [i for i in keys if 'test' in i]
-
-
-    print ('\n train:')
-    for i in train_keys:
-        print (i, ': ', temp_results[i])
-    print ('\n val:')
-    for i in val_keys:
-        print (i, ': ', temp_results[i])
-    print ('\n test:')
-    for i in test_keys:
-        print (i, ': ', temp_results[i])
-
-train_model()
+            #outputs, avg_loss = model_utils.compute_loss(model, x, target, criterion, compute_grad=True)
+            output = model(x, target)
+            print (output.shape)

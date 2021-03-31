@@ -1,0 +1,12 @@
+future
+numpy
+librosa
+soundfile
+musdb
+museval
+h5py
+tqdm
+torch==1.4.0
+torchvision==0.5.0
+tensorboard
+sortedcontainers

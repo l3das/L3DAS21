@@ -72,61 +72,6 @@ def task1_average_metric(predicted_folder, truth_folder, fs=16000):
 
 #TASK 2 METRICS
 
-def gen_seld_out(n_frames, n_overlaps=3, n_classes=14):
-    '''
-    generate a fake output of the seld model
-    ***only for testing
-    '''
-    results = []
-    for frame in range(n_frames):
-        n_sounds = np.random.randint(4)
-        for i in range(n_sounds):
-            t_class = np.random.randint(n_classes)
-            tx = (np.random.sample() * 4) - 2
-            ty = ((np.random.sample() * 2) - 1) * 1.5
-            tz = (np.random.sample() * 2) - 1
-            temp_entry = [frame, t_class, tx, ty, tz]
-            #print (temp_entry)
-            results.append(temp_entry)
-    results = np.array(results)
-    #pd.DataFrame(results).to_csv(out_path, index=None, header=None)
-    return results
-
-def gen_dummy_seld_results(out_path, n_frames=10, n_files=30, perc_tp=0.6,
-                           n_overlaps=3, n_classes=14):
-    '''
-    generate a fake pair of seld model output and truth files
-    ***only for testing
-    '''
-
-    truth_path = os.path.join(out_path, 'truth')
-    pred_path = os.path.join(out_path, 'pred')
-    if not os.path.exists(truth_path):
-        os.makedirs(truth_path)
-    if not os.path.exists(pred_path):
-        os.makedirs(pred_path)
-
-    for file in range(n_files):
-        #generate rtandom prediction and truth files
-        pred_results = gen_seld_out(n_frames, n_overlaps, n_classes)
-        truth_results = gen_seld_out(n_frames, n_overlaps, n_classes)
-
-        #change a few entries in the pred in order to make them match
-        num_truth = len(truth_results)
-        num_pred = len(pred_results)
-        num_tp = int(num_truth * perc_tp)
-        list_entries = list(range(min(num_truth, num_pred)))
-        random.shuffle(list_entries)
-        truth_ids = list_entries[:num_tp]
-        for t in truth_ids:
-            pred_results[t] = truth_results[t]
-
-        truth_out_file = os.path.join(truth_path, str(file) + '.csv')
-        pred_out_file = os.path.join(pred_path, str(file) + '.csv')
-
-        pd.DataFrame(truth_results).to_csv(truth_out_file, index=None, header=None)
-        pd.DataFrame(pred_results).to_csv(pred_out_file, index=None, header=None)
-
 
 def location_sensitive_detection(pred_path, true_path,
                                  n_frames=100, spatial_threshold=0.3):
