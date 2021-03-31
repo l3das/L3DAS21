@@ -8,10 +8,11 @@ import os
 l = []
 target = []
 for i in range(20):
-    n = np.random.randint(20000) + 2000
-    n = 16000 * 10
+    n = 169641
+    n_target = 160089
     sig = np.random.sample(n)
-    target.append(sig)
+    sig_target = np.random.sample(n_target).reshape((1, n_target))
+    target.append(sig_target)
     sig = np.vstack((sig,sig,sig,sig))
     l.append(sig)
 
@@ -44,5 +45,8 @@ np.save(os.path.join(output_path,'test_target.npy'), l)
 
 with open(os.path.join(output_path,'training_predictors.pkl'), 'rb') as f:
     data = pickle.load(f)
+with open(os.path.join(output_path,'training_target.pkl'), 'rb') as f:
+    data2 = pickle.load(f)
 
 print (data[0].shape)
+print (data2[0].shape)

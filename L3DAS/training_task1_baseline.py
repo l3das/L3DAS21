@@ -207,7 +207,7 @@ num_features = [args.features*i for i in range(1, args.levels+1)] if args.featur
                [args.features*2**i for i in range(0, args.levels)]
 target_outputs = int(args.output_size * args.sr)
 model = Waveunet(args.channels, num_features, args.channels, args.instruments, kernel_size=args.kernel_size,
-                 target_output_size=target_outputs, depth=args.depth, strides=args.strides,
+                 target_output_size=160000, depth=args.depth, strides=args.strides,
                  conv_type=args.conv_type, res=args.res, separate=args.separate)
 
 if args.use_cuda:
@@ -242,6 +242,14 @@ if args.load_model is not None:
     print("Continuing training full model from checkpoint " + str(args.load_model))
     state = model_utils.load_model(model, optimizer, args.load_model, args.cuda)
 
+def pad(x, y, size=169641):
+
+    print ('culo', x.shape, y.shape)
+    pad_x = torch.zeros(x.shape[0],x.shape[1], size)
+    pad_y = torch.zeros(x.shape[0], size)
+    pad_x[:,:,:pad_x.shape[-1]] = x
+    pad_y[:,:pad_y.shape[-1]] = y
+    return pad_x, pad_y
 
 print('TRAINING START')
 while state["worse_epochs"] < args.patience:
@@ -252,9 +260,16 @@ while state["worse_epochs"] < args.patience:
         np.random.seed()
         #for example_num, (x, targets) in enumerate(dataloader):
         for example_num, (x, target) in enumerate(tr_data):
-            x = x.to(device)
+            #x, target = pad(x, target)
             target = target.to(device)
+            #target = {'vocals': target}
+            x = x.to(device)
+            #print ('\nCAZZOcazzo', target.shape)
+
+
+            #target = target[:,:41641]
             t = time.time()
+
 
             # Set LR for this iteration
             set_cyclic_lr(optimizer, example_num, len(tr_dataset) // args.batch_size, args.cycles, args.min_lr, args.lr)
@@ -263,5 +278,7 @@ while state["worse_epochs"] < args.patience:
             # Compute loss for each instrument/model
             optimizer.zero_grad()
             #outputs, avg_loss = model_utils.compute_loss(model, x, target, criterion, compute_grad=True)
-            output = model(x, target)
-            print (output.shape)
+            outputs = model(x, 'vocals')
+            loss = criterion(outputs['vocals'], target)
+            #MODIFIED OUTPUT CONV
+            print (outputs['vocals'].shape)
