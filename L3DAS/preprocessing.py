@@ -12,6 +12,7 @@ Command line inputs define which task to process and its parameters
 
 def preprocessing_task1(args):
     sr_task1 = 16000
+    len = 10 * sr_task1
     train100_folder = 'train'
     train360_folder = 'train360'
     dev_folder = 'test'
@@ -69,17 +70,17 @@ def preprocessing_task1(args):
     if not os.path.isdir(args.output_path):
         os.mkdir(args.output_path)
 
-    with open(os.path.join(args.output_path,'predictors_train.pkl'), 'wb') as f:
+    with open(os.path.join(args.output_path,'task1_predictors_train.pkl'), 'wb') as f:
         pickle.dump(predictors_train, f)
-    with open(os.path.join(args.output_path,'predictors_validation.pkl'), 'wb') as f:
+    with open(os.path.join(args.output_path,'task1_predictors_validation.pkl'), 'wb') as f:
         pickle.dump(predictors_validation, f)
-    with open(os.path.join(args.output_path,'predictors_test.pkl'), 'wb') as f:
+    with open(os.path.join(args.output_path,'task1_predictors_test.pkl'), 'wb') as f:
         pickle.dump(predictors_test, f)
-    with open(os.path.join(args.output_path,'target_train.pkl'), 'wb') as f:
+    with open(os.path.join(args.output_path,'task1_target_train.pkl'), 'wb') as f:
         pickle.dump(target_train, f)
-    with open(os.path.join(args.output_path,'target_validation.pkl'), 'wb') as f:
+    with open(os.path.join(args.output_path,'task1_target_validation.pkl'), 'wb') as f:
         pickle.dump(target_validation, f)
-    with open(os.path.join(args.output_path,'target_test.pkl'), 'wb') as f:
+    with open(os.path.join(args.output_path,'task1_target_test.pkl'), 'wb') as f:
         pickle.dump(target_test, f)
 
     #create pytorch dataset with the preprocessed data
