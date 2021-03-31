@@ -13,6 +13,7 @@ from torch.utils.tensorboard import SummaryWriter
 from waveunet_model.waveunet import Waveunet
 import waveunet_model.utils as model_utils
 
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 parser = argparse.ArgumentParser()
 #saving parameters
@@ -260,16 +261,9 @@ while state["worse_epochs"] < args.patience:
         np.random.seed()
         #for example_num, (x, targets) in enumerate(dataloader):
         for example_num, (x, target) in enumerate(tr_data):
-            #x, target = pad(x, target)
             target = target.to(device)
-            #target = {'vocals': target}
             x = x.to(device)
-            #print ('\nCAZZOcazzo', target.shape)
-
-
-            #target = target[:,:41641]
             t = time.time()
-
 
             # Set LR for this iteration
             set_cyclic_lr(optimizer, example_num, len(tr_dataset) // args.batch_size, args.cycles, args.min_lr, args.lr)
@@ -277,8 +271,23 @@ while state["worse_epochs"] < args.patience:
 
             # Compute loss for each instrument/model
             optimizer.zero_grad()
-            #outputs, avg_loss = model_utils.compute_loss(model, x, target, criterion, compute_grad=True)
             outputs = model(x, 'vocals')
             loss = criterion(outputs['vocals'], target)
-            #MODIFIED OUTPUT CONV
-            print (outputs['vocals'].shape)
+            loss.backward()
+
+            optimizer.step()
+            state["step"] += 1
+            t = time.time() - t
+            avg_time += (1. / float(example_num + 1)) * (t - avg_time)
+
+            writer.add_scalar("train_loss", loss.item(), state["step"])
+            '''
+            if example_num % args.example_freq == 0:
+                input_centre = torch.mean(x[0, :, model.shapes["output_start_frame"]:model.shapes["output_end_frame"]], 0) # Stereo not supported for logs yet
+                writer.add_audio("input", input_centre, state["step"], sample_rate=args.sr)
+
+                for inst in outputs.keys():
+                    writer.add_audio(inst + "_pred", torch.mean(outputs[inst][0], 0), state["step"], sample_rate=args.sr)
+                    writer.add_audio(inst + "_target", torch.mean(target[inst][0], 0), state["step"], sample_rate=args.sr)
+            '''
+            pbar.update(1)

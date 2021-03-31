@@ -1,1 +1,0 @@
-This is where logs of the training process are going to be stored! 
