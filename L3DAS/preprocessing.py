@@ -22,10 +22,8 @@ def preprocessing_task1(args):
 
     sets = [train100_folder, dev_folder]
     predictors_train = []
-    predictors_validation = []
     predictors_test = []
     target_train = []
-    target_validation = []
     target_test = []
     count = 0
     for folder in sets:
@@ -63,7 +61,7 @@ def preprocessing_task1(args):
                         break
 
     #split train set into train and development
-    split_point = int(predictors_train.shape[0] * args.train_val_split)
+    split_point = int(len(predictors_train) * args.train_val_split)
     predictors_train = predictors_train[:split_point]
     target_train = target_train[:split_point]
     predictors_validation = predictors_validation[split_point:]
