@@ -7,7 +7,7 @@ import os
 
 l = []
 target = []
-for i in range(20):
+for i in range(4):
     n = 160000
     n_target = 160000
     sig = np.random.sample(n)

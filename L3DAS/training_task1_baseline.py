@@ -13,6 +13,7 @@ from torch.utils.tensorboard import SummaryWriter
 from waveunet_model.waveunet import Waveunet
 import waveunet_model.utils as model_utils
 
+
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 parser = argparse.ArgumentParser()
@@ -62,7 +63,7 @@ parser.add_argument('--min_lr', type=float, default=5e-5,
                     help='Minimum learning rate in LR cycle (default: 5e-5)')
 parser.add_argument('--cycles', type=int, default=2,
                     help='Number of LR cycles per epoch')
-parser.add_argument('--batch_size', type=int, default=4,
+parser.add_argument('--batch_size', type=int, default=2,
                     help="Batch size")
 parser.add_argument('--levels', type=int, default=6,
                     help="Number of DS/US blocks")
@@ -238,15 +239,15 @@ if args.load_model is not None:
     state = model_utils.load_model(model, optimizer, args.load_model, args.cuda)
 
 
-
 print('TRAINING START')
+
 while state["worse_epochs"] < args.patience:
     print("Training one epoch from iteration " + str(state["step"]))
     avg_time = 0.
     model.train()
     with tqdm(total=len(tr_dataset) // args.batch_size) as pbar:
-        np.random.seed()
-        #for example_num, (x, targets) in enumerate(dataloader):
+        #np.random.seed()
+
         for example_num, (x, target) in enumerate(tr_data):
             x, target = dyn_pad(x, target)
             target = target.to(device)
@@ -269,13 +270,67 @@ while state["worse_epochs"] < args.patience:
             avg_time += (1. / float(example_num + 1)) * (t - avg_time)
 
             writer.add_scalar("train_loss", loss.item(), state["step"])
-            '''
-            if example_num % args.example_freq == 0:
-                input_centre = torch.mean(x[0, :, model.shapes["output_start_frame"]:model.shapes["output_end_frame"]], 0) # Stereo not supported for logs yet
-                writer.add_audio("input", input_centre, state["step"], sample_rate=args.sr)
 
-                for inst in outputs.keys():
-                    writer.add_audio(inst + "_pred", torch.mean(outputs[inst][0], 0), state["step"], sample_rate=args.sr)
-                    writer.add_audio(inst + "_target", torch.mean(target[inst][0], 0), state["step"], sample_rate=args.sr)
-            '''
             pbar.update(1)
+
+        model.eval()
+        val_loss = 0.
+        with tqdm(total=len(val_dataset) // args.batch_size) as pbar, torch.no_grad():
+            for example_num, (x, target) in enumerate(val_data):
+                x, target = dyn_pad(x, target)
+                target = target.to(device)
+                x = x.to(device)
+
+                outputs = model(x, 'vocals')
+                loss = criterion(outputs['vocals'], target)
+
+                val_loss += (1. / float(example_num + 1)) * (loss - val_loss)
+
+                pbar.set_description("Current loss: {:.4f}".format(val_loss))
+                pbar.update(1)
+        print("VALIDATION FINISHED: LOSS: " + str(val_loss))
+
+        # EARLY STOPPING CHECK
+        #checkpoint_path = os.path.join(args.checkpoint_dir, "checkpoint_" + str(state["step"]))
+        checkpoint_path = os.path.join(args.checkpoint_dir, "checkpoint")
+
+        if val_loss >= state["best_loss"]:
+            state["worse_epochs"] += 1
+        else:
+            print("MODEL IMPROVED ON VALIDATION SET!")
+            state["worse_epochs"] = 0
+            state["best_loss"] = val_loss
+            state["best_checkpoint"] = checkpoint_path
+
+            # CHECKPOINT
+            print("Saving model...")
+            model_utils.save_model(model, optimizer, state, checkpoint_path)
+
+        state["epochs"] += 1
+        state["worse_epochs"] = 200
+
+
+#### TESTING ####
+# Test loss
+print("TESTING")
+
+# Load best model based on validation loss
+state = model_utils.load_model(model, None, state["best_checkpoint"], args.use_cuda)
+model.eval()
+test_loss = 0.
+with tqdm(total=len(val_dataset) // args.batch_size) as pbar, torch.no_grad():
+    for example_num, (x, target) in enumerate(val_data):
+        x, target = dyn_pad(x, target)
+        target = target.to(device)
+        x = x.to(device)
+
+        outputs = model(x, 'vocals')
+        loss = criterion(outputs['vocals'], target)
+
+        test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
+
+        pbar.set_description("Current loss: {:.4f}".format(test_loss))
+        pbar.update(1)
+
+print("TEST FINISHED: LOSS: " + str(test_loss))
+writer.add_scalar("test_loss", test_loss, state["step"])
