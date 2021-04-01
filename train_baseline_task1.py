@@ -242,7 +242,9 @@ def main(args):
                'test_loss': test_loss.cpu().detach().numpy(),
                'train_loss_hist': train_loss_hist,
                'val_loss_hist': val_loss_hist}
-
+    print ('RESULTS')
+    for i in results:
+        print (i, a[i])
     out_path = os.path.join(args.results_path, 'results_dict.json')
     np.save(out_path, results)
     #writer.add_scalar("test_loss", test_loss, state["step"])
