@@ -4,9 +4,10 @@ import numpy as np
 import librosa
 import pickle
 '''
-Take as input the downloaded dataset (audio files and target data)
-and output pickle lists for task1 and task2, separately.
-Command line inputs define which task to process and its parameters
+Take as input the unzipped dataset folders and output pickle lists
+containing the pre-processed data for task1 and task2, separately.
+Separate training, validation and test matrices are saved.
+Command line inputs define which task to process and its parameters.
 '''
 
 
@@ -20,7 +21,6 @@ def preprocessing_task1(args):
         else:
             pad = np.zeros((x.shape[0], size))
             pad[:,:length] = x
-
         return pad
 
     train100_folder = 'train'
@@ -81,15 +81,7 @@ def preprocessing_task1(args):
     print ('Saving files')
     if not os.path.isdir(args.output_path):
         os.makedirs(args.output_path)
-    '''
-    np.save(args.output_path,'task1_predictors_train.npy', predictors_train)
-    np.save(args.output_path,'task1_predictors_validation.npy', predictors_validation)
-    np.save(args.output_path,'task1_predictors_test.npy', predictors_test)
-    np.save(args.output_path,'task1_target_train.npy', target_train)
-    np.save(args.output_path,'task1_target_validation.npy', target_validation)
-    np.save(args.output_path,'task1_target_test.npy', target_test)
 
-    '''
     with open(os.path.join(args.output_path,'task1_predictors_train.pkl'), 'wb') as f:
         pickle.dump(predictors_training, f)
     with open(os.path.join(args.output_path,'task1_predictors_validation.pkl'), 'wb') as f:
@@ -139,7 +131,6 @@ if __name__ == '__main__':
                         help='stft window_type')
 
     args = parser.parse_args()
-
 
     if args.task_number == 1:
         preprocessing_task1(args)
