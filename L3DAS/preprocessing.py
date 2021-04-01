@@ -14,11 +14,7 @@ def preprocessing_task1(args):
     sr_task1 = 16000
     len = 10 * sr_task1
 
-    def pad(samples, len=len):  #zeropadding to 10 seconds
-        curr_len = samples.shape[-1]
-        pad = np.zeros((samples.shape[0], len))
-        pad [:,:curr_len] = samples
-        return pad
+
 
     train100_folder = 'train'
     train360_folder = 'train360'
@@ -48,12 +44,10 @@ def preprocessing_task1(args):
                     sound_path = os.path.join(data_path, sound)
                     target_path = sound_path.replace('data', 'labels').replace('_A', '')
                     samples, sr = librosa.load(sound_path, sr_task1, mono=False)
-                    samples = pad(samples)
                     if args.num_mics == 2:  # if both ambisonics mics are wanted
                         #stack the additional 4 channels to get a (8, samples) shape
                         B_sound_path = sound_path.replace('A', 'B')
                         samples_B, sr = librosa.load(sound_path, sr_task1, mono=False)
-                        samples_B = pad(samples_B)
                         samples = np.vstack((samples,samples_B))
                     samples_target, sr = librosa.load(target_path, sr_task1, mono=False)
                     #append to final arrays
@@ -99,7 +93,7 @@ def preprocessing_task1(args):
         pickle.dump(target_validation, f)
     with open(os.path.join(args.output_path,'task1_target_test.pkl'), 'wb') as f:
         pickle.dump(target_test, f)
-    
+
     #create pytorch dataset with the preprocessed data
     #seve it to args.output_directory
 
@@ -118,7 +112,7 @@ if __name__ == '__main__':
                         help='task to be pre-processed')
     parser.add_argument('--input_path', type=str,
                         help='directory where the dataset has been downloaded')
-    parser.add_argument('--output_path', type=str, default='processed',
+    parser.add_argument('--output_path', type=str, default='DATASET/processed',
                         help='where to save the numpy matrices')
 
     #processing type
