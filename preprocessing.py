@@ -63,16 +63,16 @@ def preprocessing_task1(args):
     folders = os.listdir(args.input_path)
     for folder in folders:
         if 'dev' in folder:
-            test_predictors, test_target = process_folder(folder)
+            predictors_test, target_test = process_folder(folder)
         if args.training_set == '100':
-            training_predictors, training100_target = process_folder('train100')
+            predictors_train, target_train = process_folder('train100')
         elif args.training_set == '360':
-            training360_predictors, training360_target = process_folder('train360')
+            predictors_train, target_train = process_folder('train360')
         elif args.training_set == 'both':
-            training100_predictors, training100_target = process_folder('train100')
-            training360_predictors, training360_target = process_folder('train360')
-            training_predictors = training100_predictors + training360_predictors
-            training_target = training100_target + training360_target
+            predictors_train100, target_train100 = process_folder('train100')
+            predictors_train360, target_train360 = process_folder('train360')
+            predictors_train = predictors_train100 + predictors_train360
+            target_train = target_train100 + target_train360
 
     #split train set into train and development
     split_point = int(len(predictors_train) * args.train_val_split)
