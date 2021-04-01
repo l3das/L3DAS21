@@ -48,7 +48,7 @@ def evaluate(model, dataloader):
     model.eval()
     test_loss = 0.
     with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
-        for example_num, (x, target) in enumerate(val_data):
+        for example_num, (x, target) in enumerate(dataloader):
             x, target = dyn_pad(x, target)
             target = target.to(device)
             x = x.to(device)
