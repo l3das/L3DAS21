@@ -60,8 +60,8 @@ def preprocessing_task1(args):
     split_point = int(len(predictors_train) * args.train_val_split)
     predictors_train = predictors_train[:split_point]
     target_train = target_train[:split_point]
-    predictors_validation = predictors_validation[split_point:]
-    target_validation = target_validation[split_point:]
+    predictors_validation = predictors_train[split_point:]
+    target_validation = target_train[split_point:]
 
     print ('Saving files')
     if not os.path.isdir(args.output_path):
