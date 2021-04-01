@@ -12,6 +12,11 @@ Command line inputs define which task to process and its parameters
 
 def preprocessing_task1(args):
     sr_task1 = 16000
+    def pad(x, size=sr_task1*10):
+        #pad all sounds to 10 seconds
+        pad = np.zeros(x.shape[0], size)
+        pad[:,:x.shape[-1]] = x
+        return pad
 
     train100_folder = 'train'
     train360_folder = 'train360'
@@ -39,12 +44,17 @@ def preprocessing_task1(args):
                     sound_path = os.path.join(data_path, sound)
                     target_path = sound_path.replace('data', 'labels').replace('_A', '')
                     samples, sr = librosa.load(sound_path, sr_task1, mono=False)
+                    samples = pad(samples)
                     if args.num_mics == 2:  # if both ambisonics mics are wanted
                         #stack the additional 4 channels to get a (8, samples) shape
                         B_sound_path = sound_path.replace('A', 'B')
                         samples_B, sr = librosa.load(sound_path, sr_task1, mono=False)
+                        samples_B = pad(samples_B)
                         samples = np.vstack((samples,samples_B))
                     samples_target, sr = librosa.load(target_path, sr_task1, mono=False)
+                    samples_target = samples_target.reshape((1, samples_target.shape[0]))
+                    samples_target = pad(samples_target)
+                    print ('QUIIIFIFIFIFI', samples.shape, samples_target.shape)
                     #append to final arrays
                     if folder == dev_folder:
                         predictors_test.append(samples)
