@@ -16,7 +16,6 @@ def preprocessing_task1(args):
         #pad all sounds to 10 seconds
         length = x.shape[-1]
         if length > size:
-            print ('AHIAHIAHIAHIAHIAHIA', length)
             pad = x[:,:size]
         else:
             pad = np.zeros((x.shape[0], size))
