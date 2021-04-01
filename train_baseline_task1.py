@@ -223,8 +223,8 @@ def main(args):
 
             state["epochs"] += 1
             state["worse_epochs"] = 200
-            train_loss_hist.append(train_loss)
-            val_loss_hist.append(val_loss)
+            train_loss_hist.append(train_loss.detach().numpy())
+            val_loss_hist.append(val_loss.detach().numpy())
 
     #### TESTING ####
     # Test loss
@@ -237,9 +237,9 @@ def main(args):
 
     print("TEST FINISHED: LOSS: " + str(test_loss))
 
-    results = {'train_loss': train_loss,
-               'val_loss': val_loss,
-               'test_loss': test_loss,
+    results = {'train_loss': train_loss.detach().numpy(),
+               'val_loss': val_loss.detach().numpy(),
+               'test_loss': test_loss.detach().numpy(),
                'train_loss_hist': train_loss_hist,
                'val_loss_hist': val_loss_hist}
 
