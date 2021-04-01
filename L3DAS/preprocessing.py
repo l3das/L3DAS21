@@ -14,13 +14,13 @@ def preprocessing_task1(args):
     sr_task1 = 16000
     def pad(x, size=sr_task1*10):
         #pad all sounds to 10 seconds
-        length = x.shape[0]
+        length = x.shape[-1]
         if length > size:
             print ('AHIAHIAHIAHIAHIAHIA', length)
             pad = x[:,:size]
         else:
             pad = np.zeros((x.shape[0], size))
-            pad[:,:x.shape[-1]] = x
+            pad[:,:length] = x
 
         return pad
 
