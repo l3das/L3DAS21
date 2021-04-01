@@ -58,7 +58,7 @@ def preprocessing_task1(args):
                     target.append(samples_target)
                     count += 1
                     print (count, args.num_data)
-                    if args.num_data is not None and count > int(args.num_data):
+                    if args.num_data is not 0 and count > int(args.num_data):
                         break
                         prin ('AAAAAAAAA')
         return predictors, target
@@ -128,7 +128,7 @@ if __name__ == '__main__':
                         help='perc split between train and validation sets')
     parser.add_argument('--num_mics', type=int, default=1,
                         help='how many ambisonics mics (1 or 2)')
-    parser.add_argument('--num_data', type=int, default=None,
+    parser.add_argument('--num_data', type=int, default=0,
                         help='how many datapoints per set. 0 means all available data')
     parser.add_argument('--stft_nparseg', type=int, default=256,
                         help='num of stft frames')
