@@ -60,7 +60,6 @@ def preprocessing_task1(args):
                     samples_target, sr = librosa.load(target_path, sr_task1, mono=False)
                     samples_target = samples_target.reshape((1, samples_target.shape[0]))
                     samples_target = pad(samples_target)
-                    print ('QUIIIFIFIFIFI', samples.shape, samples_target.shape)
                     #append to final arrays
                     if folder == dev_folder:
                         predictors_test.append(samples)
