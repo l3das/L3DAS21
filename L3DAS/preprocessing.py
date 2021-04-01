@@ -59,7 +59,7 @@ def preprocessing_task1(args):
     #split train set into train and development
     split_point = int(len(predictors_train) * args.train_val_split)
 
-    predictors_training = predictors_train[:split_point]    #attention: changed training names 
+    predictors_training = predictors_train[:split_point]    #attention: changed training names
     target_training = target_train[:split_point]
     predictors_validation = predictors_train[split_point:]
     target_validation = target_train[split_point:]
@@ -89,13 +89,10 @@ def preprocessing_task1(args):
     with open(os.path.join(args.output_path,'task1_target_test.pkl'), 'wb') as f:
         pickle.dump(target_test, f)
 
-    #create pytorch dataset with the preprocessed data
-    #seve it to args.output_directory
 
 def preprocessing_task2(args):
     sr_task2 = 32000
-    #create pytorch dataset with the preprocessed data
-    #seve it to args.output_directory
+
 
 
 if __name__ == '__main__':
