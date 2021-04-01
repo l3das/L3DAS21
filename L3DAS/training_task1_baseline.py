@@ -29,7 +29,7 @@ parser.add_argument('--validation_target_path', type=str, default='DATASETS/proc
 parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_test.pkl')
 parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1/task1_target_test.pkl')
 #training parameters
-parser.add_argument('--gpu_id', type=int, default=1)
+parser.add_argument('--gpu_id', type=int, default=0)
 parser.add_argument('--use_cuda', type=str, default='False')
 parser.add_argument('--num_epochs', type=int, default=200)
 parser.add_argument('--learning_rate', type=float, default=0.00005)
