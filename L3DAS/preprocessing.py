@@ -56,7 +56,7 @@ def preprocessing_task1(args):
                         predictors_train.append(samples)
                         target_train.append(samples_target)
                     count += 1
-
+                    print (len(predictors_train))
                     if args.num_data != 0 and count >= args.num_data and count >= args.num_data:
                         break
 
