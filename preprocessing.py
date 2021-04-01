@@ -64,9 +64,9 @@ def preprocessing_task1(args):
     for folder in folders:
         if 'dev' in folder:
             predictors_test, target_test = process_folder(folder)
-        if args.training_set == '100':
+        if args.training_set == 'train100':
             predictors_train, target_train = process_folder('train100')
-        elif args.training_set == '360':
+        elif args.training_set == 'train360':
             predictors_train, target_train = process_folder('train360')
         elif args.training_set == 'both':
             predictors_train100, target_train100 = process_folder('train100')
@@ -117,8 +117,8 @@ if __name__ == '__main__':
     parser.add_argument('--output_path', type=str, default='DATASET/processed',
                         help='where to save the numpy matrices')
     #task1 parameters
-    parser.add_argument('--training_set', type=str, default=100,
-                        help='which training set: 100, 360 or both')
+    parser.add_argument('--training_set', type=str, default='train100',
+                        help='which training set: train100, train360 or both')
 
     #processing type
     parser.add_argument('--processsing_type', type=str, default='stft',
