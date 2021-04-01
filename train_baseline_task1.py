@@ -44,7 +44,7 @@ def dyn_pad(x, y, size_x=169641, size_y=160089):
     pad_y[:,:,:y.shape[-1]] = y
     return pad_x, pad_y
 
-def evaluate(dataloader):
+def evaluate(model, dataloader):
     model.eval()
     test_loss = 0.
     with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
@@ -202,7 +202,7 @@ def main(args):
                 #writer.add_scalar("train_loss", loss.item(), state["step"])
                 pbar.update(1)
             #PASS VALIDATION DATA
-            val_loss = evaluate(val_data)
+            val_loss = evaluate(model, val_data)
             print("VALIDATION FINISHED: LOSS: " + str(val_loss))
 
             # EARLY STOPPING CHECK
@@ -231,9 +231,9 @@ def main(args):
     print("TESTING")
     # Load best model based on validation loss
     state = model_utils.load_model(model, None, state["best_checkpoint"], args.use_cuda)
-    train_loss = evaluate(tr_data)
-    val_loss = evaluate(val_data)
-    test_loss = evaluate(test_data)
+    train_loss = evaluate(model, tr_data)
+    val_loss = evaluate(model, val_data)
+    test_loss = evaluate(model, test_data)
 
     print("TEST FINISHED: LOSS: " + str(test_loss))
 
@@ -264,7 +264,7 @@ if __name__ == '__main__':
     parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1_mini/task1_target_test.pkl')
     #training parameters
     parser.add_argument('--gpu_id', type=int, default=0)
-    parser.add_argument('--use_cuda', type=str, default='False')
+    parser.add_argument('--use_cuda', type=str, default='True')
     parser.add_argument('--num_epochs', type=int, default=200)
     parser.add_argument('--learning_rate', type=float, default=0.00005)
     parser.add_argument('--regularization_lambda', type=float, default=0.)
