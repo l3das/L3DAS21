@@ -61,20 +61,17 @@ def preprocessing_task1(args):
                         break
         return predictors, target
 
-    folders = os.listdir(args.input_path)
-    for folder in folders:
-        if 'dev' in folder:
-            predictors_test, target_test = process_folder(folder)
-        else:
-            if args.training_set == 'train100':
-                predictors_train, target_train = process_folder('train100')
-            elif args.training_set == 'train360':
-                predictors_train, target_train = process_folder('train360')
-            elif args.training_set == 'both':
-                predictors_train100, target_train100 = process_folder('train100')
-                predictors_train360, target_train360 = process_folder('train360')
-                predictors_train = predictors_train100 + predictors_train360
-                target_train = target_train100 + target_train360
+
+    predictors_test, target_test = process_folder('dev')
+    if args.training_set == 'train100':
+        predictors_train, target_train = process_folder('train100')
+    elif args.training_set == 'train360':
+        predictors_train, target_train = process_folder('train360')
+    elif args.training_set == 'both':
+        predictors_train100, target_train100 = process_folder('train100')
+        predictors_train360, target_train360 = process_folder('train360')
+        predictors_train = predictors_train100 + predictors_train360
+        target_train = target_train100 + target_train360
 
     #split train set into train and development
     split_point = int(len(predictors_train) * args.train_val_split)
