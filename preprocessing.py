@@ -73,7 +73,7 @@ def preprocessing_task1(args):
 
                     if args.num_data is not None:
                         if train_count >= args.num_data:
-                            if dev_count train_ >= args.num_data:
+                            if dev_count >= args.num_data:
                         break
 
     #split train set into train and development
