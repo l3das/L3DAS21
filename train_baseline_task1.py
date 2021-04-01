@@ -80,7 +80,6 @@ def main(args):
     #writer = SummaryWriter(args.log_dir)
     print ('\nLoading dataset')
 
-
     #load dataset
 
     with open(args.training_predictors_path, 'rb') as f:
@@ -108,7 +107,6 @@ def main(args):
     print ('Training predictors: ', training_predictors.shape)
     print ('Validation predictors: ', validation_predictors.shape)
     print ('Test predictors: ', test_predictors.shape)
-
 
 
     #convert to tensor
