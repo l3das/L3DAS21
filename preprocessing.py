@@ -13,6 +13,7 @@ Command line inputs define which task to process and its parameters.
 
 def preprocessing_task1(args):
     sr_task1 = 16000
+
     def pad(x, size=sr_task1*10):
         #pad all sounds to 10 seconds
         length = x.shape[-1]
@@ -23,18 +24,9 @@ def preprocessing_task1(args):
             pad[:,:length] = x
         return pad
 
-    train100_folder = 'train'
-    train360_folder = 'train360'
-    dev_folder = 'test'
-
-    sets = [train100_folder, dev_folder]
-    predictors_train = []
-    predictors_test = []
-    target_train = []
-    target_test = []
-    for folder in sets:
-        train_count = 0
-        dev_count = 0
+    def process_folder(folder):
+        predictors = []
+        target = []
         print ('Processing ' + folder + ' folder...')
         main_folder = os.path.join(args.input_path, folder)
         contents = os.listdir(main_folder)
@@ -61,22 +53,26 @@ def preprocessing_task1(args):
                     samples_target = samples_target.reshape((1, samples_target.shape[0]))
                     samples_target = pad(samples_target)
                     #append to final arrays
-                    if folder == dev_folder:
-                        predictors_test.append(samples)
-                        target_test.append(samples_target)
-                        dev_count += 1
-                        print ('dev_count', train_count)
+                    predictors.append(samples)
+                    target.append(samples_target)
+                    count += 1
+                    if count > args.num_data:
+                        break
+        return predictors, target
 
-                    else:
-                        predictors_train.append(samples)
-                        target_train.append(samples_target)
-                        train_count += 1
-                        print ('train_count', train_count)
-
-                    if args.num_data is not None:
-                        if train_count >= args.num_data:
-                            if dev_count >= args.num_data:
-                                break
+    folders = os.listdir(args.input_path)
+    for folder in folders:
+        if 'dev' in folder:
+            test_predictors, test_target = process_folder(folder)
+        if args.training_set == '100':
+            training_predictors, training100_target = process_folder('train100')
+        elif args.training_set == '360':
+            training360_predictors, training360_target = process_folder('train360')
+        elif args.training_set == 'both':
+            training100_predictors, training100_target = process_folder('train100')
+            training360_predictors, training360_target = process_folder('train360')
+            training_predictors = training100_predictors + training360_predictors
+            training_target = training100_target + training360_target
 
     #split train set into train and development
     split_point = int(len(predictors_train) * args.train_val_split)
@@ -120,11 +116,13 @@ if __name__ == '__main__':
                         help='directory where the dataset has been downloaded')
     parser.add_argument('--output_path', type=str, default='DATASET/processed',
                         help='where to save the numpy matrices')
+    #task1 parameters
+    parser.add_argument('--training_set', type=str, default=100,
+                        help='which training set: 100, 360 or both')
 
     #processing type
     parser.add_argument('--processsing_type', type=str, default='stft',
                         help='stft or waveform')
-
     parser.add_argument('--train_val_split', type=float, default=0.7,
                         help='perc split between train and validation sets')
     parser.add_argument('--num_mics', type=int, default=1,
