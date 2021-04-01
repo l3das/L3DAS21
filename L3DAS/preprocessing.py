@@ -12,9 +12,6 @@ Command line inputs define which task to process and its parameters
 
 def preprocessing_task1(args):
     sr_task1 = 16000
-    len = 10 * sr_task1
-
-
 
     train100_folder = 'train'
     train360_folder = 'train360'
@@ -56,7 +53,6 @@ def preprocessing_task1(args):
                         predictors_train.append(samples)
                         target_train.append(samples_target)
                     count += 1
-                    print (len(predictors_train))
                     if args.num_data != 0 and count >= args.num_data and count >= args.num_data:
                         break
 
