@@ -244,7 +244,7 @@ def main(args):
                'val_loss_hist': val_loss_hist}
     print ('RESULTS')
     for i in results:
-        print (i, a[i])
+        print (i, results[i])
     out_path = os.path.join(args.results_path, 'results_dict.json')
     np.save(out_path, results)
     #writer.add_scalar("test_loss", test_loss, state["step"])
@@ -257,12 +257,12 @@ if __name__ == '__main__':
     parser.add_argument('--results_path', type=str, default='RESULTS/waveunet/')
     parser.add_argument('--model_path', type=str, default='../results/model_task1')
     #dataset parameters
-    parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1_mini/task1_predictors_train.pkl')
-    parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/task1_mini/task1_target_train.pkl')
-    parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/task1_mini/task1_predictors_validation.pkl')
-    parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/task1_mini/task1_target_validation.pkl')
-    parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task1_mini/task1_predictors_test.pkl')
-    parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1_mini/task1_target_test.pkl')
+    parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_train.pkl')
+    parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/task1/task1_target_train.pkl')
+    parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_validation.pkl')
+    parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/task1/task1_target_validation.pkl')
+    parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_test.pkl')
+    parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1/task1_target_test.pkl')
     #training parameters
     parser.add_argument('--gpu_id', type=int, default=0)
     parser.add_argument('--use_cuda', type=str, default='True')
