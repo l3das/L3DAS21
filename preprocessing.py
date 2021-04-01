@@ -61,6 +61,12 @@ def preprocessing_task1(args):
                     if count >= 10:
                         print ('AAAAAAAAA')
                         break
+                else:
+                    continue
+                break
+            else:
+                continue
+        break
         return predictors, target
 
 
