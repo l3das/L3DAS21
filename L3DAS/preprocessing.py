@@ -63,7 +63,7 @@ def preprocessing_task1(args):
                         break
 
     #split train set into train and development
-    split_point = int(len(predictors_train) * args.train_val_split)
+    split_point = int(predictors_train.shape[0] * args.train_val_split)
     predictors_train = predictors_train[:split_point]
     target_train = target_train[:split_point]
     predictors_validation = predictors_validation[split_point:]
@@ -110,7 +110,7 @@ if __name__ == '__main__':
     #i/o
     parser.add_argument('--task_number', type=int,
                         help='task to be pre-processed')
-    parser.add_argument('--input_path', type=str,
+    parser.add_argument('--input_path', type=str, default='DATASET/Task1'
                         help='directory where the dataset has been downloaded')
     parser.add_argument('--output_path', type=str, default='DATASET/processed',
                         help='where to save the numpy matrices')
