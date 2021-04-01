@@ -27,6 +27,7 @@ def preprocessing_task1(args):
     def process_folder(folder):
         predictors = []
         target = []
+        count = 0
         print ('Processing ' + folder + ' folder...')
         main_folder = os.path.join(args.input_path, folder)
         contents = os.listdir(main_folder)
