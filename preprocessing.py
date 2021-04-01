@@ -32,8 +32,8 @@ def preprocessing_task1(args):
     predictors_test = []
     target_train = []
     target_test = []
-    count = 0
     for folder in sets:
+        count = 0
         print ('Processing ' + folder + ' folder...')
         main_folder = os.path.join(args.input_path, folder)
         contents = os.listdir(main_folder)
