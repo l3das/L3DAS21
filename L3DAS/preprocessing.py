@@ -110,7 +110,7 @@ if __name__ == '__main__':
     #i/o
     parser.add_argument('--task_number', type=int,
                         help='task to be pre-processed')
-    parser.add_argument('--input_path', type=str, default='DATASET/Task1'
+    parser.add_argument('--input_path', type=str, default='DATASET/Task1',
                         help='directory where the dataset has been downloaded')
     parser.add_argument('--output_path', type=str, default='DATASET/processed',
                         help='where to save the numpy matrices')
