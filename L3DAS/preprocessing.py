@@ -65,7 +65,7 @@ def preprocessing_task1(args):
 
     print ('Saving files')
     if not os.path.isdir(args.output_path):
-        os.mkdirs(args.output_path)
+        os.makedirs(args.output_path)
     '''
     np.save(args.output_path,'task1_predictors_train.npy', predictors_train)
     np.save(args.output_path,'task1_predictors_validation.npy', predictors_validation)
