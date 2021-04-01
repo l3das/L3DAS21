@@ -1,5 +1,6 @@
 import sys, os
 import time
+import json
 import pickle
 import argparse
 from tqdm import tqdm
@@ -43,6 +44,24 @@ def dyn_pad(x, y, size_x=169641, size_y=160089):
     pad_y[:,:,:y.shape[-1]] = y
     return pad_x, pad_y
 
+def evaluate(dataloader):
+    model.eval()
+    test_loss = 0.
+    with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
+        for example_num, (x, target) in enumerate(val_data):
+            x, target = dyn_pad(x, target)
+            target = target.to(device)
+            x = x.to(device)
+
+            outputs = model(x, 'vocals')
+            loss = criterion(outputs['vocals'], target)
+
+            test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
+
+            pbar.set_description("Current loss: {:.4f}".format(test_loss))
+            pbar.update(1)
+    return test_loss
+
 def main(args):
     if args.use_cuda:
         device = 'cuda:' + str(args.gpu_id)
@@ -58,7 +77,7 @@ def main(args):
         if torch.cuda.is_available():
             torch.cuda.manual_seed_all(seed)
 
-    writer = SummaryWriter(args.log_dir)
+    #writer = SummaryWriter(args.log_dir)
     print ('\nLoading dataset')
 
 
@@ -152,14 +171,15 @@ def main(args):
 
 
     print('TRAINING START')
-
+    train_loss_hist = []
+    val_loss_hist = []
     while state["worse_epochs"] < args.patience:
         print("Training one epoch from iteration " + str(state["step"]))
         avg_time = 0.
         model.train()
+        train_loss = 0.
         with tqdm(total=len(tr_dataset) // args.batch_size) as pbar:
             #np.random.seed()
-
             for example_num, (x, target) in enumerate(tr_data):
                 x, target = dyn_pad(x, target)
                 target = target.to(device)
@@ -168,38 +188,23 @@ def main(args):
 
                 # Set LR for this iteration
                 set_cyclic_lr(optimizer, example_num, len(tr_dataset) // args.batch_size, args.cycles, args.min_lr, args.lr)
-                writer.add_scalar("lr", get_lr(optimizer), state["step"])
+                #writer.add_scalar("lr", get_lr(optimizer), state["step"])
 
                 # Compute loss for each instrument/model
                 optimizer.zero_grad()
                 outputs = model(x, 'vocals')
                 loss = criterion(outputs['vocals'], target)
                 loss.backward()
-
+                train_loss += (1. / float(example_num + 1)) * (loss - train_loss)
                 optimizer.step()
                 state["step"] += 1
                 t = time.time() - t
                 avg_time += (1. / float(example_num + 1)) * (t - avg_time)
 
-                writer.add_scalar("train_loss", loss.item(), state["step"])
-
+                #writer.add_scalar("train_loss", loss.item(), state["step"])
                 pbar.update(1)
-
-            model.eval()
-            val_loss = 0.
-            with tqdm(total=len(val_dataset) // args.batch_size) as pbar, torch.no_grad():
-                for example_num, (x, target) in enumerate(val_data):
-                    x, target = dyn_pad(x, target)
-                    target = target.to(device)
-                    x = x.to(device)
-
-                    outputs = model(x, 'vocals')
-                    loss = criterion(outputs['vocals'], target)
-
-                    val_loss += (1. / float(example_num + 1)) * (loss - val_loss)
-
-                    pbar.set_description("Current loss: {:.4f}".format(val_loss))
-                    pbar.update(1)
+            #PASS VALIDATION DATA
+            val_loss = evaluate(val_data)
             print("VALIDATION FINISHED: LOSS: " + str(val_loss))
 
             # EARLY STOPPING CHECK
@@ -220,39 +225,37 @@ def main(args):
 
             state["epochs"] += 1
             state["worse_epochs"] = 200
-
+            train_loss_hist.append(train_loss)
+            val_loss_hist.append(val_loss)
 
     #### TESTING ####
     # Test loss
     print("TESTING")
-
     # Load best model based on validation loss
     state = model_utils.load_model(model, None, state["best_checkpoint"], args.use_cuda)
-    model.eval()
-    test_loss = 0.
-    with tqdm(total=len(val_dataset) // args.batch_size) as pbar, torch.no_grad():
-        for example_num, (x, target) in enumerate(val_data):
-            x, target = dyn_pad(x, target)
-            target = target.to(device)
-            x = x.to(device)
-
-            outputs = model(x, 'vocals')
-            loss = criterion(outputs['vocals'], target)
-
-            test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
-
-            pbar.set_description("Current loss: {:.4f}".format(test_loss))
-            pbar.update(1)
+    train_loss = evaluate(tr_data)
+    val_loss = evaluate(val_data)
+    test_loss = evaluate(test_data)
 
     print("TEST FINISHED: LOSS: " + str(test_loss))
-    writer.add_scalar("test_loss", test_loss, state["step"])
+
+    results = {'train_loss': train_loss,
+               'val_loss': val_loss,
+               'test_loss': test_loss,
+               'train_loss_hist': train_loss_hist,
+               'val_loss_hist': val_loss_hist}
+
+    out_path = os.path.join(args.results_path, 'results_dict.json')
+    with open(out_path, 'w') as fp:
+        json.dump(results, fp)
+    #writer.add_scalar("test_loss", test_loss, state["step"])
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #saving parameters
     parser.add_argument('--results_folder', type=str, default='../results')
-    parser.add_argument('--results_path', type=str, default='../results/results_task1.npy')
+    parser.add_argument('--results_path', type=str, default='RESULTS/waveunet/')
     parser.add_argument('--model_path', type=str, default='../results/model_task1')
     #dataset parameters
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1_mini/task1_predictors_train.pkl')
