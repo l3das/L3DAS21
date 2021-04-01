@@ -60,6 +60,7 @@ def preprocessing_task1(args):
                     print (count, args.num_data)
                     if args.num_data is not None and count > int(args.num_data):
                         break
+                        prin ('AAAAAAAAA')
         return predictors, target
 
 
