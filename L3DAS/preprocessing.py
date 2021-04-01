@@ -58,8 +58,9 @@ def preprocessing_task1(args):
 
     #split train set into train and development
     split_point = int(len(predictors_train) * args.train_val_split)
-    predictors_train = predictors_train[:split_point]
-    target_train = target_train[:split_point]
+
+    predictors_training = predictors_train[:split_point]    #attention: changed training names 
+    target_training = target_train[:split_point]
     predictors_validation = predictors_train[split_point:]
     target_validation = target_train[split_point:]
 
@@ -76,13 +77,13 @@ def preprocessing_task1(args):
 
     '''
     with open(os.path.join(args.output_path,'task1_predictors_train.pkl'), 'wb') as f:
-        pickle.dump(predictors_train, f)
+        pickle.dump(predictors_training, f)
     with open(os.path.join(args.output_path,'task1_predictors_validation.pkl'), 'wb') as f:
         pickle.dump(predictors_validation, f)
     with open(os.path.join(args.output_path,'task1_predictors_test.pkl'), 'wb') as f:
         pickle.dump(predictors_test, f)
     with open(os.path.join(args.output_path,'task1_target_train.pkl'), 'wb') as f:
-        pickle.dump(target_train, f)
+        pickle.dump(target_training, f)
     with open(os.path.join(args.output_path,'task1_target_validation.pkl'), 'wb') as f:
         pickle.dump(target_validation, f)
     with open(os.path.join(args.output_path,'task1_target_test.pkl'), 'wb') as f:
