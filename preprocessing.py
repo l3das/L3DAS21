@@ -65,11 +65,13 @@ def preprocessing_task1(args):
                         predictors_test.append(samples)
                         target_test.append(samples_target)
                         dev_count += 1
+                        print ('dev_count', train_count)
 
                     else:
                         predictors_train.append(samples)
                         target_train.append(samples_target)
                         train_count += 1
+                        print ('train_count', train_count)
 
                     if args.num_data is not None:
                         if train_count >= args.num_data:
