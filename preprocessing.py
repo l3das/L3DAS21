@@ -57,8 +57,8 @@ def preprocessing_task1(args):
                     predictors.append(samples)
                     target.append(samples_target)
                     count += 1
-                    print (count)
-                    if count > args.num_data:
+                    print (count, args.num_data)
+                    if count > int(args.num_data):
                         break
         return predictors, target
 
