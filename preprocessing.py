@@ -62,7 +62,7 @@ def preprocessing_task1(args):
         return predictors, target
 
 
-    predictors_test, target_test = process_folder('dev')
+    predictors_test, target_test = process_folder('test')
     if args.training_set == 'train100':
         predictors_train, target_train = process_folder('train100')
     elif args.training_set == 'train360':
