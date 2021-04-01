@@ -24,10 +24,10 @@ def preprocessing_task1(args):
             pad[:,:length] = x
         return pad
 
-    def process_folder(folder):
+    def process_folder(folder, args):
         predictors = []
         target = []
-        count = 0
+        count = 1
         print ('Processing ' + folder + ' folder...')
         main_folder = os.path.join(args.input_path, folder)
         contents = os.listdir(main_folder)
@@ -58,17 +58,17 @@ def preprocessing_task1(args):
                     target.append(samples_target)
                     count += 1
                     print (count, args.num_data)
-                    if args.num_data is not 0 and count > int(args.num_data):
+                    if count >= int(args.num_data):
                         break
-                        prin ('AAAAAAAAA')
+                        print ('AAAAAAAAA')
         return predictors, target
 
 
-    predictors_test, target_test = process_folder('test')
+    predictors_test, target_test = process_folder('test', args)
     if args.training_set == 'train100':
-        predictors_train, target_train = process_folder('train100')
+        predictors_train, target_train = process_folder('train100', args)
     elif args.training_set == 'train360':
-        predictors_train, target_train = process_folder('train360')
+        predictors_train, target_train = process_folder('train360', args)
     elif args.training_set == 'both':
         predictors_train100, target_train100 = process_folder('train100')
         predictors_train360, target_train360 = process_folder('train360')
