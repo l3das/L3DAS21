@@ -33,7 +33,8 @@ def preprocessing_task1(args):
     target_train = []
     target_test = []
     for folder in sets:
-        count = 0
+        train_count = 0
+        dev_count = 0
         print ('Processing ' + folder + ' folder...')
         main_folder = os.path.join(args.input_path, folder)
         contents = os.listdir(main_folder)
@@ -63,11 +64,16 @@ def preprocessing_task1(args):
                     if folder == dev_folder:
                         predictors_test.append(samples)
                         target_test.append(samples_target)
+                        dev_count += 1
+
                     else:
                         predictors_train.append(samples)
                         target_train.append(samples_target)
-                    count += 1
-                    if args.num_data != 0 and count >= args.num_data and count >= args.num_data:
+                        train_count += 1
+
+                    if args.num_data is not None:
+                        if train_count >= args.num_data:
+                            if dev_count train_ >= args.num_data:
                         break
 
     #split train set into train and development
@@ -121,7 +127,7 @@ if __name__ == '__main__':
                         help='perc split between train and validation sets')
     parser.add_argument('--num_mics', type=int, default=1,
                         help='how many ambisonics mics (1 or 2)')
-    parser.add_argument('--num_data', type=float, default=100,
+    parser.add_argument('--num_data', type=float, default=None,
                         help='how many datapoints per set. 0 means all available data')
     parser.add_argument('--stft_nparseg', type=int, default=256,
                         help='num of stft frames')
