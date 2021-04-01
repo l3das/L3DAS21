@@ -237,7 +237,7 @@ def main(args):
 
     print("TEST FINISHED: LOSS: " + str(test_loss))
 
-    results = {'train_loss': train_loss.cpu()detach().numpy(),
+    results = {'train_loss': train_loss.cpu().detach().numpy(),
                'val_loss': val_loss.cpu().detach().numpy(),
                'test_loss': test_loss.cpu().detach().numpy(),
                'train_loss_hist': train_loss_hist,
