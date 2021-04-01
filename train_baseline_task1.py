@@ -244,8 +244,7 @@ def main(args):
                'val_loss_hist': val_loss_hist}
 
     out_path = os.path.join(args.results_path, 'results_dict.json')
-    with open(out_path, 'w') as fp:
-        json.dump(results, fp)
+    np.save(out_path, results)
     #writer.add_scalar("test_loss", test_loss, state["step"])
 
 if __name__ == '__main__':
