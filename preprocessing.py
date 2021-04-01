@@ -66,7 +66,7 @@ def preprocessing_task1(args):
                 break
             else:
                 continue
-        break
+        
         return predictors, target
 
 
