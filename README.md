@@ -60,7 +60,7 @@ python3 train_baseline_task2.py
 
 GPU is strongly recommended to avoid very long training.
 
-To compute the challenge metrics with the trained models run
+To compute the challenge metrics for each task using the trained models run:
 ```bash
 python3 evaluate_baseline_task1.py
 python3 evaluate_baseline_task2.py
