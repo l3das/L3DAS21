@@ -3,6 +3,7 @@ import os
 import numpy as np
 import librosa
 import pickle
+import random
 '''
 Take as input the unzipped dataset folders and output pickle lists
 containing the pre-processed data for task1 and task2, separately.
@@ -112,6 +113,11 @@ def preprocessing_task2(args):
              'Laughter','Male_speech_and_man_speaking',
              'Printer','Scissors','Telephone','Writing']
     file_size=60.0
+    data_folder = os.path.join(args.input_folder, 'data')
+    labels_folder = os.path.join(args.input_folder, 'labels')
+    sounds = os.listdir(data_folder)
+    random.shuffle(sounds)
+    print (sounds)
 
 
 if __name__ == '__main__':
