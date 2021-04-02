@@ -26,10 +26,10 @@ def preprocessing_task1(args):
         return pad
 
     def process_folder(folder, args):
+        print ('Processing ' + folder + ' folder...')
         predictors = []
         target = []
         count = 0
-        print ('Processing ' + folder + ' folder...')
         main_folder = os.path.join(args.input_path, folder)
         contents = os.listdir(main_folder)
         for sub in contents:
@@ -115,6 +115,7 @@ def preprocessing_task2(args):
     file_size=60.0
 
     def process_folder(folder, args):
+        print ('Processing ' + folder + ' folder...')
         predictors = []
         target = []
         data_path = os.path.join(folder, 'data')
@@ -146,12 +147,36 @@ def preprocessing_task2(args):
     train_folder = os.path.join(args.input_path, 'L3DAS_Task2_train')
     test_folder = os.path.join(args.input_path, 'L3DAS_Task2_dev')
 
-    #predictors_training, target_training = process_folder(train_folder, args)
+    predictors_training, target_training = process_folder(train_folder, args)
     predictors_test, target_test = process_folder(test_folder, args)
 
     predictors_test = np.array(predictors_test)
     target_test = np.array(target_test)
     print (predictors_test.shape, target_test.shape)
+
+    #split train set into train and development
+    split_point = int(len(predictors_train) * args.train_val_split)
+    predictors_training = predictors_train[:split_point]    #attention: changed training names
+    target_training = target_train[:split_point]
+    predictors_validation = predictors_train[split_point:]
+    target_validation = target_train[split_point:]
+
+    print ('Saving files')
+    if not os.path.isdir(args.output_path):
+        os.makedirs(args.output_path)
+
+    with open(os.path.join(args.output_path,'task2_predictors_train.pkl'), 'wb') as f:
+        pickle.dump(predictors_training, f)
+    with open(os.path.join(args.output_path,'task2_predictors_validation.pkl'), 'wb') as f:
+        pickle.dump(predictors_validation, f)
+    with open(os.path.join(args.output_path,'task2_predictors_test.pkl'), 'wb') as f:
+        pickle.dump(predictors_test, f)
+    with open(os.path.join(args.output_path,'task2_target_train.pkl'), 'wb') as f:
+        pickle.dump(target_training, f)
+    with open(os.path.join(args.output_path,'task2_target_validation.pkl'), 'wb') as f:
+        pickle.dump(target_validation, f)
+    with open(os.path.join(args.output_path,'task2_target_test.pkl'), 'wb') as f:
+        pickle.dump(target_test, f)
 
 if __name__ == '__main__':
 
