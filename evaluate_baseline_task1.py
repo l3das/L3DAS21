@@ -65,10 +65,30 @@ def main(args):
     state = model_utils.load_model(model, None, args.model_path, args.use_cuda)
 
     print ('AHAHAHAHAHAHAHAHAHAHAH')
-    sys.exit(0)
     #COMPUTING
     # Test loss
     print("COMPUTING METRICS")
+
+    model.eval()
+    wer = 0.
+    stoi = 0.
+    metric = 0.
+    with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
+        for example_num, (x, target) in enumerate(dataloader):
+            x, target = dyn_pad(x, target)
+            target = target.to(device)
+            x = x.to(device)
+
+            outputs = model(x, 'vocals')
+            outputs = outputs.cpu().numpy()
+
+
+            print (outputs.shape, target.shape, np.squeeze(output).shape, np.squeeze(target).shape)
+
+        #$test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
+            pbar.update(1)
+
+
 
     results = {'word error rate': wer,
                'stoi': stoi,
@@ -81,6 +101,9 @@ def main(args):
     out_path = os.path.join(args.results_path, 'results_dict.json')
     np.save(out_path, results)
     #writer.add_scalar("test_loss", test_loss, state["step"])
+
+
+
 
 if __name__ == '__main__':
 

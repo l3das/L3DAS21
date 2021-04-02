@@ -62,27 +62,6 @@ def evaluate(model, device, criterion, dataloader):
             pbar.update(1)
     return test_loss
 
-def compute_metrics(model, device, criterion, dataloader):
-    #batch size has to be 1!
-    model.eval()
-    wer = 0.
-    stoi = 0.
-    metric = 0.
-    with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
-        for example_num, (x, target) in enumerate(dataloader):
-            x, target = dyn_pad(x, target)
-            target = target.to(device)
-            x = x.to(device)
-
-            outputs = model(x, 'vocals')
-            outputs = outputs.cpu().numpy()
-
-            test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
-
-            pbar.set_description("Current loss: {:.4f}".format(test_loss))
-            pbar.update(1)
-    return test_loss
-
 def main(args):
     if args.use_cuda:
         device = 'cuda:' + str(args.gpu_id)
