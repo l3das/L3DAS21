@@ -28,7 +28,7 @@ python3 download_dataset.py --task Task2 --set_type dev output_path DATASETS/tas
 These scripts automatically extract the archives and delete the zip files.
 
 ## Pre-processing
-The file **preprocessing.py** provides automated routines that load the raw audio waveforms and their correspondent metadata, applY custom pre-processing functions and save numpy arrays (.pkl files) containing the separate predictors and target matrices.
+The file **preprocessing.py** provides automated routines that load the raw audio waveforms and their correspondent metadata, apply custom pre-processing functions and save numpy arrays (.pkl files) containing the separate predictors and target matrices.
 
 Run these commands to obtain the matrices needed for our baseline models:
 ```bash
@@ -49,5 +49,19 @@ For **Task2** the function returns 3 numpy arrays contatining:
 * The location coordinates of all sounds present in each scene, divided in 100 milliseconds frames
 
 
-## Baseline models training
-We will upload this very soon!
+## Baseline models
+We provide baseline models for both tasks, implemented in Pytorch. For task 1 we use an ambisonics-augmented wave-u-net and for task 2 a SELDNet architecture. Please refer to the challenge [paper] for detailed information about our models.
+
+To train our baseline models with the default arguments run:
+```bash
+python3 train_baseline_task1.py
+python3 train_baseline_task2.py
+```
+
+GPU is strongly recommended to avoid very long training.
+
+To compute the challenge metrics with the trained models run
+```bash
+python3 evaluate_baseline_task1.py
+python3 evaluate_baseline_task2.py
+```
