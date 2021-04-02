@@ -252,8 +252,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='RESULTS/waveunet_new/')
-    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/waveunet_new/checkpoints',
+    parser.add_argument('--results_path', type=str, default='RESULTS/waveunet_lr0.0001minlr0.000005/')
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/waveunet_lr0.0001minlr0.000005/checkpoints',
                         help='Folder to write checkpoints into')
     #dataset parameters
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_train.pkl')
@@ -262,19 +262,11 @@ if __name__ == '__main__':
     parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/task1/task1_target_validation.pkl')
     parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_test.pkl')
     parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1/task1_target_test.pkl')
-    #training parameters
+    #model parameters
     parser.add_argument('--gpu_id', type=int, default=0)
     parser.add_argument('--use_cuda', type=str, default='True')
-    parser.add_argument('--num_epochs', type=int, default=200)
-    parser.add_argument('--learning_rate', type=float, default=0.00005)
-    parser.add_argument('--regularization_lambda', type=float, default=0.)
     parser.add_argument('--early_stopping', type=str, default='True')
-    parser.add_argument('--save_model_metric', type=str, default='total_loss')
-    parser.add_argument('--load_pretrained', type=str, default=None)
-    parser.add_argument('--num_folds', type=int, default=1)
-    parser.add_argument('--num_fold', type=int, default=1)
-    parser.add_argument('--fixed_seed', type=str, default='True')
-    #model parameters
+    parser.add_argument('--fixed_seed', type=str, default='False')
     parser.add_argument('--instruments', type=str, nargs='+', default=["vocals"],
                         help="List of instruments to separate (default: \"vocals\")")
     parser.add_argument('--num_workers', type=int, default=1,
