@@ -117,8 +117,8 @@ def preprocessing_task2(args):
     def process_folder(folder, args):
         predictors = []
         target = []
-        data_folder = os.path.join(folder, 'data')
-        labels_folder = os.path.join(folder, 'labels')
+        data_path = os.path.join(folder, 'data')
+        labels_path = os.path.join(folder, 'labels')
 
         data = os.listdir(data_path)
         data = [i for i in data if i.split('.')[0].split('_')[-1]=='A']
