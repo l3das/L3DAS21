@@ -147,7 +147,7 @@ def preprocessing_task2(args):
     train_folder = os.path.join(args.input_path, 'L3DAS_Task2_train')
     test_folder = os.path.join(args.input_path, 'L3DAS_Task2_dev')
 
-    predictors_training, target_training = process_folder(train_folder, args)
+    predictors_train, target_train = process_folder(train_folder, args)
     predictors_test, target_test = process_folder(test_folder, args)
 
     predictors_test = np.array(predictors_test)
