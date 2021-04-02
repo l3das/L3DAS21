@@ -42,7 +42,7 @@ if __name__ == '__main__':
     parser.add_argument('--set_type', type=str,
                         help='which set to download, can be "train100", "train360" or "dev" for task1 and "train" or "dev" for task 2')
     parser.add_argument('--output_path', type=str,
-                        default="L3DAS"+os.sep+"DATASETS",
+                        default="DATASETS",
                         help='where to download the dataset',)
 
 
