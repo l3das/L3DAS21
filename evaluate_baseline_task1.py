@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--model_path', type=str, default='../RESULTS/waveunet_trained/checkpoints/checkpoint')
+    parser.add_argument('--model_path', type=str, default='/RESULTS/waveunet_trained/checkpoints/checkpoint')
     #dataset parameters
     parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_test.pkl')
     parser.add_argument('--target_path', type=str, default='DATASETS/processed/task1/task1_target_test.pkl')
