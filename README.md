@@ -48,7 +48,6 @@ For **Task2** the function returns 3 numpy arrays contatining:
 * The classes ids of all sounds present in each scene, divided in 100 milliseconds frames
 * The location coordinates of all sounds present in each scene, divided in 100 milliseconds frames
 
-
 ## Baseline models
 We provide baseline models for both tasks, implemented in Pytorch. For task 1 we use an ambisonics-augmented wave-u-net and for task 2 a SELDNet architecture. Please refer to the challenge [paper] for detailed information about our models.
 
@@ -65,3 +64,5 @@ To compute the challenge metrics for each task using the trained models run:
 python3 evaluate_baseline_task1.py
 python3 evaluate_baseline_task2.py
 ```
+
+## Useful features
