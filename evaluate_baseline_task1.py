@@ -67,9 +67,9 @@ def main(args):
     #COMPUTING METRICS
     print("COMPUTING METRICS")
     model.eval()
-    wer = 0.
-    stoi = 0.
-    metric = 0.
+    WER = 0.
+    STOI = 0.
+    METRIC = 0.
     with tqdm(total=len(dataloader) // 1) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
             x, target = dyn_pad(x, target)
@@ -83,6 +83,9 @@ def main(args):
             target = np.squeeze(target)
 
             metric, wer, stoi = task1_metric(target, outputs)
+            metric += (1. / float(example_num + 1)) * (metric - METRIC)
+            wer += (1. / float(example_num + 1)) * (wer - WER)
+            stoi += (1. / float(example_num + 1)) * (stoi - STOI)
 
 
             print (metric, wer, stoi)
@@ -92,15 +95,15 @@ def main(args):
 
 
 
-    results = {'word error rate': wer,
-               'stoi': stoi,
-               'task 1 metric': metric
+    results = {'word error rate': WER,
+               'stoi': STOI,
+               'task 1 metric': METRIC
                }
 
     print ('RESULTS')
     for i in results:
         print (i, results[i])
-    out_path = os.path.join(args.results_path, 'results_dict.json')
+    out_path = os.path.join(args.results_path, 'task1_metrics_dict.json')
     np.save(out_path, results)
     #writer.add_scalar("test_loss", test_loss, state["step"])
 
@@ -110,8 +113,10 @@ def main(args):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    #saving parameters
+    #i/o parameters
     parser.add_argument('--model_path', type=str, default='RESULTS/waveunet_TRAINED/checkpoints/checkpoint')
+    parser.add_argument('--results_path', type=str, default='RESULTS/waveunet_TRAINED')
+
     #dataset parameters
     parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_test.pkl')
     parser.add_argument('--target_path', type=str, default='DATASETS/processed/task1/task1_target_test.pkl')
