@@ -62,8 +62,8 @@ def main(args):
         model = model_utils.DataParallel(model)
         print("move model to gpu")
     model = model.to(device)
-    checkpoint = torch.load(args.model_path)
-    model.load_state_dict(checkpoint['model_state_dict'])
+    state = model_utils.load_model(model, None, args.model_path, args.use_cuda)
+
     print ('AHAHAHAHAHAHAHAHAHAHAH')
     sys.exit(0)
     #COMPUTING
