@@ -41,7 +41,6 @@ def dyn_pad(x, y, size_x=169641, size_y=160089):
     pad_y = torch.zeros(y.shape[0],y.shape[1], size_y)
     pad_x[:,:,:x.shape[-1]] = x
     pad_y[:,:,:y.shape[-1]] = y
-    pad_x = pad_x[:,0,:]  #REMEMBER THIS!!!!!
     return pad_x, pad_y
 
 def evaluate(model, device, criterion, dataloader):
@@ -54,8 +53,8 @@ def evaluate(model, device, criterion, dataloader):
             x = x.to(device)
 
             outputs = model(x, 'vocals')
-            loss = criterion(outputs['vocals'], target)
-
+            #loss = criterion(outputs['vocals'], target)
+            loss = criterion(outputs['vocals'][:,0,:], target)
             test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
 
             pbar.set_description("Current loss: {:.4f}".format(test_loss))
@@ -191,7 +190,9 @@ def main(args):
                 # Compute loss for each instrument/model
                 optimizer.zero_grad()
                 outputs = model(x, 'vocals')
-                loss = criterion(outputs['vocals'], target)
+
+                #loss = criterion(outputs['vocals'], target)
+                loss = criterion(outputs['vocals'][:,0,:], target)
                 loss.backward()
                 train_loss += (1. / float(example_num + 1)) * (loss - train_loss)
                 optimizer.step()
