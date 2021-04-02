@@ -78,9 +78,14 @@ def main(args):
 
             outputs = model(x, 'vocals')
             outputs = outputs['vocals'].cpu().numpy()
+            target = target.cpu().numpy()
+            outputs = np.squeeze(outputs)
+            target = np.squeeze(target)
+
+            metric, wer, stoi = task1_metric(target, outputs)
 
 
-            print (outputs.shape, target.shape, np.squeeze(outputs).shape, np.squeeze(target).shape)
+            print (metric, wer, stoi)
 
         #$test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
             pbar.update(1)
