@@ -36,13 +36,13 @@ def wer(clean_speech, denoised_speech):
 
     return wer_val
 
-def task1_metric(clean_speech, denoised_speech):
+def task1_metric(clean_speech, denoised_speech, sr=16000):
     '''
     Compute evaluation metric for task 1 as stoi + word error rate
     This function computes such measure for 1 single datapoint
     '''
     WER = wer(clean_speech, denoised_speech)
-    STOI = stoi(clean_speech, denoised_speech)
+    STOI = stoi(clean_speech, denoised_speech, sr, extended=False)
     metric = WER + STOI
     return metric, wer, stoi
 
