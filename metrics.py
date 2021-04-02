@@ -18,13 +18,13 @@ def wer(clean_speech, denoised_speech):
     def _transcription(clean_speech, denoised_speech):
 
         # transcribe clean audio
-        input_values = tokenizer(clean_speech, return_tensors="pt").input_values;
+        input_values = wer_tokenizer(clean_speech, return_tensors="pt").input_values;
         logits = wer_model(input_values).logits;
         predicted_ids = torch.argmax(logits, dim=-1);
         transcript_clean = wer_tokenizer.batch_decode(predicted_ids)[0];
 
         # transcribe
-        input_values = tokenizer(denoised_speech, return_tensors="pt").input_values;
+        input_values = wer_tokenizer(denoised_speech, return_tensors="pt").input_values;
         logits = wer_model(input_values).logits;
         predicted_ids = torch.argmax(logits, dim=-1);
         transcript_estimate = wer_tokenizer.batch_decode(predicted_ids)[0];
