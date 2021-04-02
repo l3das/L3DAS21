@@ -221,7 +221,7 @@ def main(args):
                 model_utils.save_model(model, optimizer, state, checkpoint_path)
 
             state["epochs"] += 1
-            state["worse_epochs"] = 200
+            #state["worse_epochs"] = 200
             train_loss_hist.append(train_loss.cpu().detach().numpy())
             val_loss_hist.append(val_loss.cpu().detach().numpy())
 
@@ -252,8 +252,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='RESULTS/waveunet_16features/')
-    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/waveunet_16features/checkpoints',
+    parser.add_argument('--results_path', type=str, default='RESULTS/waveunet_new/')
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/waveunet_new/checkpoints',
                         help='Folder to write checkpoints into')
     #dataset parameters
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_train.pkl')
