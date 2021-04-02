@@ -89,7 +89,7 @@ def main(args):
             metric += (1. / float(example_num + 1)) * (metric - METRIC)
             wer += (1. / float(example_num + 1)) * (wer - WER)
             stoi += (1. / float(example_num + 1)) * (stoi - STOI)
-
+            librosa.write_wav(os.path.join(args.results_path, str(example_num)+'.wav'), outputs, 16000)
 
             print (metric, wer, stoi)
 
