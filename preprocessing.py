@@ -68,21 +68,19 @@ def preprocessing_task1(args):
 
         return predictors, target
 
-
-    predictors_test, target_test = process_folder('test', args)
+    predictors_test, target_test = process_folder('L3DAS_Task1_dev', args)
     if args.training_set == 'train100':
-        predictors_train, target_train = process_folder('train100', args)
+        predictors_train, target_train = process_folder('L3DAS_Task1_train100', args)
     elif args.training_set == 'train360':
-        predictors_train, target_train = process_folder('train360', args)
+        predictors_train, target_train = process_folder('L3DAS_Task1_train360', args)
     elif args.training_set == 'both':
-        predictors_train100, target_train100 = process_folder('train100')
-        predictors_train360, target_train360 = process_folder('train360')
+        predictors_train100, target_train100 = process_folder('L3DAS_Task1_train100')
+        predictors_train360, target_train360 = process_folder('L3DAS_Task1_train360')
         predictors_train = predictors_train100 + predictors_train360
         target_train = target_train100 + target_train360
 
     #split train set into train and development
     split_point = int(len(predictors_train) * args.train_val_split)
-
     predictors_training = predictors_train[:split_point]    #attention: changed training names
     target_training = target_train[:split_point]
     predictors_validation = predictors_train[split_point:]
@@ -108,7 +106,12 @@ def preprocessing_task1(args):
 
 def preprocessing_task2(args):
     sr_task2 = 32000
-
+    sound_classes=['Chink_and_clink','Computer_keyboard','Cupboard_open_or_close',
+             'Drawer_open_or_close','Female_speech_and_woman_speaking',
+             'Finger_snapping','Keys_jangling','Knock',
+             'Laughter','Male_speech_and_man_speaking',
+             'Printer','Scissors','Telephone','Writing']
+    file_size=60.0
 
 
 if __name__ == '__main__':
