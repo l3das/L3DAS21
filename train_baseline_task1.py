@@ -37,7 +37,7 @@ def set_cyclic_lr(optimizer, it, epoch_it, cycles, min_lr, max_lr):
     set_lr(optimizer, new_lr)
 
 def dyn_pad(x, y, size_x=169641, size_y=160089):
-
+    if
     pad_x = torch.zeros(x.shape[0],x.shape[1], size_x)
     pad_y = torch.zeros(y.shape[0],y.shape[1], size_y)
     pad_x[:,:,:x.shape[-1]] = x
@@ -296,7 +296,7 @@ if __name__ == '__main__':
                         help='Minimum learning rate in LR cycle (default: 5e-5)')
     parser.add_argument('--cycles', type=int, default=2,
                         help='Number of LR cycles per epoch')
-    parser.add_argument('--batch_size', type=int, default=2,
+    parser.add_argument('--batch_size', type=int, default=10,
                         help="Batch size")
     parser.add_argument('--levels', type=int, default=6,
                         help="Number of DS/US blocks")
