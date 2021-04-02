@@ -41,7 +41,7 @@ def dyn_pad(x, y, size_x=169641, size_y=160089):
     pad_y = torch.zeros(y.shape[0],y.shape[1], size_y)
     pad_x[:,:,:x.shape[-1]] = x
     pad_y[:,:,:y.shape[-1]] = y
-    pad_y = pad_y[:,0,:]  #REMEMBER THIS!!!!!
+    pad_x = pad_x[:,0,:]  #REMEMBER THIS!!!!!
     return pad_x, pad_y
 
 def evaluate(model, device, criterion, dataloader):
