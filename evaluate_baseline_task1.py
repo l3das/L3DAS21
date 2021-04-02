@@ -82,9 +82,9 @@ def main(args):
             outputs = np.squeeze(outputs)
             target = np.squeeze(target)
 
-            #metric, wer, stoi = task1_metric(target, outputs)
+            metric, wer, stoi = task1_metric(target, outputs)
             noise = np.random.sample(len(target)) * 2 - 1
-            metric, wer, stoi = task1_metric(target, noise)
+            #metric, wer, stoi = task1_metric(target, noise)
 
             metric += (1. / float(example_num + 1)) * (metric - METRIC)
             wer += (1. / float(example_num + 1)) * (wer - WER)
