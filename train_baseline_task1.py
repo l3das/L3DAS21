@@ -41,6 +41,7 @@ def dyn_pad(x, y, size_x=169641, size_y=160089):
     pad_y = torch.zeros(y.shape[0],y.shape[1], size_y)
     pad_x[:,:,:x.shape[-1]] = x
     pad_y[:,:,:y.shape[-1]] = y
+    pad_y = pad_y[:,0,:]  #REMEMBER THIS!!!!!
     return pad_x, pad_y
 
 def evaluate(model, device, criterion, dataloader):
@@ -252,8 +253,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='RESULTS/waveunet_lr0.0001min_lr0.000005_depth2/')
-    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/waveunet_lr0.0001min_lr0.000005_depth2/checkpoints',
+    parser.add_argument('--results_path', type=str, default='RESULTS/waveunet_4outs')
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/waveunet_4outs',
                         help='Folder to write checkpoints into')
     #dataset parameters
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_train.pkl')
