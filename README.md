@@ -1,7 +1,7 @@
 # L3DAS21 challenge supporting API
-This repository supports the L3DAS challenge and is aimed at downloading the dataset, pre-processing the sound files and the metadata, training the baseline models and submitting the final results. 
+This repository supports the L3DAS challenge and is aimed at downloading the dataset, pre-processing the sound files and the metadata, training the baseline models and submitting the final results.
 We provide easy-to-use instruction to produce the results included in our paper.
-Moreover, we extensively commented our base API (contained in the L3DAS folder) for easy customization/re-use of our code.
+Moreover, we extensively commented our base API for easy customization of our code.
 
 For further information please refer to the challenge [website](https://sites.google.com/uniroma1.it/l3das/home?authuser=0).
 
@@ -9,33 +9,27 @@ For further information please refer to the challenge [website](https://sites.go
 
 ## REQUIREMENTS
 Our code is based on Python 3.5.
-Required packages:
-* torch 1.4.0
-* zipp 2.2.0
-* librosa 0.8.0
-* scipy 1.4.1
-* pandas 1.0.3
-* numpy 1.18.1
-* tqdm 4.45.0
-* jiwer 2.2.0
-* pystoi 0.3.3
-* transformers 4.4.2
-* h5py 2.10.0
 
 To install all dependencies run:
 ```bash
 pip install -r requirements.txt
 ```
 ## Dataset Download
-To download the L3DAS21 dataset use the script **download_dataset.py**.
+The script **download_dataset.py** is aimed at the dataset download.
 
-Example:
-```bash
-python3 download_dataset.py --task Task1 --set_type train
-```
 Options:
 * --task: which task's dataset will be downloaded, can be 'Task1' or 'Task2'.
-* --set_type: which set to download, can be 'train', 'dev' or 'test'.
+* --set_type: which set to download. Can be 'train100', 'train360' or dev for task 1 and 'train' or 'dev' for task 2.
+* --output_path: where to put and extract the downloaded data
+
+To download all dataset folders run:
+```bash
+python3 download_dataset.py --task Task1 --set_type train100
+python3 download_dataset.py --task Task1 --set_type train360
+python3 download_dataset.py --task Task1 --set_type dev
+python3 download_dataset.py --task Task2 --set_type train
+python3 download_dataset.py --task Task2 --set_type dev
+```
 
 ## Pre-processing
 We provide an automated routine that loads the raw audio waveforms and their correspondent metadata, applies custom pre-processing functions and outputs numpy arrays (.npy files) containing the separate predictors and target matrices.
