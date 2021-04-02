@@ -58,7 +58,7 @@ def preprocessing_task1(args):
                     predictors.append(samples)
                     target.append(samples_target)
                     count += 1
-                    if count >= 10:
+                    if count >= args.num_data:
                         break
                 else:
                     continue
@@ -122,13 +122,36 @@ def preprocessing_task2(args):
 
         data = os.listdir(data_path)
         data = [i for i in data if i.split('.')[0].split('_')[-1]=='A']
-        print (data)
+        count = 1
+        for sound in data:
+            sound_path = os.path.join(data_path, sound)
+            target_path = sound_path.replace('data', 'labels').replace('_A', '')
+            samples, sr = librosa.load(sound_path, sr_task2, mono=False)
+            if args.num_mics == 2:  # if both ambisonics mics are wanted
+                #stack the additional 4 channels to get a (8, samples) shape
+                B_sound_path = sound_path.replace('A', 'B')
+                samples_B, sr = librosa.load(sound_path, sr_task2, mono=False)
+                samples = np.vstack((samples,samples_B))
+                predictors.append(samples)
+
+            label = [0,0,0,0,0]
+            target.append(label)
+            count += 1
+            if count >= args.num_data:
+                break
+
+
         return predictors, target
 
     train_folder = os.path.join(args.input_path, 'L3DAS_Task2_train')
     test_folder = os.path.join(args.input_path, 'L3DAS_Task2_dev')
+
     #predictors_training, target_training = process_folder(train_folder, args)
     predictors_test, target_test = process_folder(test_folder, args)
+
+    predictors_test = np.array(predictors_test)
+    target_test = np.array(target_test)
+    print (predictors_test.shape, target_test.shape)
 
 if __name__ == '__main__':
 
