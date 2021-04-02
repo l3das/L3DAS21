@@ -11,7 +11,6 @@ Separate training, validation and test matrices are saved.
 Command line inputs define which task to process and its parameters.
 '''
 
-
 def preprocessing_task1(args):
     sr_task1 = 16000
 
@@ -152,7 +151,7 @@ def preprocessing_task2(args):
 
     predictors_test = np.array(predictors_test)
     target_test = np.array(target_test)
-    print (predictors_test.shape, target_test.shape)
+    #print (predictors_test.shape, target_test.shape)
 
     #split train set into train and development
     split_point = int(len(predictors_train) * args.train_val_split)
