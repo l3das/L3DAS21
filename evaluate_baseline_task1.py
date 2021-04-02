@@ -80,7 +80,7 @@ def main(args):
             outputs = outputs['vocals'].cpu().numpy()
 
 
-            print (outputs.shape, target.shape, np.squeeze(output).shape, np.squeeze(target).shape)
+            print (outputs.shape, target.shape, np.squeeze(outputs).shape, np.squeeze(target).shape)
 
         #$test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
             pbar.update(1)
