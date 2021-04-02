@@ -10,17 +10,12 @@ For further information please refer to the challenge [website](https://sites.go
 ## Installation
 Our code is based on Python 3.5.
 
-To install all dependencies run:
+To install all Python dependencies run:
 ```bash
 pip install -r requirements.txt
 ```
 ## Dataset Download
 The script **download_dataset.py** is aimed at the dataset download.
-
-Options:
-* --task: which task's dataset will be downloaded, can be 'Task1' or 'Task2'.
-* --set_type: which set to download. Can be 'train100', 'train360' or dev for task 1 and 'train' or 'dev' for task 2.
-* --output_path: where to put and extract the downloaded data
 
 To download all dataset folders run:
 ```bash
