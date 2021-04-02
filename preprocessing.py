@@ -113,8 +113,8 @@ def preprocessing_task2(args):
              'Laughter','Male_speech_and_man_speaking',
              'Printer','Scissors','Telephone','Writing']
     file_size=60.0
-    data_folder = os.path.join(args.input_folder, 'data')
-    labels_folder = os.path.join(args.input_folder, 'labels')
+    data_folder = os.path.join(args.input_path, 'data')
+    labels_folder = os.path.join(args.input_path, 'labels')
     sounds = os.listdir(data_folder)
     random.shuffle(sounds)
     print (sounds)
