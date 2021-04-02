@@ -122,7 +122,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
     #eval string args
     args.use_cuda = eval(args.use_cuda)
-    args.early_stopping = eval(args.early_stopping)
-    args.fixed_seed = eval(args.fixed_seed)
 
     main(args)
