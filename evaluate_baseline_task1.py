@@ -64,11 +64,8 @@ def main(args):
     model = model.to(device)
     state = model_utils.load_model(model, None, args.model_path, args.use_cuda)
 
-    print ('AHAHAHAHAHAHAHAHAHAHAH')
-    #COMPUTING
-    # Test loss
+    #COMPUTING METRICS
     print("COMPUTING METRICS")
-
     model.eval()
     wer = 0.
     stoi = 0.
@@ -80,7 +77,7 @@ def main(args):
             x = x.to(device)
 
             outputs = model(x, 'vocals')
-            outputs = outputs.cpu().numpy()
+            outputs = outputs['vocals'].cpu().numpy()
 
 
             print (outputs.shape, target.shape, np.squeeze(output).shape, np.squeeze(target).shape)
