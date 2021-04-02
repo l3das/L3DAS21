@@ -24,11 +24,11 @@ Options:
 
 To download all dataset folders run:
 ```bash
-python3 download_dataset.py --task Task1 --set_type train100
-python3 download_dataset.py --task Task1 --set_type train360
-python3 download_dataset.py --task Task1 --set_type dev
-python3 download_dataset.py --task Task2 --set_type train
-python3 download_dataset.py --task Task2 --set_type dev
+python3 download_dataset.py --task Task1 --set_type train100 --output_path DATASETS/task1
+python3 download_dataset.py --task Task1 --set_type train360 output_path DATASETS/task1
+python3 download_dataset.py --task Task1 --set_type dev output_path DATASETS/task1
+python3 download_dataset.py --task Task2 --set_type train output_path DATASETS/task2
+python3 download_dataset.py --task Task2 --set_type dev output_path DATASETS/task2
 ```
 These scripts automatically extract the archives and delete the zip files.
 
@@ -37,20 +37,10 @@ The file **preprocessing.py** provides automated routines that load the raw audi
 
 Run these commands to obtain the matrices needed for our baseline models:
 ```bash
-python3 preprocessing.py --task Task1 --set_type train --frame_len=20 --domain time --spectrum s --mic AB --num_samples 1 --saving_dir processed
+python3 preprocessing.py --task 1 --input_path DATASET/task1 --training_set train100 --processsing_type waveform -num_mics 1
+python3 preprocessing.py --task 2 --input_path DATASET/task2 --processsing_type stft -num_mics 1 --frame_len 100
 
-python3 preprocess_and_save_numpy.py --task Task2 --set_type train --frame_len=20 --domain freq --spectrum s --mic AB --num_samples 1 --saving_dir processed
 ```
-
-Options:
-* --task: task to be pre-processed, can be 'Task1' or 'Task2'
-* --set_type, set to be pre-processed relative to the given task, can be train, dev or test.
-* --frame_len: length in seconds of a single frame
-* --domain: domain of the audio sample can be 'time' or 'freq'
-* --spectrum: choose what to get from the stft, can be can be 'm' to get the magnitude,  'p' to get the phase,  'mp' to get magnitude and phase,  's' to get the spectrum concatenating magnitude and phase on the last axis. Used only if --domain = 'freq'.
-* --saving_dir (str): where to save the processed data
-* --mic:  which mic have to be used, mic can be 'A' to use the files of mic A and  'AB' to use the files of mic A and mic B concatenated on the last axis
-* --num_samples = num of audio files to process
 
 The two tasks of the challenge require different pre-processing.
 

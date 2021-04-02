@@ -116,7 +116,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #i/o
-    parser.add_argument('--task_number', type=int,
+    parser.add_argument('--task', type=int,
                         help='task to be pre-processed')
     parser.add_argument('--input_path', type=str, default='DATASET/Task1',
                         help='directory where the dataset has been downloaded')
@@ -125,9 +125,11 @@ if __name__ == '__main__':
     #task1 parameters
     parser.add_argument('--training_set', type=str, default='train100',
                         help='which training set: train100, train360 or both')
-
+    #task2 parameters
+    parser.add_argument('--frame_len', type=str, default=100,
+                        help='frame length for SELD evaluation (in msecs)')
     #processing type
-    parser.add_argument('--processsing_type', type=str, default='stft',
+    parser.add_argument('--processsing_type', type=str, default='waveform',
                         help='stft or waveform')
     parser.add_argument('--train_val_split', type=float, default=0.7,
                         help='perc split between train and validation sets')
@@ -144,7 +146,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if args.task_number == 1:
+    if args.task == 1:
         preprocessing_task1(args)
-    elif args.task_number == 2:
+    elif args.task == 2:
         preprocessing_task2(args)
