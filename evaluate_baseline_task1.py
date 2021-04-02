@@ -5,7 +5,7 @@ import pickle
 import argparse
 from tqdm import tqdm
 import numpy as np
-import librosa
+import soundfile as sf
 import torch
 import torch.nn as nn
 from torch import optim
@@ -90,8 +90,8 @@ def main(args):
             metric += (1. / float(example_num + 1)) * (metric - METRIC)
             wer += (1. / float(example_num + 1)) * (wer - WER)
             stoi += (1. / float(example_num + 1)) * (stoi - STOI)
-
-            librosa.output.write_wav(os.path.join(args.results_path, str(example_num)+'.wav'), outputs, 16000)
+            sf.write(os.path.join(args.results_path, str(example_num)+'.wav'), outputs, 16000, 'PCM_16')
+            #librosa.output.write_wav(os.path.join(args.results_path, str(example_num)+'.wav'), outputs, 16000)
 
             print (metric, wer, stoi)
 
