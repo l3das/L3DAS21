@@ -82,7 +82,7 @@ def main(args):
             target = target.cpu().numpy()
             outputs = np.squeeze(outputs)
             target = np.squeeze(target)
-
+            outputs = outputs / np.max(outputs) * 0.9
             metric, wer, stoi = task1_metric(target, outputs)
             noise = np.random.sample(len(target)) * 2 - 1
             #metric, wer, stoi = task1_metric(target, noise)
