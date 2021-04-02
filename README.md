@@ -7,7 +7,7 @@ For further information please refer to the challenge [website](https://sites.go
 
 
 
-## REQUIREMENTS
+## Installation
 Our code is based on Python 3.5.
 
 To install all dependencies run:
@@ -30,13 +30,14 @@ python3 download_dataset.py --task Task1 --set_type dev
 python3 download_dataset.py --task Task2 --set_type train
 python3 download_dataset.py --task Task2 --set_type dev
 ```
+These scripts automatically extract the archives and delete the zip files.
 
 ## Pre-processing
-We provide an automated routine that loads the raw audio waveforms and their correspondent metadata, applies custom pre-processing functions and outputs numpy arrays (.npy files) containing the separate predictors and target matrices.
+The file **preprocessing.py** provides automated routines that load the raw audio waveforms and their correspondent metadata, applY custom pre-processing functions and save numpy arrays (.pkl files) containing the separate predictors and target matrices.
 
 Run these commands to obtain the matrices needed for our baseline models:
 ```bash
-python3 preprocess_and_save_numpy.py --task Task1 --set_type train --frame_len=20 --domain time --spectrum s --mic AB --num_samples 1 --saving_dir processed
+python3 preprocessing.py --task Task1 --set_type train --frame_len=20 --domain time --spectrum s --mic AB --num_samples 1 --saving_dir processed
 
 python3 preprocess_and_save_numpy.py --task Task2 --set_type train --frame_len=20 --domain freq --spectrum s --mic AB --num_samples 1 --saving_dir processed
 ```
