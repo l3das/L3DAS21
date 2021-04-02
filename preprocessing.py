@@ -28,7 +28,7 @@ def preprocessing_task1(args):
     def process_folder(folder, args):
         predictors = []
         target = []
-        count = 1
+        count = 0
         print ('Processing ' + folder + ' folder...')
         main_folder = os.path.join(args.input_path, folder)
         contents = os.listdir(main_folder)
@@ -58,7 +58,7 @@ def preprocessing_task1(args):
                     predictors.append(samples)
                     target.append(samples_target)
                     count += 1
-                    if count >= args.num_data:
+                    if args.num_data is not None and count >= args.num_data:
                         break
                 else:
                     continue
@@ -122,7 +122,7 @@ def preprocessing_task2(args):
 
         data = os.listdir(data_path)
         data = [i for i in data if i.split('.')[0].split('_')[-1]=='A']
-        count = 1
+        count = 0
         for sound in data:
             sound_path = os.path.join(data_path, sound)
             target_path = sound_path.replace('data', 'labels').replace('_A', '')
