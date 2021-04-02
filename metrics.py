@@ -60,7 +60,7 @@ def task1_average_metric(predicted_folder, truth_folder, fs=16000):
         truth_temp_path = os.path.join(truth_folder, name)
         predicted = librosa.load(predicted_temp_path, sr=fs)
         truth = librosa.load(truth_temp_path, sr=fs)
-        temp_metric = task1_metric(truth, predicted)
+        temp_metric, wer, stoi = task1_metric(truth, predicted)
         metrics.append(temp_metric)
         print (predicted_temp_path)
 
