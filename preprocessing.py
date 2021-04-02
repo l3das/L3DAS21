@@ -132,7 +132,7 @@ def preprocessing_task2(args):
                 B_sound_path = sound_path.replace('A', 'B')
                 samples_B, sr = librosa.load(sound_path, sr_task2, mono=False)
                 samples = np.vstack((samples,samples_B))
-                predictors.append(samples)
+            predictors.append(samples)
 
             label = [0,0,0,0,0]
             target.append(label)
