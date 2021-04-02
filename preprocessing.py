@@ -113,12 +113,22 @@ def preprocessing_task2(args):
              'Laughter','Male_speech_and_man_speaking',
              'Printer','Scissors','Telephone','Writing']
     file_size=60.0
-    data_folder = os.path.join(args.input_path, 'data')
-    labels_folder = os.path.join(args.input_path, 'labels')
-    sounds = os.listdir(data_folder)
-    random.shuffle(sounds)
-    print (sounds)
 
+    def process_folder(folder, args):
+        predictors = []
+        target = []
+        data_folder = os.path.join(folder, 'data')
+        labels_folder = os.path.join(folder, 'labels')
+
+        data = os.listdir(data_path)
+        data = [i for i in data if i.split('.')[0].split('_')[-1]=='A']
+        print (data)
+        return predictors, target
+
+    train_folder = os.path.join(args.input_folder, 'L3DAS_Task2_train')
+    test_folder = os.path.join(args.input_folder, 'L3DAS_Task2_dev')
+    #predictors_training, target_training = process_folder(train_folder)
+    predictors_test, target_test = process_folder(test_folder)
 
 if __name__ == '__main__':
 
