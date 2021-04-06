@@ -26,8 +26,8 @@ def dyn_pad(x, y, size_x=32000, size_y=32000):
     pad_x[:,:,:x.shape[-1]] = x
     pad_y[:,:,:y.shape[-1]] = y
     '''
-    pad_x = x[:,:,:97961]
-    pad_y = y[:,:,:88409]
+    pad_x = x[:,:,:32000]
+    pad_y = y[:,:,:32000]
     return pad_x, pad_y
 def evaluate(model, device, criterion, dataloader):
     model.eval()
