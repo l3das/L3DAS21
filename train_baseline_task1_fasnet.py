@@ -220,8 +220,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='RESULTS/waveunet_shorter_continuelowerlr')
-    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/waveunet_shorter_continuelowerlr',
+    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_test')
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/fasnet_test',
                         help='Folder to write checkpoints into')
     #dataset parameters
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_train.pkl')
