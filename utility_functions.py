@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 import math
 import pandas
+import torch
 
 def spectrum_fast(x, nparseg=256, noverlap=128, window='hamming'):
     '''
@@ -201,9 +202,42 @@ def gen_fake_task1_dataset():
     print (data[0].shape)
     print (data2[0].shape)
 
-def print_bar(index, total):
-    perc = int(index / total * 20)
-    perc_progress = int(np.round((float(index)/total) * 100))
-    inv_perc = int(20 - perc - 1)
-    strings = '[' + '=' * perc + '>' + '.' * inv_perc + ']' + ' Progress: ' + str(perc_progress) + '%'
-    print ('\r', strings, end='')
+def save_model(model, optimizer, state, path):
+    if isinstance(model, torch.nn.DataParallel):
+        model = model.module  # save state dict of wrapped module
+    if len(os.path.dirname(path)) > 0 and not os.path.exists(os.path.dirname(path)):
+        os.makedirs(os.path.dirname(path))
+    torch.save({
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'state': state,  # state of training loop (was 'step')
+    }, path)
+
+
+def load_model(model, optimizer, path, cuda):
+    if isinstance(model, torch.nn.DataParallel):
+        model = model.module  # load state dict of wrapped module
+    if cuda:
+        checkpoint = torch.load(path)
+    else:
+        checkpoint = torch.load(path, map_location='cpu')
+    try:
+        model.load_state_dict(checkpoint['model_state_dict'])
+    except:
+        # work-around for loading checkpoints where DataParallel was saved instead of inner module
+        from collections import OrderedDict
+        model_state_dict_fixed = OrderedDict()
+        prefix = 'module.'
+        for k, v in checkpoint['model_state_dict'].items():
+            if k.startswith(prefix):
+                k = k[len(prefix):]
+            model_state_dict_fixed[k] = v
+        model.load_state_dict(model_state_dict_fixed)
+    if optimizer is not None:
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    if 'state' in checkpoint:
+        state = checkpoint['state']
+    else:
+        # older checkpoints only store step, rest of state won't be there
+        state = {'step': checkpoint['step']}
+    return state
