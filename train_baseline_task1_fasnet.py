@@ -155,7 +155,7 @@ def main(args):
 
                 # Compute loss for each instrument/model
                 optimizer.zero_grad()
-                outputs = model(x, args.num_mic)
+                outputs = model(x, args.num_mic.long())
                 loss = criterion(outputs, target)
                 #loss = criterion(outputs['vocals'][:,0,:], target)
                 loss.backward()
@@ -169,7 +169,7 @@ def main(args):
                 pbar.update(1)
 
             #PASS VALIDATION DATA
-            val_loss = evaluate(model, device, criterion, args.num_mic, val_data)
+            val_loss = evaluate(model, device, criterion, args.num_mic.long(), val_data)
             print("VALIDATION FINISHED: LOSS: " + str(val_loss))
 
             # EARLY STOPPING CHECK
@@ -198,9 +198,9 @@ def main(args):
     print("TESTING")
     # Load best model based on validation loss
     state = uf.load_model(model, None, state["best_checkpoint"], args.use_cuda)
-    train_loss = evaluate(model, device, criterion, args.num_mic, tr_data)
-    val_loss = evaluate(model, device, criterion, args.num_mic, val_data)
-    test_loss = evaluate(model, device, criterion, args.num_mic, test_data)
+    train_loss = evaluate(model, device, criterion, args.num_mic.long(), tr_data)
+    val_loss = evaluate(model, device, criterion, args.num_mic.long(), val_data)
+    test_loss = evaluate(model, device, criterion, args.num_mic.long(), test_data)
 
     print("TEST FINISHED: LOSS: " + str(test_loss))
 
