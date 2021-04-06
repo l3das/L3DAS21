@@ -28,7 +28,7 @@ def evaluate(model, device, criterion, num_mic, dataloader):
             target = target.to(device)
             x = x.to(device)
 
-            outputs = model(x, num_mic)
+            outputs = model(x, torch.tensor([num_mic])))
             loss = criterion(outputs, target)
             #loss = criterion(outputs['vocals'][:,0,:], target)
             test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
@@ -155,7 +155,7 @@ def main(args):
 
                 # Compute loss for each instrument/model
                 optimizer.zero_grad()
-                outputs = model(x, torch.tensor(args.num_mic).long())
+                outputs = model(x, torch.tensor([args.num_mic])))
                 loss = criterion(outputs, target)
                 #loss = criterion(outputs['vocals'][:,0,:], target)
                 loss.backward()
@@ -198,9 +198,9 @@ def main(args):
     print("TESTING")
     # Load best model based on validation loss
     state = uf.load_model(model, None, state["best_checkpoint"], args.use_cuda)
-    train_loss = evaluate(model, device, criterion, torch.tensor(args.num_mic).long(), tr_data)
-    val_loss = evaluate(model, device, criterion, torch.tensor(args.num_mic).long(), val_data)
-    test_loss = evaluate(model, device, criterion, torch.tensor(args.num_mic).long(), test_data)
+    train_loss = evaluate(model, device, criterion, args.num_mic, tr_data)
+    val_loss = evaluate(model, device, criterion, args.num_mic, val_data)
+    test_loss = evaluate(model, device, criterion, args.num_mic, test_data)
 
     print("TEST FINISHED: LOSS: " + str(test_loss))
 
