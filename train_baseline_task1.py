@@ -53,8 +53,8 @@ def evaluate(model, device, criterion, dataloader):
             x = x.to(device)
 
             outputs = model(x, 'vocals')
-            #loss = criterion(outputs['vocals'], target)
-            loss = criterion(outputs['vocals'][:,0,:], target)
+            loss = criterion(outputs['vocals'], target)
+            #loss = criterion(outputs['vocals'][:,0,:], target)
             test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
 
             pbar.set_description("Current loss: {:.4f}".format(test_loss))
@@ -131,7 +131,7 @@ def main(args):
                    [args.features*2**i for i in range(0, args.levels)]
     target_outputs = int(args.output_size * args.sr)
     model = Waveunet(args.channels, num_features, args.channels, args.instruments, kernel_size=args.kernel_size,
-                     target_output_size=160000, depth=args.depth, strides=args.strides,
+                     target_output_size=88200, depth=args.depth, strides=args.strides,
                      conv_type=args.conv_type, res=args.res, separate=args.separate)
 
     if args.use_cuda:
@@ -191,8 +191,8 @@ def main(args):
                 optimizer.zero_grad()
                 outputs = model(x, 'vocals')
 
-                #loss = criterion(outputs['vocals'], target)
-                loss = criterion(outputs['vocals'][:,0,:], target)
+                loss = criterion(outputs['vocals'], target)
+                #loss = criterion(outputs['vocals'][:,0,:], target)
                 loss.backward()
                 train_loss += (1. / float(example_num + 1)) * (loss - train_loss)
                 optimizer.step()
@@ -299,7 +299,7 @@ if __name__ == '__main__':
                         help="Number of input audio channels")
     parser.add_argument('--kernel_size', type=int, default=5,
                         help="Filter width of kernels. Has to be an odd number")
-    parser.add_argument('--output_size', type=float, default=2.0,
+    parser.add_argument('--output_size', type=float, default=1.0,
                         help="Output duration")
     parser.add_argument('--strides', type=int, default=4,
                         help="Strides in Waveunet")
