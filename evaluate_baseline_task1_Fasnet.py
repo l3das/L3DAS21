@@ -98,7 +98,10 @@ def main(args):
 
             outputs = outputs / np.max(outputs) * 0.9
             metric, wer, stoi = task1_metric(target, outputs)
-            metric_ref, wer_ref, stoi_ref = task1_metric(target, x[:,0,:].cpu().numpy())
+            #metric_ref, wer_ref, stoi_ref = task1_metric(target, x[:,0,:].cpu().numpy())
+            metric_ref = 0
+            wer_ref = 0
+            stoi_ref = 0
             #noise = np.random.sample(len(target)) * 2 - 1
             #metric, wer, stoi = task1_metric(target, noise)
 
