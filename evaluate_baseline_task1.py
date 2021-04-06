@@ -122,8 +122,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #i/o parameters
-    parser.add_argument('--model_path', type=str, default='RESULTS/shorter_continuelowerlr/checkpoints/checkpoint')
-    parser.add_argument('--results_path', type=str, default='RESULTS/shorter_continuelowerlr')
+    parser.add_argument('--model_path', type=str, default='RESULTS/waveunet_shorter_continuelowerlr/checkpoints/checkpoint')
+    parser.add_argument('--results_path', type=str, default='RESULTS/waveunet_shorter_continuelowerlr')
 
     #dataset parameters
     parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_test.pkl')
