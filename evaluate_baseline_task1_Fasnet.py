@@ -78,6 +78,10 @@ def main(args):
     WER = 0.
     STOI = 0.
     METRIC = 0.
+    WER_ref = 0.
+    STOI_ref = 0.
+    METRIC_ref = 0.
+    count = 0
     with tqdm(total=len(dataloader) // 1) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
             x, target = dyn_pad(x, target)
@@ -94,16 +98,23 @@ def main(args):
 
             outputs = outputs / np.max(outputs) * 0.9
             metric, wer, stoi = task1_metric(target, outputs)
+            metric_ref, wer_ref, stoi_ref = task1_metric(x.cpu().numpy()[:,0,:], outputs)
             #noise = np.random.sample(len(target)) * 2 - 1
             #metric, wer, stoi = task1_metric(target, noise)
 
-            metric += (1. / float(example_num + 1)) * (metric - METRIC)
-            wer += (1. / float(example_num + 1)) * (wer - WER)
-            stoi += (1. / float(example_num + 1)) * (stoi - STOI)
-            sf.write(os.path.join(args.results_path, str(example_num)+'.wav'), outputs, 16000, 'PCM_16')
+            METRIC += (1. / float(example_num + 1)) * (metric - METRIC)
+            WER += (1. / float(example_num + 1)) * (wer - WER)
+            STOI += (1. / float(example_num + 1)) * (stoi - STOI)
+            METRIC_ref += (1. / float(example_num + 1)) * (metric_ref - METRIC_ref)
+            WER_ref += (1. / float(example_num + 1)) * (wer_ref - WER_ref)
+            STOI_ref += (1. / float(example_num + 1)) * (stoi_ref - STOI_ref)
+            if count % 50 == 0:
+                sf.write(os.path.join(args.results_path, str(example_num)+'.wav'), outputs, 16000, 'PCM_16')
+
             #librosa.output.write_wav(os.path.join(args.results_path, str(example_num)+'.wav'), outputs, 16000)
 
-            print (metric, wer, stoi)
+            print ('metrics: ',metric, wer, stoi)
+            print ('metrics ref: ',metric_ref, wer_ref, stoi_ref)
 
         #$test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
             pbar.update(1)
@@ -112,7 +123,10 @@ def main(args):
 
     results = {'word error rate': WER,
                'stoi': STOI,
-               'task 1 metric': METRIC
+               'task 1 metric': METRIC,
+               'word error rate REF': WER_ref,
+               'stoi REF': STOI_ref,
+               'task 1 metric REF': METRIC_ref
                }
 
     print ('RESULTS')
