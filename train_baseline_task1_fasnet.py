@@ -19,7 +19,7 @@ import utility_functions as uf
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 
-def evaluate(model, device, criterion, dataloader):
+def evaluate(model, device, criterion, num_mic, dataloader):
     model.eval()
     test_loss = 0.
     with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
@@ -28,7 +28,7 @@ def evaluate(model, device, criterion, dataloader):
             target = target.to(device)
             x = x.to(device)
 
-            outputs = model(x)
+            outputs = model(x, num_mic)
             loss = criterion(outputs, target)
             #loss = criterion(outputs['vocals'][:,0,:], target)
             test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
@@ -155,7 +155,7 @@ def main(args):
 
                 # Compute loss for each instrument/model
                 optimizer.zero_grad()
-                outputs = model(x)
+                outputs = model(x, args.num_mic)
                 loss = criterion(outputs, target)
                 #loss = criterion(outputs['vocals'][:,0,:], target)
                 loss.backward()
@@ -169,7 +169,7 @@ def main(args):
                 pbar.update(1)
 
             #PASS VALIDATION DATA
-            val_loss = evaluate(model, device, criterion, val_data)
+            val_loss = evaluate(model, device, criterion, args.num_mic, val_data)
             print("VALIDATION FINISHED: LOSS: " + str(val_loss))
 
             # EARLY STOPPING CHECK
@@ -198,9 +198,9 @@ def main(args):
     print("TESTING")
     # Load best model based on validation loss
     state = uf.load_model(model, None, state["best_checkpoint"], args.use_cuda)
-    train_loss = evaluate(model, device, criterion, tr_data)
-    val_loss = evaluate(model, device, criterion, val_data)
-    test_loss = evaluate(model, device, criterion, test_data)
+    train_loss = evaluate(model, device, criterion, args.num_mic, tr_data)
+    val_loss = evaluate(model, device, criterion, args.num_mic, val_data)
+    test_loss = evaluate(model, device, criterion, args.num_mic, test_data)
 
     print("TEST FINISHED: LOSS: " + str(test_loss))
 
@@ -232,6 +232,7 @@ if __name__ == '__main__':
     parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1/task1_target_test.pkl')
     #model parameters
     parser.add_argument('--gpu_id', type=int, default=0)
+    parser.add_argument('--num_mic', type=int, default=4)
     parser.add_argument('--use_cuda', type=str, default='True')
     parser.add_argument('--early_stopping', type=str, default='True')
     parser.add_argument('--fixed_seed', type=str, default='False')
