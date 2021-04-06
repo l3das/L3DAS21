@@ -116,15 +116,15 @@ def main(args):
     print ('Total paramters: ' + str(model_params))
 
     # Set up the loss function
-    '''
+
     if args.loss == "L1":
         criterion = nn.L1Loss()
     elif args.loss == "L2":
         criterion = nn.MSELoss()
     else:
         raise NotImplementedError("Couldn't find this loss!")
-    '''
-    criterion = batch_SDR_torch
+
+    #criterion = batch_SDR_torch
 
     # Set up optimiser
     optimizer = Adam(params=model.parameters(), lr=args.lr)
@@ -258,7 +258,7 @@ if __name__ == '__main__':
                         help='Minimum learning rate in LR cycle (default: 5e-5)')
     parser.add_argument('--cycles', type=int, default=2,
                         help='Number of LR cycles per epoch')
-    parser.add_argument('--batch_size', type=int, default=10,
+    parser.add_argument('--batch_size', type=int, default=3,
                         help="Batch size")
     parser.add_argument('--levels', type=int, default=6,
                         help="Number of DS/US blocks")
