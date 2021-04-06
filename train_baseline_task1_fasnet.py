@@ -14,12 +14,13 @@ from torch.utils.tensorboard import SummaryWriter
 from waveunet_model.waveunet import Waveunet
 from FaSNet import FaSNet_origin
 import utility_functions as uf
+from utils_tac import batch_SDR_torch
 
 
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 
-def evaluate(model, device, criterion, num_mic, dataloader):
+def evaluate(model, device, criterion, dataloader):
     model.eval()
     test_loss = 0.
     with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
@@ -28,7 +29,7 @@ def evaluate(model, device, criterion, num_mic, dataloader):
             target = target.to(device)
             x = x.to(device)
 
-            outputs = model(x, torch.tensor([num_mic]))
+            outputs = model(x, torch.tensor([0.]))
             loss = criterion(outputs, target)
             #loss = criterion(outputs['vocals'][:,0,:], target)
             test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
@@ -115,12 +116,15 @@ def main(args):
     print ('Total paramters: ' + str(model_params))
 
     # Set up the loss function
+    '''
     if args.loss == "L1":
         criterion = nn.L1Loss()
     elif args.loss == "L2":
         criterion = nn.MSELoss()
     else:
         raise NotImplementedError("Couldn't find this loss!")
+    '''
+    criterion = batch_SDR_torch
 
     # Set up optimiser
     optimizer = Adam(params=model.parameters(), lr=args.lr)
@@ -155,7 +159,7 @@ def main(args):
 
                 # Compute loss for each instrument/model
                 optimizer.zero_grad()
-                outputs = model(x, torch.tensor([args.num_mic]))
+                outputs = model(x, torch.tensor([0.]))
                 loss = criterion(outputs, target)
                 #loss = criterion(outputs['vocals'][:,0,:], target)
                 loss.backward()
@@ -169,7 +173,7 @@ def main(args):
                 pbar.update(1)
 
             #PASS VALIDATION DATA
-            val_loss = evaluate(model, device, criterion, torch.tensor(args.num_mic).long(), val_data)
+            val_loss = evaluate(model, device, criterion, val_data)
             print("VALIDATION FINISHED: LOSS: " + str(val_loss))
 
             # EARLY STOPPING CHECK
@@ -198,9 +202,9 @@ def main(args):
     print("TESTING")
     # Load best model based on validation loss
     state = uf.load_model(model, None, state["best_checkpoint"], args.use_cuda)
-    train_loss = evaluate(model, device, criterion, args.num_mic, tr_data)
-    val_loss = evaluate(model, device, criterion, args.num_mic, val_data)
-    test_loss = evaluate(model, device, criterion, args.num_mic, test_data)
+    train_loss = evaluate(model, device, criterion, tr_data)
+    val_loss = evaluate(model, device, criterion, val_data)
+    test_loss = evaluate(model, device, criterion, test_data)
 
     print("TEST FINISHED: LOSS: " + str(test_loss))
 
