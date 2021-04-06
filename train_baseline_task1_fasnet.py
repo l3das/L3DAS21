@@ -12,7 +12,7 @@ from torch.optim import Adam
 import torch.utils.data as utils
 from torch.utils.tensorboard import SummaryWriter
 from waveunet_model.waveunet import Waveunet
-from FaSNet import FaSNet_origin as fasnet
+from FaSNet import FaSNet_origin
 import utility_functions as uf
 
 
