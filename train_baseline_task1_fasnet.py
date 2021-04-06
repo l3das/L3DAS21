@@ -116,15 +116,15 @@ def main(args):
     print ('Total paramters: ' + str(model_params))
 
     # Set up the loss function
-    '''
+    
     if args.loss == "L1":
         criterion = nn.L1Loss()
     elif args.loss == "L2":
         criterion = nn.MSELoss()
     else:
         raise NotImplementedError("Couldn't find this loss!")
-    '''
-    criterion = batch_SDR_torch
+
+    #criterion = batch_SDR_torch
 
     # Set up optimiser
     optimizer = Adam(params=model.parameters(), lr=args.lr)
