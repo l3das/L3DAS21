@@ -330,7 +330,8 @@ def test_model(model):
     num_mic = torch.from_numpy(np.array([3, 2])).view(-1,).type(x.type())  # ad-hoc array
     none_mic = torch.zeros(1).type(x.type())  # fixed-array
     y1 = model(x, num_mic.long())
-    y2 = model(x, none_mic.long())
+    #y2 = model(x, none_mic.long())
+    y2 = model(x, torch.tensor([0.]))
     print(y1.shape, y2.shape)  # (batch, nspk, length)
 
 
