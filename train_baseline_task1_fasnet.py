@@ -14,7 +14,7 @@ from torch.utils.tensorboard import SummaryWriter
 from waveunet_model.waveunet import Waveunet
 from FaSNet import FaSNet_origin
 import utility_functions as uf
-from utility_tac import batch_SDR_torch
+from utility_tac.sdr import batch_SDR_torch
 
 
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
