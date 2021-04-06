@@ -19,13 +19,22 @@ from utility_tac.sdr import batch_SDR_torch
 
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
-
+def dyn_pad(x, y, size_x=32000, size_y=32000):
+    '''
+    pad_x = torch.zeros(x.shape[0],x.shape[1], size_x)
+    pad_y = torch.zeros(y.shape[0],y.shape[1], size_y)
+    pad_x[:,:,:x.shape[-1]] = x
+    pad_y[:,:,:y.shape[-1]] = y
+    '''
+    pad_x = x[:,:,:97961]
+    pad_y = y[:,:,:88409]
+    return pad_x, pad_y
 def evaluate(model, device, criterion, dataloader):
     model.eval()
     test_loss = 0.
     with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
-            #x, target = dyn_pad(x, target)
+            x, target = dyn_pad(x, target)
             target = target.to(device)
             x = x.to(device)
 
@@ -105,8 +114,8 @@ def main(args):
 
     #LOAD MODEL
 
-    model = FaSNet_origin(enc_dim=32, feature_dim=32, hidden_dim=128, layer=4, segment_size=50,
-                                     nspk=2, win_len=4, context_len=16, sr=16000)
+    model = FaSNet_origin(enc_dim=64, feature_dim=64, hidden_dim=128, layer=6, segment_size=24,
+                            nspk=2, win_len=16, context_len=16, sr=16000)
     if args.use_cuda:
         print("move model to gpu")
     model = model.to(device)
@@ -152,7 +161,7 @@ def main(args):
         with tqdm(total=len(tr_dataset) // args.batch_size) as pbar:
             #np.random.seed()
             for example_num, (x, target) in enumerate(tr_data):
-                #x, target = dyn_pad(x, target)
+                x, target = dyn_pad(x, target)
                 target = target.to(device)
                 x = x.to(device)
                 t = time.time()
