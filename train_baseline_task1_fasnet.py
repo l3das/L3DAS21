@@ -232,7 +232,7 @@ if __name__ == '__main__':
     parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1/task1_target_test.pkl')
     #model parameters
     parser.add_argument('--gpu_id', type=int, default=0)
-    parser.add_argument('--num_mic', type=int, default=4)
+    parser.add_argument('--num_mic', type=float, default=4)
     parser.add_argument('--use_cuda', type=str, default='True')
     parser.add_argument('--early_stopping', type=str, default='True')
     parser.add_argument('--fixed_seed', type=str, default='False')
