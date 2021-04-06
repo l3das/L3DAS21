@@ -26,9 +26,10 @@ def dyn_pad(x, y, size_x=32000, size_y=32000):
     pad_x[:,:,:x.shape[-1]] = x
     pad_y[:,:,:y.shape[-1]] = y
     '''
-    pad_x = x[:,:,:32000]
-    pad_y = y[:,:,:32000]
+    pad_x = x[:,:,:size_x]
+    pad_y = y[:,:,:size_y]
     return pad_x, pad_y
+
 def evaluate(model, device, criterion, dataloader):
     model.eval()
     test_loss = 0.
@@ -39,8 +40,8 @@ def evaluate(model, device, criterion, dataloader):
             x = x.to(device)
 
             outputs = model(x, torch.tensor([0.]))
-            loss = criterion(outputs, target)
-            #loss = criterion(outputs['vocals'][:,0,:], target)
+            #loss = criterion(outputs, target)
+            loss = criterion(outputs[:,0,:], target)
             test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
 
             pbar.set_description("Current loss: {:.4f}".format(test_loss))
@@ -169,8 +170,8 @@ def main(args):
                 # Compute loss for each instrument/model
                 optimizer.zero_grad()
                 outputs = model(x, torch.tensor([0.]))
-                loss = criterion(outputs, target)
-                #loss = criterion(outputs['vocals'][:,0,:], target)
+                #loss = criterion(outputs, target)
+                loss = criterion(outputs[:,0,:], target)
                 loss.backward()
                 train_loss += (1. / float(example_num + 1)) * (loss - train_loss)
                 optimizer.step()
