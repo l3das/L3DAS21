@@ -105,7 +105,7 @@ def main(args):
 
     #LOAD MODEL
 
-    model = FaSNet_origin(enc_dim=32, feature_dim=32, hidden_dim=128, layer=6, segment_size=50,
+    model = FaSNet_origin(enc_dim=32, feature_dim=32, hidden_dim=128, layer=4, segment_size=50,
                                      nspk=2, win_len=4, context_len=16, sr=16000)
     if args.use_cuda:
         print("move model to gpu")
