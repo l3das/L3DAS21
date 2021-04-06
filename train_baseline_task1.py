@@ -168,7 +168,7 @@ def main(args):
     # LOAD MODEL CHECKPOINT IF DESIRED
     if args.load_model is not None:
         print("Continuing training full model from checkpoint " + str(args.load_model))
-        state = model_utils.load_model(model, optimizer, args.load_model, args.cuda)
+        state = model_utils.load_model(model, optimizer, args.load_model, args.use_cuda)
 
 
     print('TRAINING START')
@@ -258,8 +258,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='RESULTS/waveunet_shorter')
-    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/waveunet_shorter',
+    parser.add_argument('--results_path', type=str, default='RESULTS/waveunet_shorter_continuelowerlr')
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/waveunet_shorter_continuelowerlr',
                         help='Folder to write checkpoints into')
     #dataset parameters
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_train.pkl')

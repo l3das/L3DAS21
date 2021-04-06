@@ -43,7 +43,7 @@ def task1_metric(clean_speech, denoised_speech, sr=16000):
     '''
     WER = wer(clean_speech, denoised_speech)
     STOI = stoi(clean_speech, denoised_speech, sr, extended=False)
-    metric = WER + (1-STOI)
+    metric = (STOI + (1 - WER)) / 2
     return metric, WER, STOI
 
 def task1_average_metric(predicted_folder, truth_folder, fs=16000):
