@@ -28,7 +28,7 @@ def evaluate(model, device, criterion, num_mic, dataloader):
             target = target.to(device)
             x = x.to(device)
 
-            outputs = model(x, torch.tensor([num_mic])))
+            outputs = model(x, torch.tensor([num_mic]))
             loss = criterion(outputs, target)
             #loss = criterion(outputs['vocals'][:,0,:], target)
             test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
@@ -155,7 +155,7 @@ def main(args):
 
                 # Compute loss for each instrument/model
                 optimizer.zero_grad()
-                outputs = model(x, torch.tensor([args.num_mic])))
+                outputs = model(x, torch.tensor([args.num_mic]))
                 loss = criterion(outputs, target)
                 #loss = criterion(outputs['vocals'][:,0,:], target)
                 loss.backward()
