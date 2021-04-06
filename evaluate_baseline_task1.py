@@ -122,7 +122,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #i/o parameters
-    parser.add_argument('--model_path', type=str, default='RESULTS/waveunet_shorter_continuelowerlr/checkpoints/checkpoint')
+    parser.add_argument('--model_path', type=str, default='RESULTS/waveunet_shorter_continuelowerlr/checkpoint')
     parser.add_argument('--results_path', type=str, default='RESULTS/waveunet_shorter_continuelowerlr')
 
     #dataset parameters
