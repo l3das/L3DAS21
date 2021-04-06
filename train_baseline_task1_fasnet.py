@@ -134,7 +134,7 @@ def main(args):
     else:
         raise NotImplementedError("Couldn't find this loss!")
 
-    criterion = batch_SDR_torch
+    #criterion = batch_SDR_torch
 
     # Set up optimiser
     optimizer = Adam(params=model.parameters(), lr=args.lr)
