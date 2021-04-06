@@ -253,7 +253,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--load_model', type=str, default=None,
                         help='Reload a previously trained model (whole task model)')
-    parser.add_argument('--lr', type=float, default=0.00005,
+    parser.add_argument('--lr', type=float, default=0.00005)
 
     parser.add_argument('--batch_size', type=int, default=20,
                         help="Batch size")
