@@ -60,7 +60,7 @@ def main(args):
                    [args.features*2**i for i in range(0, args.levels)]
     target_outputs = int(args.output_size * args.sr)
     model = Waveunet(args.channels, num_features, args.channels, args.instruments, kernel_size=args.kernel_size,
-                     target_output_size=160000, depth=args.depth, strides=args.strides,
+                     target_output_size=88200, depth=args.depth, strides=args.strides,
                      conv_type=args.conv_type, res=args.res, separate=args.separate)
     if args.use_cuda:
         model = model_utils.DataParallel(model)
