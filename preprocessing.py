@@ -134,7 +134,7 @@ def preprocessing_task2(args):
                 samples = np.vstack((samples,samples_B))
             predictors.append(samples)
 
-            label = [0,0,0,0,0]
+            label = get_label(target_path,0.1,file_size,sr_task2,sound_classes,file_size/0.1):
             target.append(label)
             count += 1
             if args.num_data is not None and count >= args.num_data:
