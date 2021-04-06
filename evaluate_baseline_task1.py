@@ -19,11 +19,14 @@ from metrics import task1_metric
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 def dyn_pad(x, y, size_x=169641, size_y=160089):
-
+    '''
     pad_x = torch.zeros(x.shape[0],x.shape[1], size_x)
     pad_y = torch.zeros(y.shape[0],y.shape[1], size_y)
     pad_x[:,:,:x.shape[-1]] = x
     pad_y[:,:,:y.shape[-1]] = y
+    '''
+    pad_x = x[:,:,:97961]
+    pad_y = y[:,:,:88409]
     return pad_x, pad_y
 
 def main(args):
@@ -119,8 +122,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #i/o parameters
-    parser.add_argument('--model_path', type=str, default='RESULTS/waveunet_new/checkpoints/checkpoint')
-    parser.add_argument('--results_path', type=str, default='RESULTS/waveunet_new')
+    parser.add_argument('--model_path', type=str, default='RESULTS/shorter_continuelowerlr/checkpoints/checkpoint')
+    parser.add_argument('--results_path', type=str, default='RESULTS/shorter_continuelowerlr')
 
     #dataset parameters
     parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_test.pkl')
