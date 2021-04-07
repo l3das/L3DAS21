@@ -96,7 +96,7 @@ def main(args):
             outputs = np.squeeze(outputs)
             target = np.squeeze(target)
 
-            outputs = outputs / np.max(outputs) * 0.9
+            #outputs = outputs / np.max(outputs) * 0.9
             metric, wer, stoi = task1_metric(target, outputs)
             #metric_ref, wer_ref, stoi_ref = task1_metric(target, x[:,0,:].cpu().numpy())
             metric_ref = 0
