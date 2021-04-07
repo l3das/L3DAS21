@@ -2,7 +2,7 @@ import os, sys
 import numpy as np
 import pickle
 import math
-import pandas
+import pandas as pd
 import torch
 
 def spectrum_fast(x, nparseg=256, noverlap=128, window='hamming'):
