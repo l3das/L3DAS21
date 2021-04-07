@@ -16,7 +16,15 @@ Command line inputs define which task to process and its parameters.
 def preprocessing_task1(args):
     '''
     predictors output: ambisonics mixture waveforms
+                       Matrix shape: -x: data points
+                                     -4 or 8: ambisonics channels
+                                     -signal samples
+
     target output: monoaural clean speech waveforms
+                   Matrix shape: -x: data points
+                                 -1: it's monoaural 
+                                 -signal samples
+
     '''
     sr_task1 = 16000
 
@@ -126,8 +134,15 @@ def preprocessing_task1(args):
 def preprocessing_task2(args):
     '''
     predictors output: ambisonics stft
+                       Matrix shape: -x data points
+                                     - num freqency bins
+                                     - num time frames
     target output: matrix containing all active sounds and their position at each
                    100msec frame.
+                   Matrix shape: -x data points
+                                 -600: frames
+                                 -168: 14 (clases) * 3 (max simultaneous sounds per frame)
+                                       concatenated to 14 (classes) * 3 (max simultaneous sounds per frame) * 3 (xyz coordinates)
     '''
     sr_task2 = 32000
     sound_classes=['Chink_and_clink','Computer_keyboard','Cupboard_open_or_close',
@@ -238,7 +253,7 @@ if __name__ == '__main__':
     #task2 only parameters
     parser.add_argument('--frame_len', type=str, default=100,
                         help='frame length for SELD evaluation (in msecs)')
-                        
+
     args = parser.parse_args()
 
     if args.task == 1:

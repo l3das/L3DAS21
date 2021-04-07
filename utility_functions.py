@@ -5,6 +5,10 @@ import math
 import pandas as pd
 import torch
 
+'''
+miscellaneous utilities
+'''
+
 def spectrum_fast(x, nparseg=256, noverlap=128, window='hamming'):
     '''
     compute magnitude spectra from monophonic signal
@@ -18,6 +22,11 @@ def spectrum_fast(x, nparseg=256, noverlap=128, window='hamming'):
     return np.rot90(np.abs(seg_stft))
 
 def get_label_task2(path,frame_len,file_size,sample_rate,classes_,num_frames):
+    '''
+    process input csv file and output a matrix containing
+    the class ids of all sounds present in each data-point and
+    their location coordinates, divided in 100 milliseconds frames.
+    '''
     class_vec=[]
     loc_vec=[]
     num_classes=len(classes_)

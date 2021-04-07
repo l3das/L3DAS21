@@ -7,14 +7,10 @@ from tqdm import tqdm
 import numpy as np
 import torch
 import torch.nn as nn
-from torch import optim
 from torch.optim import Adam
 import torch.utils.data as utils
-from torch.utils.tensorboard import SummaryWriter
-from waveunet_model.waveunet import Waveunet
 from FaSNet import FaSNet_origin
-import utility_functions as uf
-from utility_tac.sdr import batch_SDR_torch
+import utility_functions import load_model, save_model
 
 def evaluate(model, device, criterion, dataloader):
     model.eval()
@@ -128,7 +124,7 @@ def main(args):
     # LOAD MODEL CHECKPOINT IF DESIRED
     if args.load_model is not None:
         print("Continuing training full model from checkpoint " + str(args.load_model))
-        state = uf.load_model(model, optimizer, args.load_model, args.use_cuda)
+        state = load_model(model, optimizer, args.load_model, args.use_cuda)
 
 
     print('TRAINING START')
@@ -177,7 +173,7 @@ def main(args):
 
                 # CHECKPOINT
                 print("Saving model...")
-                uf.save_model(model, optimizer, state, checkpoint_path)
+                save_model(model, optimizer, state, checkpoint_path)
 
             state["epochs"] += 1
             #state["worse_epochs"] = 200
@@ -185,15 +181,13 @@ def main(args):
             val_loss_hist.append(val_loss.cpu().detach().numpy())
 
     #### TESTING ####
-    # Test loss
     print("TESTING")
     # Load best model based on validation loss
-    state = uf.load_model(model, None, state["best_checkpoint"], args.use_cuda)
+    state = load_model(model, None, state["best_checkpoint"], args.use_cuda)
+    #compute loss on all set_output_size
     train_loss = evaluate(model, device, criterion, tr_data)
     val_loss = evaluate(model, device, criterion, val_data)
     test_loss = evaluate(model, device, criterion, test_data)
-
-    print("TEST FINISHED: LOSS: " + str(test_loss))
 
     results = {'train_loss': train_loss.cpu().detach().numpy(),
                'val_loss': val_loss.cpu().detach().numpy(),
@@ -209,7 +203,6 @@ def main(args):
     #writer.add_scalar("test_loss", test_loss, state["step"])
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
     #saving parameters
     parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL',
@@ -217,7 +210,6 @@ if __name__ == '__main__':
     parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/fasnet_fulltrain100_REAL',
                         help='Folder to write checkpoints into')
     #dataset parameters
-
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1_100/task1_predictors_train.pkl')
     parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/task1_100/task1_target_train.pkl')
     parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/task1_100/task1_predictors_validation.pkl')
@@ -258,8 +250,8 @@ if __name__ == '__main__':
     parser.add_argument('--win_len', type=int, default=16)
     parser.add_argument('--context_len', type=int, default=16)
 
-
     args = parser.parse_args()
+    
     #eval string args
     args.use_cuda = eval(args.use_cuda)
     args.early_stopping = eval(args.early_stopping)

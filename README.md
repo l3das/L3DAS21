@@ -45,10 +45,10 @@ For **Task1** the function returns 2 numpy arrays contatining:
 * The input multichannel audio waveforms (3d noise+speech scenarios)
 * The output monoaural audio waveforms (clean speech)
 
-For **Task2** the function returns 3 numpy arrays contatining:
+For **Task2** the function returns 2 numpy arrays contatining:
 * The input multichannel audio spectra(3d acoustic scenarios)
-* The classes ids of all sounds present in each scene, divided in 100 milliseconds frames
-* The location coordinates of all sounds present in each scene, divided in 100 milliseconds frames
+* The class ids of all sounds present in each data-point and their location coordinates, divided in 100 milliseconds frames.
+
 
 ## Baseline models
 We provide baseline models for both tasks, implemented in Pytorch. For task 1 we use an ambisonics-augmented wave-u-net and for task 2 a SELDNet architecture. Please refer to the challenge paper [link] for detailed information about our models.

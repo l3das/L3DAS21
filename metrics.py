@@ -11,6 +11,7 @@ wer_tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h")
 wer_model = Wav2Vec2ForMaskedLM.from_pretrained("facebook/wav2vec2-base-960h");
 
 #TASK 1 METRICS
+
 def wer(clean_speech, denoised_speech):
     """
     computes the word error rate(WER) score for 1 single data point
@@ -38,12 +39,14 @@ def wer(clean_speech, denoised_speech):
 
 def task1_metric(clean_speech, denoised_speech, sr=16000):
     '''
-    Compute evaluation metric for task 1 as stoi + word error rate
+    Compute evaluation metric for task 1 as (stoi+(1-word error rate)/2)
     This function computes such measure for 1 single datapoint
     '''
     WER = wer(clean_speech, denoised_speech)
     STOI = stoi(clean_speech, denoised_speech, sr, extended=False)
-    metric = (STOI + (1 - WER)) / 2
+    WER = np.clip(WER, 0., 1.)
+    STOI = np.clip(STOI, 0., 1.)
+    metric = (STOI + (1. - WER)) / 2.
     return metric, WER, STOI
 
 def task1_average_metric(predicted_folder, truth_folder, fs=16000):
@@ -71,7 +74,6 @@ def task1_average_metric(predicted_folder, truth_folder, fs=16000):
 
 
 #TASK 2 METRICS
-
 
 def location_sensitive_detection(pred_path, true_path,
                                  n_frames=100, spatial_threshold=0.3):
