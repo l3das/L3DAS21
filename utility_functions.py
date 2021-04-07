@@ -120,7 +120,7 @@ def segment_waveforms(predictors, target, length):
             cut_x = pad(predictors[:,start:end], length)
             cut_y = pad(target[:,start:end], length)
         X.append(cut_x)
-        Y.append(cut_Y)
+        Y.append(cut_y)
     return X, Y
 
 
