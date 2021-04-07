@@ -94,6 +94,7 @@ def main(args):
                 print ('No voice activity on this frame')
 
             pbar.update(1)
+            count += 1
 
 
     #visualize and save results
