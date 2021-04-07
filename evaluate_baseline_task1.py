@@ -40,6 +40,9 @@ def main(args):
     #build data loader from dataset
     dataloader = utils.DataLoader(dataset_, 1, shuffle=False, pin_memory=True)
 
+    if not os.path.exists(args.results_path):
+        os.makedirs(args.results_path)
+
     #LOAD MODEL
     model = FaSNet_origin(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
                           hidden_dim=args.hidden_dim, layer=args.layer,
@@ -105,7 +108,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #i/o parameters
     parser.add_argument('--model_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL/checkpoint')
-    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL')
+    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL/metrics')
     #dataset parameters
     parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_test.pkl')
     parser.add_argument('--target_path', type=str, default='DATASETS/processed/task1/task1_target_test.pkl')
