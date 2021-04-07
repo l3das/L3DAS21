@@ -73,12 +73,12 @@ def main(args):
 
             outputs = outputs[:,0,:].cpu().numpy()
             target = target.cpu().numpy()
-            print ('SSSSSS',outputs.shape, target.shape)
 
             outputs = np.squeeze(outputs)
             target = np.squeeze(target)
+            print ('SSSSSS',outputs.shape, target.shape)
 
-            #outputs = outputs / np.max(outputs) * 0.9  #normalize prediction
+            outputs = outputs / np.max(outputs) * 0.9  #normalize prediction
             metric, wer, stoi = task1_metric(target, outputs)
 
             METRIC += (1. / float(example_num + 1)) * (metric - METRIC)
