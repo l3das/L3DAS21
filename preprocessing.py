@@ -187,9 +187,9 @@ if __name__ == '__main__':
     #i/o
     parser.add_argument('--task', type=int,
                         help='task to be pre-processed')
-    parser.add_argument('--input_path', type=str, default='DATASET/Task1',
+    parser.add_argument('--input_path', type=str, default='DATASETS/Task1',
                         help='directory where the dataset has been downloaded')
-    parser.add_argument('--output_path', type=str, default='DATASET/processed',
+    parser.add_argument('--output_path', type=str, default='DATASETS/processed',
                         help='where to save the numpy matrices')
     #task1 parameters
     parser.add_argument('--training_set', type=str, default='train100',

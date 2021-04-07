@@ -35,7 +35,7 @@ The file **preprocessing.py** provides automated routines that load the raw audi
 Run these commands to obtain the matrices needed for our baseline models:
 ```bash
 python3 preprocessing.py --task 1 --input_path DATASET/task1 --training_set train100 --processsing_type waveform -num_mics 1
-python3 preprocessing.py --task 2 --input_path DATASET/task2 --processsing_type stft -num_mics 1 --frame_len 100
+python3 preprocessing.py --task 2 --input_path DATASET/task2 --processsing_type stft --num_mics 1 --frame_len 100
 
 ```
 
