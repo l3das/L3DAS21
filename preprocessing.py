@@ -47,7 +47,7 @@ def preprocessing_task1(args):
                     if args.num_mics == 2:  # if both ambisonics mics are wanted
                         #stack the additional 4 channels to get a (8, samples) shape
                         B_sound_path = sound_path.replace('A', 'B')
-                        samples_B, sr = librosa.load(sound_path, sr_task1, mono=False)
+                        samples_B, sr = librosa.load(B_sound_path, sr_task1, mono=False)
                         samples_B = pad(samples_B)
                         samples = np.vstack((samples,samples_B))
                     samples_target, sr = librosa.load(target_path, sr_task1, mono=False)
@@ -130,11 +130,13 @@ def preprocessing_task2(args):
             if args.num_mics == 2:  # if both ambisonics mics are wanted
                 #stack the additional 4 channels to get a (8, samples) shape
                 B_sound_path = sound_path.replace('A', 'B')
-                samples_B, sr = librosa.load(sound_path, sr_task2, mono=False)
+                samples_B, sr = librosa.load(B_sound_path, sr_task2, mono=False)
                 samples = np.vstack((samples,samples_B))
             predictors.append(samples)
 
             label = get_label(target_path,0.1,file_size,sr_task2,sound_classes,file_size/0.1):
+            print (label.shape)
+            sys.exit(0)
             target.append(label)
             count += 1
             if args.num_data is not None and count >= args.num_data:
