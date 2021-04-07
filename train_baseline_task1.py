@@ -213,7 +213,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #saving parameters
     parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL',
-                        help='Folder to write results dicts into'))
+                        help='Folder to write results dicts into')
     parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/fasnet_fulltrain100_REAL',
                         help='Folder to write checkpoints into')
     #dataset parameters
