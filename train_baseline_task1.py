@@ -10,7 +10,7 @@ import torch.nn as nn
 from torch.optim import Adam
 import torch.utils.data as utils
 from FaSNet import FaSNet_origin
-import utility_functions import load_model, save_model
+from utility_functions import load_model, save_model
 
 def evaluate(model, device, criterion, dataloader):
     model.eval()
@@ -251,7 +251,7 @@ if __name__ == '__main__':
     parser.add_argument('--context_len', type=int, default=16)
 
     args = parser.parse_args()
-    
+
     #eval string args
     args.use_cuda = eval(args.use_cuda)
     args.early_stopping = eval(args.early_stopping)

@@ -8,7 +8,7 @@ import torch
 import torch.utils.data as utils
 from metrics import task1_metric
 from FaSNet import FaSNet_origin
-import utility_functions import load_model, save_model
+from utility_functions import load_model, save_model
 
 '''
 Load pretrained FasNet model and compute the metric for
