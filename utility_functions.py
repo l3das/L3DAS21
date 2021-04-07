@@ -17,7 +17,7 @@ def spectrum_fast(x, nparseg=256, noverlap=128, window='hamming'):
 
     return np.rot90(np.abs(seg_stft))
 
-def get_label(path,frame_len,file_size,sample_rate,classes_,num_frames):
+def get_label_task2(path,frame_len,file_size,sample_rate,classes_,num_frames):
     class_vec=[]
     loc_vec=[]
     num_classes=len(classes_)
