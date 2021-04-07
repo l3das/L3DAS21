@@ -63,7 +63,7 @@ def preprocessing_task1(args):
                         for i in range(len(predictors_cuts)):
                             predictors.append(predictors_cuts[i])
                             target.append(target_cuts[i])
-                            print (predictors_cuts[i].shape, target_cut[i].shape)
+                            print (predictors_cuts[i].shape, target_cuts[i].shape)
                     else:
                         predictors.append(samples)
                         target.append(samples_target)
