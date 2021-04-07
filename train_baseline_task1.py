@@ -212,11 +212,12 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL')
+    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL',
+                        help='Folder to write results dicts into'))
     parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/fasnet_fulltrain100_REAL',
                         help='Folder to write checkpoints into')
     #dataset parameters
-    '''
+
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1_100/task1_predictors_train.pkl')
     parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/task1_100/task1_target_train.pkl')
     parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/task1_100/task1_predictors_validation.pkl')
@@ -230,7 +231,7 @@ if __name__ == '__main__':
     parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/task1_mini/task1_target_validation.pkl')
     parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task1_mini/task1_predictors_test.pkl')
     parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1_mini/task1_target_test.pkl')
-
+    '''
     #training parameters
     parser.add_argument('--gpu_id', type=int, default=0)
     parser.add_argument('--use_cuda', type=str, default='True')
