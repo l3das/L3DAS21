@@ -62,7 +62,7 @@ def preprocessing_task1(args):
                         predictors_cuts, target_cuts = segment_waveforms(samples, samples_target, segmentation_len_samps)
                         for i in range(len(predictors_cuts)):
                             predictors.append(predictors_cuts[i])
-                            target.append(target_cut[i])
+                            target.append(target_cuts[i])
                             print (predictors_cuts[i].shape, target_cut[i].shape)
                     else:
                         predictors.append(samples)
