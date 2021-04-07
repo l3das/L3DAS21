@@ -206,7 +206,7 @@ if __name__ == '__main__':
     #task1 parameters
     parser.add_argument('--training_set', type=str, default='train100',
                         help='which training set: train100, train360 or both')
-    parser.add_argument('--segmentation_len', type=float, default=None,
+    parser.add_argument('--segmentation_len', type=float, default=2.,
                         help='length of segmented frames in seconds')
     #task2 parameters
     parser.add_argument('--frame_len', type=str, default=100,
