@@ -56,7 +56,7 @@ def preprocessing_task1(args):
                     samples_target = pad(samples_target)
                     #append to final arrays
 
-                    if args.segmentation_len in not None:
+                    if args.segmentation_len is not None:
                         #segment longer file to shorter frames
                         segmentation_len_samps = int(sr_task1 * args.segmentation_len)
                         predictors_cuts, target_cuts = uf.segment_waveforms(samples, samples_target, segmentation_len_samps)
