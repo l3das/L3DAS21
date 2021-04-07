@@ -66,6 +66,14 @@ def main(args):
     model.eval()
     with tqdm(total=len(dataloader) // 1) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
+
+
+            outputs = model(x, torch.tensor([0.]))
+            #loss = criterion(outputs, target)
+            loss = criterion(outputs[:,0,:], target)
+
+
+
             target = target.to(device)
             x = x.to(device)
 
@@ -73,6 +81,7 @@ def main(args):
 
             outputs = outputs[:,0,:].cpu().numpy()
             target = target.cpu().numpy()
+            print ('SSSSSS',outputs.shape, target.shape)
 
             outputs = np.squeeze(outputs)
             target = np.squeeze(target)
@@ -111,8 +120,8 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL/checkpoint')
     parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL/metrics')
     #dataset parameters
-    parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task1_100/task1_predictors_test.pkl')
-    parser.add_argument('--target_path', type=str, default='DATASETS/processed/task1_100/task1_target_test.pkl')
+    parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task1_mini/task1_predictors_test.pkl')
+    parser.add_argument('--target_path', type=str, default='DATASETS/processed/task1_mini/task1_target_test.pkl')
     parser.add_argument('--sr', type=int, default=16000)
     #model parameters
     parser.add_argument('--gpu_id', type=int, default=0)
