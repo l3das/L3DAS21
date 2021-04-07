@@ -55,7 +55,7 @@ def main(args):
     model = model.to(device)
 
     #load checkpoint
-    state = model_utils.load_model(model, None, args.model_path, args.use_cuda)
+    state = load_model(model, None, args.model_path, args.use_cuda)
 
     #COMPUTING METRICS
     print("COMPUTING METRICS")
