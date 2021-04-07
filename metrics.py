@@ -33,7 +33,10 @@ def wer(clean_speech, denoised_speech):
         return [transcript_clean, transcript_estimate]
 
     transcript = _transcription(clean_speech, denoised_speech);
-    wer_val = jiwer.wer(transcript[0], transcript[1])
+    try:   #if no words are predicted
+        wer_val = jiwer.wer(transcript[0], transcript[1])
+    except ValueError:
+        wer_val = 1.
 
     return wer_val
 

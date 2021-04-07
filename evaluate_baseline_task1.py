@@ -76,7 +76,6 @@ def main(args):
 
             outputs = np.squeeze(outputs)
             target = np.squeeze(target)
-            print ('SSSSSS',outputs.shape, target.shape)
 
             outputs = outputs / np.max(outputs) * 0.9  #normalize prediction
             metric, wer, stoi = task1_metric(target, outputs)
