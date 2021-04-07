@@ -137,9 +137,9 @@ def preprocessing_task2(args):
                 samples = np.vstack((samples,samples_B))
             predictors.append(samples)
 
-            label = get_label_task2(target_path,0.1,file_size,sr_task2,
+            labels, coordinates = get_label_task2(target_path,0.1,file_size,sr_task2,
                                     sound_classes,int(file_size/0.1))
-            print (label.shape)
+            print (labels.shape, coordinates.shape)
             sys.exit(0)
             target.append(label)
             count += 1
