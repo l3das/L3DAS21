@@ -234,8 +234,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_test')
-    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/fasnet_test',
+    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_lowerlr')
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/fasnet_lowerlr',
                         help='Folder to write checkpoints into')
     #dataset parameters
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_train.pkl')
@@ -246,14 +246,13 @@ if __name__ == '__main__':
     parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1/task1_target_test.pkl')
     #model parameters
     parser.add_argument('--gpu_id', type=int, default=0)
-    parser.add_argument('--num_mic', type=float, default=4)
     parser.add_argument('--use_cuda', type=str, default='True')
     parser.add_argument('--early_stopping', type=str, default='True')
     parser.add_argument('--fixed_seed', type=str, default='False')
 
     parser.add_argument('--load_model', type=str, default=None,
                         help='Reload a previously trained model (whole task model)')
-    parser.add_argument('--lr', type=float, default=0.00005)
+    parser.add_argument('--lr', type=float, default=0.00001)
 
     parser.add_argument('--batch_size', type=int, default=20,
                         help="Batch size")
