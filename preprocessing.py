@@ -100,7 +100,7 @@ def preprocessing_task1(args):
     print ('Saving files')
     if not os.path.isdir(args.output_path):
         os.makedirs(args.output_path)
-    '''
+        
     with open(os.path.join(args.output_path,'task1_predictors_train.pkl'), 'wb') as f:
         pickle.dump(predictors_training, f)
     with open(os.path.join(args.output_path,'task1_predictors_validation.pkl'), 'wb') as f:
@@ -113,19 +113,7 @@ def preprocessing_task1(args):
         pickle.dump(target_validation, f)
     with open(os.path.join(args.output_path,'task1_target_test.pkl'), 'wb') as f:
         pickle.dump(target_test, f)
-    '''
-    with open(os.path.join(args.output_path,'task1_predictors_train_MINI.pkl'), 'wb') as f:
-        pickle.dump(predictors_training, f)
-    with open(os.path.join(args.output_path,'task1_predictors_validation_MINI.pkl'), 'wb') as f:
-        pickle.dump(predictors_validation, f)
-    with open(os.path.join(args.output_path,'task1_predictors_test_MINI.pkl'), 'wb') as f:
-        pickle.dump(predictors_test, f)
-    with open(os.path.join(args.output_path,'task1_target_train_MINI.pkl'), 'wb') as f:
-        pickle.dump(target_training, f)
-    with open(os.path.join(args.output_path,'task1_target_validation_MINI.pkl'), 'wb') as f:
-        pickle.dump(target_validation, f)
-    with open(os.path.join(args.output_path,'task1_target_test_MINI.pkl'), 'wb') as f:
-        pickle.dump(target_test, f)
+
 
 
 def preprocessing_task2(args):
