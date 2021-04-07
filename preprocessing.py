@@ -4,6 +4,7 @@ import numpy as np
 import librosa
 import pickle
 import random
+from utility_functions import get_label_task2
 '''
 Take as input the unzipped dataset folders and output pickle lists
 containing the pre-processed data for task1 and task2, separately.
@@ -134,7 +135,7 @@ def preprocessing_task2(args):
                 samples = np.vstack((samples,samples_B))
             predictors.append(samples)
 
-            label = get_label(target_path,0.1,file_size,sr_task2,sound_classes,file_size/0.1):
+            label = get_label_task2(target_path,0.1,file_size,sr_task2,sound_classes,file_size/0.1)
             print (label.shape)
             sys.exit(0)
             target.append(label)
