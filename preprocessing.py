@@ -5,14 +5,19 @@ import librosa
 import pickle
 import random
 from utility_functions import get_label_task2, segment_waveforms
+
 '''
-Take as input the unzipped dataset folders and output pickle lists
+Process the unzipped dataset folders and output numpy matrices (pkl files)
 containing the pre-processed data for task1 and task2, separately.
 Separate training, validation and test matrices are saved.
 Command line inputs define which task to process and its parameters.
 '''
 
 def preprocessing_task1(args):
+    '''
+    predictors output: ambisonics mixture waveforms
+    target output: monoaural clean speech waveforms
+    '''
     sr_task1 = 16000
 
     def pad(x, size=sr_task1*10):
@@ -26,6 +31,7 @@ def preprocessing_task1(args):
         return pad
 
     def process_folder(folder, args):
+        #process single dataset folder
         print ('Processing ' + folder + ' folder...')
         predictors = []
         target = []
@@ -79,6 +85,7 @@ def preprocessing_task1(args):
 
         return predictors, target
 
+    #process all required folders
     predictors_test, target_test = process_folder('L3DAS_Task1_dev', args)
     if args.training_set == 'train100':
         predictors_train, target_train = process_folder('L3DAS_Task1_train100', args)
@@ -97,10 +104,11 @@ def preprocessing_task1(args):
     predictors_validation = predictors_train[split_point:]
     target_validation = target_train[split_point:]
 
+    #save numpy matrices in pickle files
     print ('Saving files')
     if not os.path.isdir(args.output_path):
         os.makedirs(args.output_path)
-        
+
     with open(os.path.join(args.output_path,'task1_predictors_train.pkl'), 'wb') as f:
         pickle.dump(predictors_training, f)
     with open(os.path.join(args.output_path,'task1_predictors_validation.pkl'), 'wb') as f:
@@ -115,8 +123,12 @@ def preprocessing_task1(args):
         pickle.dump(target_test, f)
 
 
-
 def preprocessing_task2(args):
+    '''
+    predictors output: ambisonics stft
+    target output: matrix containing all active sounds and their position at each
+                   100msec frame.
+    '''
     sr_task2 = 32000
     sound_classes=['Chink_and_clink','Computer_keyboard','Cupboard_open_or_close',
              'Drawer_open_or_close','Female_speech_and_woman_speaking',
@@ -176,6 +188,7 @@ def preprocessing_task2(args):
     predictors_validation = predictors_train[split_point:]
     target_validation = target_train[split_point:]
 
+    #save numpy matrices into pickle files
     print ('Saving files')
     if not os.path.isdir(args.output_path):
         os.makedirs(args.output_path)
@@ -194,8 +207,6 @@ def preprocessing_task2(args):
         pickle.dump(target_test, f)
 
 if __name__ == '__main__':
-
-
     parser = argparse.ArgumentParser()
     #i/o
     parser.add_argument('--task', type=int,
@@ -204,14 +215,6 @@ if __name__ == '__main__':
                         help='directory where the dataset has been downloaded')
     parser.add_argument('--output_path', type=str, default='DATASETS/processed',
                         help='where to save the numpy matrices')
-    #task1 parameters
-    parser.add_argument('--training_set', type=str, default='train100',
-                        help='which training set: train100, train360 or both')
-    parser.add_argument('--segmentation_len', type=float, default=2.,
-                        help='length of segmented frames in seconds')
-    #task2 parameters
-    parser.add_argument('--frame_len', type=str, default=100,
-                        help='frame length for SELD evaluation (in msecs)')
     #processing type
     parser.add_argument('--processsing_type', type=str, default='waveform',
                         help='stft or waveform')
@@ -227,7 +230,15 @@ if __name__ == '__main__':
                         help='num of overlapping samples for stft')
     parser.add_argument('--stft_window', type=str, default='hamming',
                         help='stft window_type')
-
+    #task1 only parameters
+    parser.add_argument('--training_set', type=str, default='train100',
+                        help='which training set: train100, train360 or both')
+    parser.add_argument('--segmentation_len', type=float, default=2.,
+                        help='length of segmented frames in seconds')
+    #task2 only parameters
+    parser.add_argument('--frame_len', type=str, default=100,
+                        help='frame length for SELD evaluation (in msecs)')
+                        
     args = parser.parse_args()
 
     if args.task == 1:
