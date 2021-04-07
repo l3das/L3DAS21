@@ -83,11 +83,11 @@ def main(args):
             METRIC += (1. / float(example_num + 1)) * (metric - METRIC)
             WER += (1. / float(example_num + 1)) * (wer - WER)
             STOI += (1. / float(example_num + 1)) * (stoi - STOI)
-            '''
+
             #save sounds
-            if count % 50 == 0:
+            if count % 1 == 0:
                 sf.write(os.path.join(args.results_path, str(example_num)+'.wav'), outputs, 16000, 'PCM_16')
-            '''
+
             print ('metric: ', metric, 'wer: ', wer, 'stoi: ', stoi)
 
             pbar.update(1)
