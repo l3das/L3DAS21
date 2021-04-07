@@ -94,6 +94,34 @@ def get_label_task2(path,frame_len,file_size,sample_rate,classes_,num_frames):
     #return (class_vec), (loc_vec)
     return stacked
 
+def segment_waveforms(predictors, target, length):
+    '''
+    segment input waveforms into shorter frames of
+    predefined length. Output lists of cut frames
+    - length is in samples
+    '''
+
+    def pad(x, d):
+        pad = np.zeros((x.shape[0], d))
+        pad[:,:x.shape[-1]] = x
+        return pad
+
+    cuts = np.arange(0,predictors.shape[-1], length)  #points to cut
+    X = []
+    Y = []
+    for i in range(len(cuts)):
+        start = cuts[i]
+        if i != len(cuts)-1:
+            end = cuts[i+1]
+            cut_x = predictors[:,start:end]
+            cut_y = target[:,start:end]
+        else:
+            end = predictors.shape[-1]
+            cut_x = pad(predictors[:,start:end], length)
+            cut_y = pad(target[:,start:end], length)
+        X.append(cut_x)
+        Y.append(cut_Y)
+    return X, Y
 
 
 def gen_seld_out(n_frames, n_overlaps=3, n_classes=14):
