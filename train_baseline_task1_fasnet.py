@@ -16,34 +16,18 @@ from FaSNet import FaSNet_origin
 import utility_functions as uf
 from utility_tac.sdr import batch_SDR_torch
 
-
-os.environ['KMP_DUPLICATE_LIB_OK']='True'
-
-def dyn_pad(x, y, size_x=32000, size_y=32000):
-    '''
-    pad_x = torch.zeros(x.shape[0],x.shape[1], size_x)
-    pad_y = torch.zeros(y.shape[0],y.shape[1], size_y)
-    pad_x[:,:,:x.shape[-1]] = x
-    pad_y[:,:,:y.shape[-1]] = y
-    '''
-    pad_x = x[:,:,:size_x]
-    pad_y = y[:,:,:size_y]
-    return pad_x, pad_y
-
 def evaluate(model, device, criterion, dataloader):
     model.eval()
     test_loss = 0.
     with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
-            x, target = dyn_pad(x, target)
+            #x, target = dyn_pad(x, target)
             target = target.to(device)
             x = x.to(device)
-
             outputs = model(x, torch.tensor([0.]))
             #loss = criterion(outputs, target)
             loss = criterion(outputs[:,0,:], target)
             test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
-
             pbar.set_description("Current loss: {:.4f}".format(test_loss))
             pbar.update(1)
     return test_loss
@@ -63,10 +47,8 @@ def main(args):
         if torch.cuda.is_available():
             torch.cuda.manual_seed_all(seed)
 
-    #writer = SummaryWriter(args.log_dir)
+    #LOAD DATASET
     print ('\nLoading dataset')
-
-    #load dataset
 
     with open(args.training_predictors_path, 'rb') as f:
         training_predictors = pickle.load(f)
@@ -88,12 +70,10 @@ def main(args):
     test_predictors = np.array(test_predictors)
     test_target = np.array(test_target)
 
-
     print ('\nShapes:')
     print ('Training predictors: ', training_predictors.shape)
     print ('Validation predictors: ', validation_predictors.shape)
     print ('Test predictors: ', test_predictors.shape)
-
 
     #convert to tensor
     training_predictors = torch.tensor(training_predictors).float()
@@ -111,12 +91,13 @@ def main(args):
     val_data = utils.DataLoader(val_dataset, args.batch_size, shuffle=False, pin_memory=True)
     test_data = utils.DataLoader(test_dataset, args.batch_size, shuffle=False, pin_memory=True)
 
-
-
     #LOAD MODEL
+    model = FaSNet_origin(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
+                          hidden_dim=args.hidden_dim, layer=args.layer,
+                          segment_size=args.segment_size, nspk=args.nspk,
+                          win_len=args.win_len, context_len=args.context_len,
+                          sr=args.sr)
 
-    model = FaSNet_origin(enc_dim=64, feature_dim=64, hidden_dim=128, layer=6, segment_size=24,
-                            nspk=2, win_len=16, context_len=16, sr=16000)
     if args.use_cuda:
         print("move model to gpu")
     model = model.to(device)
@@ -125,8 +106,7 @@ def main(args):
     model_params = sum([np.prod(p.size()) for p in model.parameters()])
     print ('Total paramters: ' + str(model_params))
 
-    # Set up the loss function
-
+    #set up the loss function
     if args.loss == "L1":
         criterion = nn.L1Loss()
     elif args.loss == "L2":
@@ -136,10 +116,10 @@ def main(args):
 
     #criterion = batch_SDR_torch
 
-    # Set up optimiser
+    #set up optimiser
     optimizer = Adam(params=model.parameters(), lr=args.lr)
 
-    # Set up training state dict that will also be saved into checkpoints
+    #set up training state dict that will also be saved into checkpoints
     state = {"step" : 0,
              "worse_epochs" : 0,
              "epochs" : 0,
@@ -160,13 +140,11 @@ def main(args):
         model.train()
         train_loss = 0.
         with tqdm(total=len(tr_dataset) // args.batch_size) as pbar:
-            #np.random.seed()
             for example_num, (x, target) in enumerate(tr_data):
-                x, target = dyn_pad(x, target)
+                #x, target = dyn_pad(x, target)
                 target = target.to(device)
                 x = x.to(device)
                 t = time.time()
-
                 # Compute loss for each instrument/model
                 optimizer.zero_grad()
                 outputs = model(x, torch.tensor([0.]))
@@ -179,7 +157,6 @@ def main(args):
                 t = time.time() - t
                 avg_time += (1. / float(example_num + 1)) * (t - avg_time)
 
-                #writer.add_scalar("train_loss", loss.item(), state["step"])
                 pbar.update(1)
 
             #PASS VALIDATION DATA
@@ -234,8 +211,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_lowerlr')
-    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/fasnet_lowerlr',
+    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100')
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/fasnet_fulltrain100',
                         help='Folder to write checkpoints into')
     #dataset parameters
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_train.pkl')
@@ -244,27 +221,32 @@ if __name__ == '__main__':
     parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/task1/task1_target_validation.pkl')
     parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task1/task1_predictors_test.pkl')
     parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1/task1_target_test.pkl')
-    #model parameters
+    #training parameters
     parser.add_argument('--gpu_id', type=int, default=0)
     parser.add_argument('--use_cuda', type=str, default='True')
     parser.add_argument('--early_stopping', type=str, default='True')
     parser.add_argument('--fixed_seed', type=str, default='False')
-
     parser.add_argument('--load_model', type=str, default=None,
                         help='Reload a previously trained model (whole task model)')
     parser.add_argument('--lr', type=float, default=0.00001)
-
     parser.add_argument('--batch_size', type=int, default=20,
                         help="Batch size")
-
     parser.add_argument('--sr', type=int, default=16000,
                         help="Sampling rate")
-
     parser.add_argument('--patience', type=int, default=20,
                         help="Patience for early stopping on validation set")
-
     parser.add_argument('--loss', type=str, default="L2",
                         help="L1 or L2")
+    #model parameters
+    parser.add_argument('--enc_dim', type=int, default=64)
+    parser.add_argument('--feature_dim', type=int, default=64)
+    parser.add_argument('--hidden_dim', type=int, default=128)
+    parser.add_argument('--layer', type=int, default=6)
+    parser.add_argument('--segment_size', type=int, default=24)
+    parser.add_argument('--nspk', type=int, default=2)
+    parser.add_argument('--win_len', type=int, default=16)
+    parser.add_argument('--context_len', type=int, default=16)
+
 
     args = parser.parse_args()
     #eval string args
