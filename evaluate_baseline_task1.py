@@ -66,14 +66,6 @@ def main(args):
     model.eval()
     with tqdm(total=len(dataloader) // 1) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
-
-
-            outputs = model(x, torch.tensor([0.]))
-            #loss = criterion(outputs, target)
-            loss = criterion(outputs[:,0,:], target)
-
-
-
             target = target.to(device)
             x = x.to(device)
 
