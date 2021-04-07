@@ -55,8 +55,18 @@ def preprocessing_task1(args):
                     samples_target = samples_target.reshape((1, samples_target.shape[0]))
                     samples_target = pad(samples_target)
                     #append to final arrays
-                    predictors.append(samples)
-                    target.append(samples_target)
+
+                    if args.segmentation_len in not None:
+                        #segment longer file to shorter frames
+                        segmentation_len_samps = int(sr_task1 * args.segmentation_len)
+                        predictors_cuts, target_cuts = uf.segment_waveforms(samples, samples_target, segmentation_len_samps)
+                        for i in range(len(predictors_cuts)):
+                            predictors.append(predictors_cuts[i])
+                            taget.append(target_cut[i])
+                            print (predictors_cuts[i].shape, target_cut[i].shape)
+                    else:
+                        predictors.append(samples)
+                        target.append(samples_target)
                     count += 1
                     if args.num_data is not None and count >= args.num_data:
                         break
@@ -196,6 +206,8 @@ if __name__ == '__main__':
     #task1 parameters
     parser.add_argument('--training_set', type=str, default='train100',
                         help='which training set: train100, train360 or both')
+    parser.add_argument('--segmentation_len', type=float, default=None,
+                        help='length of segmented frames in seconds')
     #task2 parameters
     parser.add_argument('--frame_len', type=str, default=100,
                         help='frame length for SELD evaluation (in msecs)')
