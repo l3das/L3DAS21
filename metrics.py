@@ -36,7 +36,7 @@ def wer(clean_speech, denoised_speech):
     try:   #if no words are predicted
         wer_val = jiwer.wer(transcript[0], transcript[1])
     except ValueError:
-        wer_val = 1.
+        wer_val = None
 
     return wer_val
 
@@ -46,10 +46,14 @@ def task1_metric(clean_speech, denoised_speech, sr=16000):
     This function computes such measure for 1 single datapoint
     '''
     WER = wer(clean_speech, denoised_speech)
-    STOI = stoi(clean_speech, denoised_speech, sr, extended=False)
-    WER = np.clip(WER, 0., 1.)
-    STOI = np.clip(STOI, 0., 1.)
-    metric = (STOI + (1. - WER)) / 2.
+    if WER is not None:  #if there is no speech in the segment
+        STOI = stoi(clean_speech, denoised_speech, sr, extended=False)
+        WER = np.clip(WER, 0., 1.)
+        STOI = np.clip(STOI, 0., 1.)
+        metric = (STOI + (1. - WER)) / 2.
+    else:
+        metric = None
+        STOI = None
     return metric, WER, STOI
 
 def task1_average_metric(predicted_folder, truth_folder, fs=16000):
