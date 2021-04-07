@@ -4,7 +4,7 @@ import numpy as np
 import librosa
 import pickle
 import random
-from utility_functions import get_label_task2
+from utility_functions import get_label_task2, segment_waveforms
 '''
 Take as input the unzipped dataset folders and output pickle lists
 containing the pre-processed data for task1 and task2, separately.
@@ -59,7 +59,7 @@ def preprocessing_task1(args):
                     if args.segmentation_len is not None:
                         #segment longer file to shorter frames
                         segmentation_len_samps = int(sr_task1 * args.segmentation_len)
-                        predictors_cuts, target_cuts = uf.segment_waveforms(samples, samples_target, segmentation_len_samps)
+                        predictors_cuts, target_cuts = segment_waveforms(samples, samples_target, segmentation_len_samps)
                         for i in range(len(predictors_cuts)):
                             predictors.append(predictors_cuts[i])
                             taget.append(target_cut[i])
