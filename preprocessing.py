@@ -139,8 +139,7 @@ def preprocessing_task2(args):
 
             label = get_label_task2(target_path,0.1,file_size,sr_task2,
                                     sound_classes,int(file_size/0.1))
-            print (label.shape)
-            sys.exit(0)
+
             target.append(label)
             count += 1
             if args.num_data is not None and count >= args.num_data:
