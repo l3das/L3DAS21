@@ -139,7 +139,7 @@ def preprocessing_task2(args):
 
             labels, coordinates = get_label_task2(target_path,0.1,file_size,sr_task2,
                                     sound_classes,int(file_size/0.1))
-            print (labels.shape, coordinates.shape)
+            print (np.array(labels).shape, np.array(coordinates).shape)
             sys.exit(0)
             target.append(label)
             count += 1
