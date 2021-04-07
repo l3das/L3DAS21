@@ -47,7 +47,7 @@ For **Task1** the function returns 2 numpy arrays contatining:
 
 For **Task2** the function returns 2 numpy arrays contatining:
 * The input multichannel audio spectra(3d acoustic scenarios)
-* The classes ids of all sounds present in each scene and their location coordinates, divided in 100 milliseconds frames.
+* The class ids of all sounds present in each data-point and their location coordinates, divided in 100 milliseconds frames.
 
 
 ## Baseline models
