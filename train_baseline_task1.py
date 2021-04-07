@@ -144,6 +144,7 @@ def main(args):
                 #x, target = dyn_pad(x, target)
                 target = target.to(device)
                 x = x.to(device)
+                print ('AAAAAAAAAAAA', x.shape, target.shape)
                 t = time.time()
                 # Compute loss for each instrument/model
                 optimizer.zero_grad()
@@ -200,6 +201,7 @@ def main(args):
                'test_loss': test_loss.cpu().detach().numpy(),
                'train_loss_hist': train_loss_hist,
                'val_loss_hist': val_loss_hist}
+
     print ('RESULTS')
     for i in results:
         print (i, results[i])
@@ -229,7 +231,7 @@ if __name__ == '__main__':
     parser.add_argument('--load_model', type=str, default=None,
                         help='Reload a previously trained model (whole task model)')
     parser.add_argument('--lr', type=float, default=0.00001)
-    parser.add_argument('--batch_size', type=int, default=15,
+    parser.add_argument('--batch_size', type=int, default=20,
                         help="Batch size")
     parser.add_argument('--sr', type=int, default=16000,
                         help="Sampling rate")
