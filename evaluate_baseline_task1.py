@@ -102,11 +102,18 @@ def main(args):
         os.makedirs(args.results_path)
 
     #LOAD MODEL
-    model = FaSNet_origin(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
-                          hidden_dim=args.hidden_dim, layer=args.layer,
-                          segment_size=args.segment_size, nspk=args.nspk,
-                          win_len=args.win_len, context_len=args.context_len,
-                          sr=args.sr)
+    if args.architecture == 'fasnet':
+        model = FaSNet_origin(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
+                              hidden_dim=args.hidden_dim, layer=args.layer,
+                              segment_size=args.segment_size, nspk=args.nspk,
+                              win_len=args.win_len, context_len=args.context_len,
+                              sr=args.sr)
+    elif args.architecture == 'tac':
+        model = FaSNet_TAC(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
+                              hidden_dim=args.hidden_dim, layer=args.layer,
+                              segment_size=args.segment_size, nspk=args.nspk,
+                              win_len=args.win_len, context_len=args.context_len,
+                              sr=args.sr)
     if args.use_cuda:
         print("move model to gpu")
     model = model.to(device)
@@ -174,6 +181,8 @@ if __name__ == '__main__':
     parser.add_argument('--segment_length', type=int, default=32000)
     parser.add_argument('--segment_overlap', type=float, default=0.5)
     #model parameters
+    parser.add_argument('--architecture', type=str, default='fasnet',
+                        help="can be fasnet or tac")
     parser.add_argument('--gpu_id', type=int, default=0)
     parser.add_argument('--use_cuda', type=str, default='True')
     parser.add_argument('--enc_dim', type=int, default=64)
