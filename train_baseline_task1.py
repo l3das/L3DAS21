@@ -249,7 +249,7 @@ if __name__ == '__main__':
                         help="L1 or L2")
     #model parameters
     parser.add_argument('--architecture', type=string, default='fasnet',
-                        help="can be fasnet or tac"))
+                        help="can be fasnet or tac")
     parser.add_argument('--enc_dim', type=int, default=64)
     parser.add_argument('--feature_dim', type=int, default=64)
     parser.add_argument('--hidden_dim', type=int, default=128)
