@@ -15,6 +15,63 @@ Load pretrained FasNet model and compute the metric for
 the Task 1 of the L3DAS21 challenge.
 The metric is: (STOI+(1-WER))/2
 '''
+
+
+def enhance_sound(predictors, model, device, length, overlap):
+    '''
+    compute enhanced waveform applying a sliding crossfading window
+    '''
+
+    def pad(x, d):
+        #zeropad to desired length
+        pad = np.zeros((x.shape[0], d))
+        pad[:,:x.shape[-1]] = x
+        return pad
+
+    def xfade(x1, x2, fade_samps, exp=1.):
+        #simple linear/exponential crossfade and concatenation
+        out = []
+        fadein = np.arange(fade_samps) / fade_samps
+        fadeout = np.arange(fade_samps, 0, -1) / fade_samps
+        fade_in = fadein * exp
+        fade_out = fadeout * exp
+        x1[:,-fade_samps:] = x1[:,-fade_samps:] * fadeout
+        x2[:,:fade_samps] = x2[:,:fade_samps] * fadein
+        left = x1[:,:-fade_samps]
+        center = x1[:,-fade_samps:] + x2[:,:fade_samps]
+        end = x2[:,fade_samps:]
+        return np.concatenate((left,center,end), axis=-1)
+
+    overlap_len = int(length*overlap)  #in samples
+    total_len = predictors.shape[-1]
+    starts = np.arange(0,total_len, overlap_len)  #points to cut
+    #iterate the sliding frames
+    for i in range(len(starts)):
+        start = starts[i]
+        end = starts[i] + length
+        if end < total_len:
+            cut_x = predictors[:,start:end]
+        else:
+            #zeropad the last frame
+            end = total_len
+            cut_x = pad(predictors[:,start:end], length)
+
+        #compute model's output here
+        cut_x = cut_x.to(device)
+        predicted_x = model(cut_x, torch.tensor([0.]))
+        predicted_x = predicted_x[:,0,:].cpu().numpy()
+
+        #reconstruct sound crossfading segments
+        if i == 0:
+            recon = predicted_x
+        else:
+            recon = xfade(recon, predicted_x, overlap_len)
+
+    #undo final pad
+    recon = recon[:,:total_len]
+
+    return recon
+
 def main(args):
     if args.use_cuda:
         device = 'cuda:' + str(args.gpu_id)
