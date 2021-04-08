@@ -248,7 +248,7 @@ if __name__ == '__main__':
     parser.add_argument('--loss', type=str, default="L2",
                         help="L1 or L2")
     #model parameters
-    parser.add_argument('--architecture', type=string, default='fasnet',
+    parser.add_argument('--architecture', type=str, default='fasnet',
                         help="can be fasnet or tac")
     parser.add_argument('--enc_dim', type=int, default=64)
     parser.add_argument('--feature_dim', type=int, default=64)
