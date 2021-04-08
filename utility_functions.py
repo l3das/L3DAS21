@@ -4,10 +4,52 @@ import pickle
 import math
 import pandas as pd
 import torch
+from scipy.signal import stft
 
 '''
-miscellaneous utilities
+Miscellaneous utilities
 '''
+
+def save_model(model, optimizer, state, path):
+    if isinstance(model, torch.nn.DataParallel):
+        model = model.module  # save state dict of wrapped module
+    if len(os.path.dirname(path)) > 0 and not os.path.exists(os.path.dirname(path)):
+        os.makedirs(os.path.dirname(path))
+    torch.save({
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'state': state,  # state of training loop (was 'step')
+    }, path)
+
+
+def load_model(model, optimizer, path, cuda):
+    if isinstance(model, torch.nn.DataParallel):
+        model = model.module  # load state dict of wrapped module
+    if cuda:
+        checkpoint = torch.load(path)
+    else:
+        checkpoint = torch.load(path, map_location='cpu')
+    try:
+        model.load_state_dict(checkpoint['model_state_dict'])
+    except:
+        # work-around for loading checkpoints where DataParallel was saved instead of inner module
+        from collections import OrderedDict
+        model_state_dict_fixed = OrderedDict()
+        prefix = 'module.'
+        for k, v in checkpoint['model_state_dict'].items():
+            if k.startswith(prefix):
+                k = k[len(prefix):]
+            model_state_dict_fixed[k] = v
+        model.load_state_dict(model_state_dict_fixed)
+    if optimizer is not None:
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    if 'state' in checkpoint:
+        state = checkpoint['state']
+    else:
+        # older checkpoints only store step, rest of state won't be there
+        state = {'step': checkpoint['step']}
+    return state
+
 
 def spectrum_fast(x, nparseg=256, noverlap=128, window='hamming'):
     '''
@@ -20,6 +62,7 @@ def spectrum_fast(x, nparseg=256, noverlap=128, window='hamming'):
                         noverlap=noverlap)
 
     return np.rot90(np.abs(seg_stft))
+
 
 def get_label_task2(path,frame_len,file_size,sample_rate,classes_,num_frames):
     '''
@@ -103,6 +146,7 @@ def get_label_task2(path,frame_len,file_size,sample_rate,classes_,num_frames):
     #return (class_vec), (loc_vec)
     return stacked
 
+
 def segment_waveforms(predictors, target, length):
     '''
     segment input waveforms into shorter frames of
@@ -153,6 +197,7 @@ def gen_seld_out(n_frames, n_overlaps=3, n_classes=14):
     #pd.DataFrame(results).to_csv(out_path, index=None, header=None)
     return results
 
+
 def gen_dummy_seld_results(out_path, n_frames=10, n_files=30, perc_tp=0.6,
                            n_overlaps=3, n_classes=14):
     '''
@@ -187,6 +232,7 @@ def gen_dummy_seld_results(out_path, n_frames=10, n_files=30, perc_tp=0.6,
 
         pd.DataFrame(truth_results).to_csv(truth_out_file, index=None, header=None)
         pd.DataFrame(pred_results).to_csv(pred_out_file, index=None, header=None)
+
 
 def gen_dummy_waveforms(n, out_path):
     '''
@@ -246,43 +292,3 @@ def gen_fake_task1_dataset():
 
     print (data[0].shape)
     print (data2[0].shape)
-
-def save_model(model, optimizer, state, path):
-    if isinstance(model, torch.nn.DataParallel):
-        model = model.module  # save state dict of wrapped module
-    if len(os.path.dirname(path)) > 0 and not os.path.exists(os.path.dirname(path)):
-        os.makedirs(os.path.dirname(path))
-    torch.save({
-        'model_state_dict': model.state_dict(),
-        'optimizer_state_dict': optimizer.state_dict(),
-        'state': state,  # state of training loop (was 'step')
-    }, path)
-
-
-def load_model(model, optimizer, path, cuda):
-    if isinstance(model, torch.nn.DataParallel):
-        model = model.module  # load state dict of wrapped module
-    if cuda:
-        checkpoint = torch.load(path)
-    else:
-        checkpoint = torch.load(path, map_location='cpu')
-    try:
-        model.load_state_dict(checkpoint['model_state_dict'])
-    except:
-        # work-around for loading checkpoints where DataParallel was saved instead of inner module
-        from collections import OrderedDict
-        model_state_dict_fixed = OrderedDict()
-        prefix = 'module.'
-        for k, v in checkpoint['model_state_dict'].items():
-            if k.startswith(prefix):
-                k = k[len(prefix):]
-            model_state_dict_fixed[k] = v
-        model.load_state_dict(model_state_dict_fixed)
-    if optimizer is not None:
-        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    if 'state' in checkpoint:
-        state = checkpoint['state']
-    else:
-        # older checkpoints only store step, rest of state won't be there
-        state = {'step': checkpoint['step']}
-    return state

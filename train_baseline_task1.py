@@ -12,6 +12,13 @@ import torch.utils.data as utils
 from FaSNet import FaSNet_origin, FaSNet_TAC
 from utility_functions import load_model, save_model
 
+'''
+Train out baseline model for the Task 1 of the L3DAS21 challenge.
+The script saves the best model checkpoint as well as a dict containing
+the results (loss and hstory). To evaluate the performance of the trained model
+according to the challenge metrics, please use evaluate_baseline_task1.py.
+'''
+
 def evaluate(model, device, criterion, dataloader):
     model.eval()
     test_loss = 0.

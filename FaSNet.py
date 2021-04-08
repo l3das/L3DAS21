@@ -7,6 +7,9 @@ import numpy as np
 
 from utility_tac.models import *
 
+'''
+from: https://github.com/yluo42/TACz
+'''
 # DPRNN for beamforming filter estimation
 class BF_module(DPRNN_base):
     def __init__(self, *args, **kwargs):
