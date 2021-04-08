@@ -11,7 +11,7 @@ from L3DAS.audio_processing import fft_set
 
 class GinNet(nn.Module):
     def __init__(self, n_frames, lstm_h, num_classes, num_locations):
-        
+
         super(GinNet, self).__init__()
         self.n_frames=n_frames
         self.lstm_h=lstm_h
@@ -33,7 +33,7 @@ class GinNet(nn.Module):
         out_conv3=self.conv3(out_conv2)
 
         gru_input=reshape(out_conv3,(out_conv3.shape[0],out_conv3.shape[1],out_conv3.shape[2]*out_conv3.shape[3]))
-        
+
         gru_out, _ =self.gru(gru_input)
 
         time_distributed_batch_y1 = []
@@ -45,7 +45,7 @@ class GinNet(nn.Module):
             for j in range(self.n_frames):
                 time_distributed_sample_y1.append(self.dense1_y1(gru_out[i][j]))
                 time_distributed_sample_y2.append(self.dense1_y2(gru_out[i][j]))
-            
+
             time_distributed_sample_y1=stack(time_distributed_sample_y1)
             time_distributed_sample_y2=stack(time_distributed_sample_y2)
 
@@ -94,7 +94,7 @@ mark_batch=0
 while(True):
     batch=audio[mark_batch:mark_batch+batch_size]
     y1_pred, y2_pred = model(batch.float())
-    loss_y1 = bc(y1_pred, classes[mark_batch:mark_batch+batch_size].float()) 
+    loss_y1 = bc(y1_pred, classes[mark_batch:mark_batch+batch_size].float())
     loss_y2 = mse(y2_pred, location[mark_batch:mark_batch+batch_size].float())
     loss = loss_y1 + loss_y2
     print("Epoch: %2d   Timestep: %3d   Classification Loss: %5.5f   Localization Loss: %5.5f   Total Loss: %5.5f" %(current_epoch, step,loss_y1,loss_y2,loss))

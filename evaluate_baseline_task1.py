@@ -11,9 +11,10 @@ from FaSNet import FaSNet_origin
 from utility_functions import load_model, save_model
 
 '''
-Load pretrained FasNet model and compute the metric for
+Load a pretrained FasNet/TAC model and compute the metric for
 the Task 1 of the L3DAS21 challenge.
-The metric is: (STOI+(1-WER))/2
+he metric is: (STOI+(1-WER))/2
+The script visualized and saves a dict with the obtained results.
 '''
 
 

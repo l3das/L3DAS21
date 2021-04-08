@@ -1,11 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
 import os
 import numpy as np
-
 from utility_tac.models import *
+
+'''
+from: https://github.com/yluo42/TACz
+'''
 
 # DPRNN for beamforming filter estimation
 class BF_module(DPRNN_base):
@@ -337,10 +339,10 @@ def test_model(model):
 
 if __name__ == "__main__":
     model_origin = FaSNet_origin(enc_dim=64, feature_dim=64, hidden_dim=128, layer=6, segment_size=50,
-                                 nspk=2, win_len=4, context_len=16, sr=16000)
+                                 nspk=1, win_len=4, context_len=16, sr=16000)
 
     model_TAC = FaSNet_TAC(enc_dim=64, feature_dim=64, hidden_dim=128, layer=4, segment_size=50,
-                           nspk=2, win_len=4, context_len=16, sr=16000)
+                           nspk=1, win_len=4, context_len=16, sr=16000)
 
     test_model(model_origin)
     test_model(model_TAC)

@@ -10,6 +10,10 @@ import sys, os
 wer_tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h");
 wer_model = Wav2Vec2ForMaskedLM.from_pretrained("facebook/wav2vec2-base-960h");
 
+'''
+Functions to compute the metrics for the 2 tasks of the L3DAS21 challenge.
+'''
+
 #TASK 1 METRICS
 
 def wer(clean_speech, denoised_speech):
