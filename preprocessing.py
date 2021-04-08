@@ -22,7 +22,7 @@ def preprocessing_task1(args):
 
     target output: monoaural clean speech waveforms
                    Matrix shape: -x: data points
-                                 -1: it's monoaural 
+                                 -1: it's monoaural
                                  -signal samples
 
     '''
@@ -58,20 +58,21 @@ def preprocessing_task1(args):
                     sound_path = os.path.join(data_path, sound)
                     target_path = sound_path.replace('data', 'labels').replace('_A', '')
                     samples, sr = librosa.load(sound_path, sr_task1, mono=False)
-                    samples = pad(samples)
+                    #samples = pad(samples)
                     if args.num_mics == 2:  # if both ambisonics mics are wanted
                         #stack the additional 4 channels to get a (8, samples) shape
                         B_sound_path = sound_path.replace('A', 'B')
                         samples_B, sr = librosa.load(B_sound_path, sr_task1, mono=False)
-                        samples_B = pad(samples_B)
+                        #samples_B = pad(samples_B)
                         samples = np.vstack((samples,samples_B))
                     samples_target, sr = librosa.load(target_path, sr_task1, mono=False)
                     samples_target = samples_target.reshape((1, samples_target.shape[0]))
-                    samples_target = pad(samples_target)
+                    #samples_target = pad(samples_target)
                     #append to final arrays
 
                     if args.segmentation_len is not None:
                         #segment longer file to shorter frames
+                        #not padding if segmenting to avoid silence frames
                         segmentation_len_samps = int(sr_task1 * args.segmentation_len)
                         predictors_cuts, target_cuts = segment_waveforms(samples, samples_target, segmentation_len_samps)
                         for i in range(len(predictors_cuts)):
@@ -79,6 +80,8 @@ def preprocessing_task1(args):
                             target.append(target_cuts[i])
                             #print (predictors_cuts[i].shape, target_cuts[i].shape)
                     else:
+                        samples = pad(samples)
+                        samples_target = pad(samples_target)
                         predictors.append(samples)
                         target.append(samples_target)
                     count += 1
@@ -130,6 +133,14 @@ def preprocessing_task1(args):
     with open(os.path.join(args.output_path,'task1_target_test.pkl'), 'wb') as f:
         pickle.dump(target_test, f)
 
+    if args.segmentation_len is not None:
+        #if segmenting, generate also a test set matrix without segmenting, just for the evaluation
+        args.segmentation_len = None
+        predictors_test_uncut, target_test_uncut = process_folder('L3DAS_Task1_dev', args)
+        with open(os.path.join(args.output_path,'task1_predictors_test_uncut.pkl'), 'wb') as f:
+            pickle.dump(predictors_test_uncut, f)
+        with open(os.path.join(args.output_path,'task1_target_test_uncut.pkl'), 'wb') as f:
+            pickle.dump(target_test_uncut, f)
 
 def preprocessing_task2(args):
     '''
