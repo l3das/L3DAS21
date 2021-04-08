@@ -220,9 +220,9 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL_TAC',
+    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_nspk1',
                         help='Folder to write results dicts into')
-    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/fasnet_fulltrain100_REAL_TAC',
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/fasnet_fulltrain100_nspk1',
                         help='Folder to write checkpoints into')
     #dataset parameters
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1_100/task1_predictors_train.pkl')
@@ -263,7 +263,7 @@ if __name__ == '__main__':
     parser.add_argument('--hidden_dim', type=int, default=128)
     parser.add_argument('--layer', type=int, default=6)
     parser.add_argument('--segment_size', type=int, default=24)
-    parser.add_argument('--nspk', type=int, default=2)
+    parser.add_argument('--nspk', type=int, default=1)
     parser.add_argument('--win_len', type=int, default=16)
     parser.add_argument('--context_len', type=int, default=16)
 
