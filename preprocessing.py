@@ -136,7 +136,9 @@ def preprocessing_task1(args):
     if args.segmentation_len is not None:
         #if segmenting, generate also a test set matrix without segmenting, just for the evaluation
         args.segmentation_len = None
+        print ('processing uncut test set')
         predictors_test_uncut, target_test_uncut = process_folder('L3DAS_Task1_dev', args)
+        print ('Saving files')
         with open(os.path.join(args.output_path,'task1_predictors_test_uncut.pkl'), 'wb') as f:
             pickle.dump(predictors_test_uncut, f)
         with open(os.path.join(args.output_path,'task1_target_test_uncut.pkl'), 'wb') as f:
