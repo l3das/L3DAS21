@@ -11,10 +11,9 @@ from FaSNet import FaSNet_origin
 from utility_functions import load_model, save_model
 
 '''
-Load a pretrained FasNet/TAC model and compute the metric for
+Load pretrained FasNet model and compute the metric for
 the Task 1 of the L3DAS21 challenge.
-he metric is: (STOI+(1-WER))/2
-The script visualized and saves a dict with the obtained results.
+The metric is: (STOI+(1-WER))/2
 '''
 
 
@@ -60,8 +59,8 @@ def enhance_sound(predictors, model, device, length, overlap):
         #compute model's output here
         cut_x = cut_x.to(device)
         predicted_x = model(cut_x, torch.tensor([0.]))
-        predicted_x = predicted_x[:,0,:].cpu().numpy()
-
+        #predicted_x = predicted_x[:,0,:].cpu().numpy()
+        predicted_x = predicted_x.cpu().numpy()
         #reconstruct sound crossfading segments
         if i == 0:
             recon = predicted_x
@@ -124,13 +123,8 @@ def main(args):
     model.eval()
     with tqdm(total=len(dataloader) // 1) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
-            target = target.to(device)
-            x = x.to(device)
 
-            outputs = model(x, torch.tensor([0.]))
-
-            outputs = outputs[:,0,:].cpu().numpy()
-            target = target.cpu().numpy()
+            outputs = enhance_sound(x, model, device, args.segment_length, args.segment_overlap)
 
             outputs = np.squeeze(outputs)
             target = np.squeeze(target)
@@ -173,9 +167,12 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL/checkpoint')
     parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL/metrics')
     #dataset parameters
-    parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task1_predictors_test_uncut.pkl')
-    parser.add_argument('--target_path', type=str, default='DATASETS/processed/task1_target_test_uncut.pkl')
+    parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task1_mini/task1_predictors_test.pkl')
+    parser.add_argument('--target_path', type=str, default='DATASETS/processed/task1_mini/task1_target_test.pkl')
     parser.add_argument('--sr', type=int, default=16000)
+    #reconstruction parameters
+    parser.add_argument('--segment_length', type=int, default=32000)
+    parser.add_argument('--segment_overlap', type=float, default=0.5)
     #model parameters
     parser.add_argument('--gpu_id', type=int, default=0)
     parser.add_argument('--use_cuda', type=str, default='True')
