@@ -94,7 +94,7 @@ def main(args):
                               segment_size=args.segment_size, nspk=args.nspk,
                               win_len=args.win_len, context_len=args.context_len,
                               sr=args.sr)
-    elif args.architecture = 'tac':
+    elif args.architecture == 'tac':
         model = FaSNet_TAC(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
                               hidden_dim=args.hidden_dim, layer=args.layer,
                               segment_size=args.segment_size, nspk=args.nspk,
