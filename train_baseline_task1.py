@@ -211,7 +211,8 @@ def main(args):
 
     print ('RESULTS')
     for i in results:
-        print (i, results[i])
+        if 'hist' not in i:
+            print (i, results[i])
     out_path = os.path.join(args.results_path, 'results_dict.json')
     np.save(out_path, results)
     #writer.add_scalar("test_loss", test_loss, state["step"])
