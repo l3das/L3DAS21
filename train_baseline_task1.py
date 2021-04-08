@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 from torch.optim import Adam
 import torch.utils.data as utils
-from FaSNet import FaSNet_origin
+from FaSNet import FaSNet_origin, FaSNet_TAC
 from utility_functions import load_model, save_model
 
 def evaluate(model, device, criterion, dataloader):
@@ -88,11 +88,18 @@ def main(args):
     test_data = utils.DataLoader(test_dataset, args.batch_size, shuffle=False, pin_memory=True)
 
     #LOAD MODEL
-    model = FaSNet_origin(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
-                          hidden_dim=args.hidden_dim, layer=args.layer,
-                          segment_size=args.segment_size, nspk=args.nspk,
-                          win_len=args.win_len, context_len=args.context_len,
-                          sr=args.sr)
+    if args.architecture == 'fasnet':
+        model = FaSNet_origin(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
+                              hidden_dim=args.hidden_dim, layer=args.layer,
+                              segment_size=args.segment_size, nspk=args.nspk,
+                              win_len=args.win_len, context_len=args.context_len,
+                              sr=args.sr)
+    elif args.architecture = 'tac':
+        model = FaSNet_TAC(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
+                              hidden_dim=args.hidden_dim, layer=args.layer,
+                              segment_size=args.segment_size, nspk=args.nspk,
+                              win_len=args.win_len, context_len=args.context_len,
+                              sr=args.sr)
 
     if args.use_cuda:
         print("move model to gpu")
@@ -205,9 +212,9 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL',
+    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_REAL_TAC',
                         help='Folder to write results dicts into')
-    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/fasnet_fulltrain100_REAL',
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/fasnet_fulltrain100_REAL_TAC',
                         help='Folder to write checkpoints into')
     #dataset parameters
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1_100/task1_predictors_train.pkl')
@@ -241,6 +248,8 @@ if __name__ == '__main__':
     parser.add_argument('--loss', type=str, default="L2",
                         help="L1 or L2")
     #model parameters
+    parser.add_argument('--architecture', type=string, default='fasnet',
+                        help="can be fasnet or tac"))
     parser.add_argument('--enc_dim', type=int, default=64)
     parser.add_argument('--feature_dim', type=int, default=64)
     parser.add_argument('--hidden_dim', type=int, default=128)
