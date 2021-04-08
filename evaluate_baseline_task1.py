@@ -115,7 +115,7 @@ def main(args):
                               win_len=args.win_len, context_len=args.context_len,
                               sr=args.sr)
     if args.use_cuda:
-        print("move model to gpu")
+        print("Moving model to gpu")
     model = model.to(device)
 
     #load checkpoint

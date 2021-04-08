@@ -109,7 +109,7 @@ def main(args):
                               sr=args.sr)
 
     if args.use_cuda:
-        print("move model to gpu")
+        print("Moving model to gpu")
     model = model.to(device)
 
     #compute number of parameters
