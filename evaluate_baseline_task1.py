@@ -162,8 +162,8 @@ def main(args):
                         print ('metric: ', metric, 'wer: ', wer, 'stoi: ', stoi)
             else:
                 print ('No voice activity on this frame')
-            pbar.set_description('AVERAGE METRICS: task1_metric: ' +  str(METRIC) +
-                                 'wer: ' + str(WER) + 'stoi: ' + str(STOI))
+            pbar.set_description('AVERAGE METRICS: task1_metric: ' +  str(np.round(METRIC),decimals=3) +
+                                 'wer: ' + str(np.round(WER),decimals=3)) + 'stoi: ' + str(np.round(STOI),decimals=3)))
             pbar.update(1)
             count += 1
 
