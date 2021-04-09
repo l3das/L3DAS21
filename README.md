@@ -20,10 +20,10 @@ The script **download_dataset.py** is aimed at the dataset download.
 To download all dataset folders run:
 ```bash
 python3 download_dataset.py --task Task1 --set_type train100 --output_path DATASETS/Task1
-python3 download_dataset.py --task Task1 --set_type train360 output_path DATASETS/Task1
-python3 download_dataset.py --task Task1 --set_type dev output_path DATASETS/Task1
-python3 download_dataset.py --task Task2 --set_type train output_path DATASETS/Task2
-python3 download_dataset.py --task Task2 --set_type dev output_path DATASETS/Task2
+python3 download_dataset.py --task Task1 --set_type train360 --output_path DATASETS/Task1
+python3 download_dataset.py --task Task1 --set_type dev --output_path DATASETS/Task1
+python3 download_dataset.py --task Task2 --set_type train --output_path DATASETS/Task2
+python3 download_dataset.py --task Task2 --set_type dev --output_path DATASETS/Task2
 ```
 These scripts automatically extract the archives and delete the zip files.
 
