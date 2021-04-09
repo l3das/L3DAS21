@@ -134,39 +134,40 @@ def main(args):
     METRIC = 0.
     count = 0
     model.eval()
-    with tqdm(total=len(dataloader) // 1, leave=False) as pbar, torch.no_grad():
-        for example_num, (x, target) in enumerate(dataloader):
+    with tqdm(total=len(dataloader) // 1) as pbar, torch.no_grad():
+        with tqdm(total=len(dataloader) // 1) as pbar2:
+            for example_num, (x, target) in enumerate(dataloader):
 
-            outputs = enhance_sound(x, model, device, args.segment_length, args.segment_overlap)
+                outputs = enhance_sound(x, model, device, args.segment_length, args.segment_overlap)
 
-            outputs = np.squeeze(outputs)
-            target = np.squeeze(target)
+                outputs = np.squeeze(outputs)
+                target = np.squeeze(target)
 
-            outputs = outputs / np.max(outputs) * 0.9  #normalize prediction
-            metric, wer, stoi = task1_metric(target, outputs)
+                outputs = outputs / np.max(outputs) * 0.9  #normalize prediction
+                metric, wer, stoi = task1_metric(target, outputs)
 
-            if metric is not None:
+                if metric is not None:
 
-                METRIC += (1. / float(example_num + 1)) * (metric - METRIC)
-                WER += (1. / float(example_num + 1)) * (wer - WER)
-                STOI += (1. / float(example_num + 1)) * (stoi - STOI)
+                    METRIC += (1. / float(example_num + 1)) * (metric - METRIC)
+                    WER += (1. / float(example_num + 1)) * (wer - WER)
+                    STOI += (1. / float(example_num + 1)) * (stoi - STOI)
 
-                #save sounds
-                if args.save_sounds_freq is not None:
-                    sounds_dir = os.path.join(args.results_path, 'sounds')
-                    if not os.path.exists(sounds_dir):
-                        os.makedirs(sounds_dir)
+                    #save sounds
+                    if args.save_sounds_freq is not None:
+                        sounds_dir = os.path.join(args.results_path, 'sounds')
+                        if not os.path.exists(sounds_dir):
+                            os.makedirs(sounds_dir)
 
-                    if count % args.save_sounds_freq == 0:
-                        sf.write(os.path.join(sounds_dir, str(example_num)+'.wav'), outputs, 16000, 'PCM_16')
-                        print ('metric: ', metric, 'wer: ', wer, 'stoi: ', stoi)
-            else:
-                print ('No voice activity on this frame')
-            print ('\r', '\nAVERAGE METRICS: task1_metric: ' +  str(np.round(METRIC,decimals=3)) +
-                   ', WER: ' + str(np.round(WER,decimals=3)) + ', STOI: ' + str(np.round(STOI,decimals=3)), end='')
-            pbar.set_description('Progress: ')
-            pbar.update(1)
-            count += 1
+                        if count % args.save_sounds_freq == 0:
+                            sf.write(os.path.join(sounds_dir, str(example_num)+'.wav'), outputs, 16000, 'PCM_16')
+                            print ('metric: ', metric, 'wer: ', wer, 'stoi: ', stoi)
+                else:
+                    print ('No voice activity on this frame')
+                pbar2.write(\nAVERAGE METRICS: task1_metric: ' +  str(np.round(METRIC,decimals=3)) +
+                       ', WER: ' + str(np.round(WER,decimals=3)) + ', STOI: ' + str(np.round(STOI,decimals=3)))
+                pbar.set_description('Progress: ')
+                pbar.update(1)
+                count += 1
 
 
     #visualize and save results
