@@ -68,7 +68,7 @@ python3 evaluate_baseline_task2.py
 ```
 ## Evaluaton metrics
 Our evaluation metrics for both tasks are included in the **metrics.py** script.
-TO BE CONTINUED...
+TO BE CONTINUED..
 
 ## Submission shape validation
 The file **validate_submission.py** provides functions to assess wether the files to be submitted for the 2 tasks have the correct naming, format, and shape.
