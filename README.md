@@ -66,7 +66,7 @@ To compute the challenge metrics for each task using the trained models run:
 python3 evaluate_baseline_task1.py
 python3 evaluate_baseline_task2.py
 ```
-## Evaluate your own results
+## Evaluaton metrics
 Our evaluation metrics for both tasks are included in the **metrics.py** script.
 TO BE CONTINUED...
 
