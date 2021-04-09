@@ -192,7 +192,7 @@ if __name__ == '__main__':
     #i/o parameters
     parser.add_argument('--model_path', type=str, default='RESULTS/Task1/checkpoint')
     parser.add_argument('--results_path', type=str, default='RESULTS/Task1/metrics')
-    parser.add_argument('--save_sounds_freq', type=int, default=None')
+    parser.add_argument('--save_sounds_freq', type=int, default=None)
 
     #dataset parameters
     parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task1_predictors_test_uncut.pkl')
