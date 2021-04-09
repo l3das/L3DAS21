@@ -152,9 +152,15 @@ def main(args):
                 STOI += (1. / float(example_num + 1)) * (stoi - STOI)
 
                 #save sounds
-                if count % 1 == 0:
-                    sf.write(os.path.join(args.results_path, str(example_num)+'.wav'), outputs, 16000, 'PCM_16')
-                    print ('metric: ', metric, 'wer: ', wer, 'stoi: ', stoi)
+                if args.save_sounds_freq is not None:
+                    sounds_dir = os.path.join(args.results_path, 'sounds')
+                    if not os.path.exists(sounds_dir):
+                        os.makedirs(sounds_dir)
+
+                    if count % args.save_sounds_freq == 0:
+                        sf.write(os.path.join(sounds_dir, str(example_num)+'.wav'), outputs, 16000, 'PCM_16')
+                        pbar.set_description('AVERAGE METRICS: task1_metric: ', METRIC, 'wer: ', WER, 'stoi: ', STOI)
+                        print ('metric: ', metric, 'wer: ', wer, 'stoi: ', stoi)
             else:
                 print ('No voice activity on this frame')
 
@@ -174,11 +180,20 @@ def main(args):
     out_path = os.path.join(args.results_path, 'task1_metrics_dict.json')
     np.save(out_path, results)
 
+    '''
+    baseline results
+    word error rate 0.4957875215172642
+    stoi 0.7070443256051635
+    task 1 metric 0.6056284020439507
+    '''
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #i/o parameters
-    parser.add_argument('--model_path', type=str, default='RESULTS/fasnet_fulltrain100_nspk1/checkpoint')
-    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_nspk1/metrics_provvisorio')
+    parser.add_argument('--model_path', type=str, default='RESULTS/Task1/checkpoint')
+    parser.add_argument('--results_path', type=str, default='RESULTS/Task1/metrics')
+    parser.add_argument('--save_sounds_freq', type=int, default=None')
+
     #dataset parameters
     parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task1_predictors_test_uncut.pkl')
     parser.add_argument('--target_path', type=str, default='DATASETS/processed/task1_target_test_uncut.pkl')
