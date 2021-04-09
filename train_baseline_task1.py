@@ -20,16 +20,15 @@ according to the challenge metrics, please use evaluate_baseline_task1.py.
 '''
 
 def evaluate(model, device, criterion, dataloader):
+    #compute loss without backprop
     model.eval()
     test_loss = 0.
     with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
-            #x, target = dyn_pad(x, target)
             target = target.to(device)
             x = x.to(device)
             outputs = model(x, torch.tensor([0.]))
             loss = criterion(outputs, target)
-            #loss = criterion(outputs[:,0,:], target)
             test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
             pbar.set_description("Current loss: {:.4f}".format(test_loss))
             pbar.update(1)
@@ -124,9 +123,7 @@ def main(args):
     else:
         raise NotImplementedError("Couldn't find this loss!")
 
-    #criterion = batch_SDR_torch
-
-    #set up optimiser
+    #set up optimizer
     optimizer = Adam(params=model.parameters(), lr=args.lr)
 
     #set up training state dict that will also be saved into checkpoints
@@ -135,12 +132,12 @@ def main(args):
              "epochs" : 0,
              "best_loss" : np.Inf}
 
-    # LOAD MODEL CHECKPOINT IF DESIRED
+    #load model checkpoint if desired
     if args.load_model is not None:
         print("Continuing training full model from checkpoint " + str(args.load_model))
         state = load_model(model, optimizer, args.load_model, args.use_cuda)
 
-
+    #TRAIN MODEL
     print('TRAINING START')
     train_loss_hist = []
     val_loss_hist = []
@@ -151,7 +148,6 @@ def main(args):
         train_loss = 0.
         with tqdm(total=len(tr_dataset) // args.batch_size) as pbar:
             for example_num, (x, target) in enumerate(tr_data):
-                #x, target = dyn_pad(x, target)
                 target = target.to(device)
                 x = x.to(device)
                 t = time.time()
@@ -159,8 +155,8 @@ def main(args):
                 optimizer.zero_grad()
                 outputs = model(x, torch.tensor([0.]))
                 loss = criterion(outputs, target)
-                #loss = criterion(outputs[:,0,:], target)
                 loss.backward()
+
                 train_loss += (1. / float(example_num + 1)) * (loss - train_loss)
                 optimizer.step()
                 state["step"] += 1
@@ -174,7 +170,6 @@ def main(args):
             print("VALIDATION FINISHED: LOSS: " + str(val_loss))
 
             # EARLY STOPPING CHECK
-            #checkpoint_path = os.path.join(args.checkpoint_dir, "checkpoint_" + str(state["step"]))
             checkpoint_path = os.path.join(args.checkpoint_dir, "checkpoint")
 
             if val_loss >= state["best_loss"]:
@@ -194,7 +189,7 @@ def main(args):
             train_loss_hist.append(train_loss.cpu().detach().numpy())
             val_loss_hist.append(val_loss.cpu().detach().numpy())
 
-    #### TESTING ####
+    #LOAD BEST MODEL AND COMPUTE LOSS FOR ALL SETS
     print("TESTING")
     # Load best model based on validation loss
     state = load_model(model, None, state["best_checkpoint"], args.use_cuda)
@@ -203,6 +198,7 @@ def main(args):
     val_loss = evaluate(model, device, criterion, val_data)
     test_loss = evaluate(model, device, criterion, test_data)
 
+    #PRINT AND SAVE RESULTS
     results = {'train_loss': train_loss.cpu().detach().numpy(),
                'val_loss': val_loss.cpu().detach().numpy(),
                'test_loss': test_loss.cpu().detach().numpy(),
@@ -215,7 +211,6 @@ def main(args):
             print (i, results[i])
     out_path = os.path.join(args.results_path, 'results_dict.json')
     np.save(out_path, results)
-    #writer.add_scalar("test_loss", test_loss, state["step"])
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
