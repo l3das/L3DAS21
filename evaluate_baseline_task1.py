@@ -45,6 +45,7 @@ def enhance_sound(predictors, model, device, length, overlap):
 
     overlap_len = int(length*overlap)  #in samples
     total_len = predictors.shape[-1]
+    print ('t ', total_len, ' ol ', overlap_len)
     starts = np.arange(0,total_len, overlap_len)  #points to cut
     #iterate the sliding frames
     for i in range(len(starts)):
