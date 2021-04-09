@@ -251,7 +251,7 @@ if __name__ == '__main__':
                         help="Batch size")
     parser.add_argument('--sr', type=int, default=16000,
                         help="Sampling rate")
-    parser.add_argument('--patience', type=int, default=20,
+    parser.add_argument('--patience', type=int, default=15,
                         help="Patience for early stopping on validation set")
     parser.add_argument('--loss', type=str, default="L2",
                         help="L1 or L2")
