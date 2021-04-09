@@ -14,7 +14,7 @@ To install all Python dependencies run:
 ```bash
 pip install -r requirements.txt
 ```
-## Dataset Download
+## Dataset download
 The script **download_dataset.py** is aimed at the dataset download.
 
 To download all dataset folders run:
