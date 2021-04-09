@@ -54,8 +54,10 @@ def enhance_sound(predictors, model, device, length, overlap):
             cut_x = predictors[:,start:end]
         else:
             #zeropad the last frame
+            '''
             end = total_len
             cut_x = pad(predictors[:,start:end], length)
+            '''
 
         #compute model's output here
         cut_x = cut_x.to(device)
