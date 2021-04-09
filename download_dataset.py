@@ -26,10 +26,6 @@ def extract_dataset(task, set_type,output_path):
             zip_ref.extractall(os.getcwd()+os.sep+output_path)
         print("Done")
         os.remove(os.getcwd()+os.sep+"L3DAS_"+task+'_'+set_type+'.zip')
-        #if not os.path.isdir(os.getcwd()+os.sep+"L3DAS"+os.sep+"DATASETS"+os.sep+task):
-        #    os.mkdir(os.getcwd()+os.sep+"L3DAS"+os.sep+"DATASETS"+os.sep+task)
-        os.rename(os.getcwd()+os.sep+output_path+os.sep+'L3DAS_'+task+'_'+set_type,
-                  os.getcwd()+os.sep+output_path+os.sep+task+set_type)
 
 
 if __name__ == '__main__':
