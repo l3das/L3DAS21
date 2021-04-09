@@ -66,11 +66,10 @@ To compute the challenge metrics for each task using the trained models run:
 python3 evaluate_baseline_task1.py
 python3 evaluate_baseline_task2.py
 ```
+## Evaluate your own results
+Our evaluation metrics for both tasks are included in the **metrics.py** script.
+TO BE CONTINUED...
 
 ## Submission shape validation
 The file **validate_submission.py** provides functions to assess wether the files to be submitted for the 2 tasks have the correct naming, format, and shape.
 TO BE CONTINUED...
-
-
-## Evaluate your own results
-Our evaluation metrics for both tasks are included in the **metrics.py** script.
