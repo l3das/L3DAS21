@@ -58,6 +58,7 @@ def enhance_sound(predictors, model, device, length, overlap):
 
         #compute model's output here
         cut_x = cut_x.to(device)
+        print (cut_x.shape)
         predicted_x = model(cut_x, torch.tensor([0.]))
         #predicted_x = predicted_x[:,0,:].cpu().numpy()
         predicted_x = predicted_x.cpu().numpy()
