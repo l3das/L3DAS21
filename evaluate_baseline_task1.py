@@ -159,11 +159,10 @@ def main(args):
 
                     if count % args.save_sounds_freq == 0:
                         sf.write(os.path.join(sounds_dir, str(example_num)+'.wav'), outputs, 16000, 'PCM_16')
-                        pbar.set_description('AVERAGE METRICS: task1_metric: ', METRIC, 'wer: ', WER, 'stoi: ', STOI)
                         print ('metric: ', metric, 'wer: ', wer, 'stoi: ', stoi)
             else:
                 print ('No voice activity on this frame')
-
+            pbar.set_description('AVERAGE METRICS: task1_metric: ', METRIC, 'wer: ', WER, 'stoi: ', STOI)
             pbar.update(1)
             count += 1
 
