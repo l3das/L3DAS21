@@ -11,11 +11,10 @@ from FaSNet import FaSNet_origin
 from utility_functions import load_model, save_model
 
 '''
-Load pretrained FasNet model and compute the metric for
-the Task 1 of the L3DAS21 challenge.
+Load pretrained FasNet model and compute the metric for Task 1
+of the L3DAS21 challenge.
 The metric is: (STOI+(1-WER))/2
 '''
-
 
 def enhance_sound(predictors, model, device, length, overlap):
     '''
@@ -45,7 +44,6 @@ def enhance_sound(predictors, model, device, length, overlap):
 
     overlap_len = int(length*overlap)  #in samples
     total_len = predictors.shape[-1]
-    #print ('t ', total_len, ' ol ', overlap_len)
     starts = np.arange(0,total_len, overlap_len)  #points to cut
     #iterate the sliding frames
     for i in range(len(starts)):
@@ -55,18 +53,14 @@ def enhance_sound(predictors, model, device, length, overlap):
             cut_x = predictors[:,:,start:end]
         else:
             #zeropad the last frame
-
             end = total_len
             cut_x = pad(predictors[:,:,start:end], length)
 
-
-        #compute model's output here
+        #compute model's output
         cut_x = cut_x.to(device)
-        #print ('start ', start, 'end ', end)
-        #print (cut_x.shape)
         predicted_x = model(cut_x, torch.tensor([0.]))
-        #predicted_x = predicted_x[:,0,:].cpu().numpy()
         predicted_x = predicted_x.cpu().numpy()
+
         #reconstruct sound crossfading segments
         if i == 0:
             recon = predicted_x
