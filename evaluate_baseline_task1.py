@@ -190,7 +190,7 @@ if __name__ == '__main__':
     parser.add_argument('--hidden_dim', type=int, default=128)
     parser.add_argument('--layer', type=int, default=6)
     parser.add_argument('--segment_size', type=int, default=24)
-    parser.add_argument('--nspk', type=int, default=2)
+    parser.add_argument('--nspk', type=int, default=1)
     parser.add_argument('--win_len', type=int, default=16)
     parser.add_argument('--context_len', type=int, default=16)
 
