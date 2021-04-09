@@ -19,7 +19,8 @@ The metric is: (STOI+(1-WER))/2
 
 def enhance_sound(predictors, model, device, length, overlap):
     '''
-    compute enhanced waveform applying a sliding crossfading window
+    compute enhanced waveform using a trained model,
+    applying a sliding crossfading window
     '''
 
     def pad(x, d):
@@ -58,7 +59,7 @@ def enhance_sound(predictors, model, device, length, overlap):
 
         #compute model's output here
         cut_x = cut_x.to(device)
-        print (cut_x.shape)
+        print ('aaaaaaiudnfoiwenfwief', cut_x.shape)
         predicted_x = model(cut_x, torch.tensor([0.]))
         #predicted_x = predicted_x[:,0,:].cpu().numpy()
         predicted_x = predicted_x.cpu().numpy()
