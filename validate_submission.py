@@ -6,16 +6,16 @@ def validate_task1_submission(submission_folder, test_folder):
     Check if the folder contains all files to be submitted for task 1
     Check if all files have the correct format, shape, naming
     Args:
-    - submission_folder: folder containing the model's output for task 1.
-    - test_folder: folder containing the released test data
+    - submission_folder: folder containing the model's output for task 1 (non zipped).
+    - test_folder: folder containing the released test data (non zipped).
     '''
     #this is just a draft
 
     #read folders and sort them alphabetically
     #contents_submitted = sorted(os.listdir(submission_folder))
     #contents_test = sorted(os.listdir(test_folder))
-    contents_submitted = ['a.npy', 'b.npy']
-    contents_test = [['a.npy', 'b.npy']]
+    contents_submitted = ['a.npy', 'f.npy']
+    contents_test = ['a.npy', 'b.npy']
 
     #check if non.npy files are present
     non_npy = [x for x in contents_submitted if x[-4:] != '.npy']  #non .npy files
@@ -36,11 +36,17 @@ def validate_task1_submission(submission_folder, test_folder):
                                'exactly as its input .waf file, but with .npy extension')
 
     #check shape file-by-file
-    for i in range(contents_test):
+    ###TO BE TESTED
+    for i in contents_test:
         submitted_path = os.path.join(submission_folder, i)
         test_path = os.path.join(test_folder, i)
         s = np.load(submitted_path, allow_pickle=True)
         t = librosa.load(test_path, sr_task1, mono=False)
+        target_shape = t.shape[-1]
+        if not s.shape == target_shape:
+            raise AssertionError ('Wrong shape for :' + str(i) + '. Target: ' + str(target_shape) +
+                                 ', detected:' + str(s.shape))
+
 
 
     print ('Your submission for Task 1 is valid!')
