@@ -29,6 +29,9 @@ These scripts automatically extract the archives and delete the zip files.
 
 Alternatively, it is possible to manually download the dataset from [zenodo](https://zenodo.org/record/4642005#.YGcX-hMzaAx).
 
+To obtain our baseline results for Task 1, do not download the train360 set.
+
+
 ## Pre-processing
 The file **preprocessing.py** provides automated routines that load the raw audio waveforms and their correspondent metadata, apply custom pre-processing functions and save numpy arrays (.pkl files) containing the separate predictors and target matrices.
 
@@ -47,7 +50,6 @@ For **Task2** the function returns 2 numpy arrays contatining:
 * The input multichannel audio spectra (3d acoustic scenarios)
 * The class ids of all sounds present in each data-point and their location coordinates, divided in 100 milliseconds frames.
 
-To obtain our baseline results for Task 1, do not download the train360 set.
 
 
 ## Baseline models
