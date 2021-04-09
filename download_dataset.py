@@ -4,7 +4,9 @@ import wget
 import zipfile
 
 '''
-Download dataset into a user-defined directory
+Download and extract the L3DAS21 dataset into a user-defined directory.
+Command line arguments define which dataset partition to download and where to
+save the unzipped folders.
 '''
 
 def download_l3das_dataset(task, set_type):

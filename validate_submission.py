@@ -1,10 +1,13 @@
 import os, sys
 import numpy as np
+'''
+Check if the the submssion folders are valid: all files must have the
+correct format, shape and naming.
+WORK IN PROGRESS...
+'''
 
 def validate_task1_submission(submission_folder, test_folder):
     '''
-    Check if the folder contains all files to be submitted for task 1
-    Check if all files have the correct format, shape, naming
     Args:
     - submission_folder: folder containing the model's output for task 1 (non zipped).
     - test_folder: folder containing the released test data (non zipped).

@@ -17,6 +17,8 @@ Train our baseline model for the Task1 of the L3DAS21 challenge.
 This script saves the best model checkpoint, as well as a dict containing
 the results (loss and history). To evaluate the performance of the trained model
 according to the challenge metrics, please use evaluate_baseline_task1.py.
+Command line arguments define the model parameters, the dataset to use and
+where to save the obtained results.
 '''
 
 def evaluate(model, device, criterion, dataloader):

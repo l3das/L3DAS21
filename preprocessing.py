@@ -7,7 +7,7 @@ import random
 from utility_functions import get_label_task2, segment_waveforms
 
 '''
-Process the unzipped dataset folders and output numpy matrices (pkl files)
+Process the unzipped dataset folders and output numpy matrices (.pkl files)
 containing the pre-processed data for task1 and task2, separately.
 Separate training, validation and test matrices are saved.
 Command line inputs define which task to process and its parameters.
@@ -261,7 +261,7 @@ if __name__ == '__main__':
     #task1 only parameters
     parser.add_argument('--training_set', type=str, default='train100',
                         help='which training set: train100, train360 or both')
-    parser.add_argument('--segmentation_len', type=float, default=2.,
+    parser.add_argument('--segmentation_len', type=float, default=None,
                         help='length of segmented frames in seconds')
     #task2 only parameters
     parser.add_argument('--frame_len', type=str, default=100,

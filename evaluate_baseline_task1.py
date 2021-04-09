@@ -13,6 +13,8 @@ from utility_functions import load_model, save_model
 '''
 Load pretrained model and compute the metrics for Task 1
 of the L3DAS21 challenge. The metric is: (STOI+(1-WER))/2
+Command line arguments define the model parameters, the dataset to use and
+where to save the obtained results.
 '''
 
 def enhance_sound(predictors, model, device, length, overlap):
@@ -190,7 +192,6 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', type=str, default='RESULTS/Task1/checkpoint')
     parser.add_argument('--results_path', type=str, default='RESULTS/Task1/metrics')
     parser.add_argument('--save_sounds_freq', type=int, default=None)
-
     #dataset parameters
     parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task1_predictors_test_uncut.pkl')
     parser.add_argument('--target_path', type=str, default='DATASETS/processed/task1_target_test_uncut.pkl')
