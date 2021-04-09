@@ -11,14 +11,13 @@ from FaSNet import FaSNet_origin
 from utility_functions import load_model, save_model
 
 '''
-Load pretrained FasNet model and compute the metric for Task 1
-of the L3DAS21 challenge.
-The metric is: (STOI+(1-WER))/2
+Load pretrained model and compute the metrics for Task 1
+of the L3DAS21 challenge. The metric is: (STOI+(1-WER))/2
 '''
 
 def enhance_sound(predictors, model, device, length, overlap):
     '''
-    compute enhanced waveform using a trained model,
+    Compute enhanced waveform using a trained model,
     applying a sliding crossfading window
     '''
 
