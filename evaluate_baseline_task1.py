@@ -167,7 +167,7 @@ def main(args):
             else:
                 print ('No voice activity on this frame')
             pbar.set_description('M:' +  str(np.round(METRIC,decimals=3)) +
-                   ',W:' + str(np.round(WER,decimals=3)) + ', S: ' + str(np.round(STOI,decimals=3)))
+                   ', W:' + str(np.round(WER,decimals=3)) + ', S: ' + str(np.round(STOI,decimals=3)))
             pbar.update(1)
             count += 1
 

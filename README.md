@@ -19,11 +19,11 @@ The script **download_dataset.py** is aimed at the dataset download.
 
 To download all dataset folders run:
 ```bash
-python3 download_dataset.py --task Task1 --set_type train100 --output_path DATASETS/task1
-python3 download_dataset.py --task Task1 --set_type train360 output_path DATASETS/task1
-python3 download_dataset.py --task Task1 --set_type dev output_path DATASETS/task1
-python3 download_dataset.py --task Task2 --set_type train output_path DATASETS/task2
-python3 download_dataset.py --task Task2 --set_type dev output_path DATASETS/task2
+python3 download_dataset.py --task Task1 --set_type train100 --output_path DATASETS/Task1
+python3 download_dataset.py --task Task1 --set_type train360 output_path DATASETS/Task1
+python3 download_dataset.py --task Task1 --set_type dev output_path DATASETS/Task1
+python3 download_dataset.py --task Task2 --set_type train output_path DATASETS/Task2
+python3 download_dataset.py --task Task2 --set_type dev output_path DATASETS/Task2
 ```
 These scripts automatically extract the archives and delete the zip files.
 
@@ -34,7 +34,7 @@ The file **preprocessing.py** provides automated routines that load the raw audi
 
 Run these commands to obtain the matrices needed for our baseline models:
 ```bash
-python3 preprocessing.py --task 1 --input_path DATASETS/Task1 --training_set train100 --processsing_type waveform --num_mics 1 --segmentation_len 2.
+python3 preprocessing.py --task 1 --input_path DATASETS/Task1 --training_set train100 --processsing_type waveform --num_mics 1 --segmentation_len 2
 python3 preprocessing.py --task 2 --input_path DATASETS/Task2 --processsing_type stft --num_mics 1 --frame_len 100
 
 ```
