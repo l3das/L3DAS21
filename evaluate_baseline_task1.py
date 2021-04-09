@@ -25,8 +25,8 @@ def enhance_sound(predictors, model, device, length, overlap):
 
     def pad(x, d):
         #zeropad to desired length
-        pad = np.zeros((x.shape[0], d))
-        pad[:,:x.shape[-1]] = x
+        pad = np.zeros((x.shape[0], x.shape[1], d))
+        pad[:,:,:x.shape[-1]] = x
         return pad
 
     def xfade(x1, x2, fade_samps, exp=1.):
@@ -36,11 +36,11 @@ def enhance_sound(predictors, model, device, length, overlap):
         fadeout = np.arange(fade_samps, 0, -1) / fade_samps
         fade_in = fadein * exp
         fade_out = fadeout * exp
-        x1[:,-fade_samps:] = x1[:,-fade_samps:] * fadeout
-        x2[:,:fade_samps] = x2[:,:fade_samps] * fadein
-        left = x1[:,:-fade_samps]
-        center = x1[:,-fade_samps:] + x2[:,:fade_samps]
-        end = x2[:,fade_samps:]
+        x1[:,:,-fade_samps:] = x1[:,:,-fade_samps:] * fadeout
+        x2[:,:,:fade_samps] = x2[:,:,:fade_samps] * fadein
+        left = x1[:,:,:-fade_samps]
+        center = x1[:,:,-fade_samps:] + x2[:,:,:fade_samps]
+        end = x2[:,:,fade_samps:]
         return np.concatenate((left,center,end), axis=-1)
 
     overlap_len = int(length*overlap)  #in samples
@@ -52,12 +52,12 @@ def enhance_sound(predictors, model, device, length, overlap):
         start = starts[i]
         end = starts[i] + length
         if end < total_len:
-            cut_x = predictors[:,start:end]
+            cut_x = predictors[:,:,start:end]
         else:
             #zeropad the last frame
 
             end = total_len
-            cut_x = pad(predictors[:,start:end], length)
+            cut_x = pad(predictors[:,:,start:end], length)
 
 
         #compute model's output here
