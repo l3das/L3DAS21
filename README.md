@@ -46,12 +46,12 @@ For **Task1** the function returns 2 numpy arrays contatining:
 * The output monoaural audio waveforms (clean speech)
 
 For **Task2** the function returns 2 numpy arrays contatining:
-* The input multichannel audio spectra(3d acoustic scenarios)
+* The input multichannel audio spectra (3d acoustic scenarios)
 * The class ids of all sounds present in each data-point and their location coordinates, divided in 100 milliseconds frames.
 
 
 ## Baseline models
-We provide baseline models for both tasks, implemented in Pytorch. For task 1 we use an ambisonics-augmented wave-u-net and for task 2 a SELDNet architecture. Please refer to the challenge paper [link] for detailed information about our models.
+We provide baseline models for both tasks, implemented in PyTorch. For task 1 we use a Filter and Sum (FaSNet) architecture and for task 2 a SELDNet architecture. Please refer to the challenge paper [link] for additional information about our models.
 
 To train our baseline models with the default arguments run:
 ```bash
@@ -59,7 +59,7 @@ python3 train_baseline_task1.py
 python3 train_baseline_task2.py
 ```
 
-GPU is strongly recommended to avoid very long training.
+GPU is strongly recommended to avoid very long training times.
 
 To compute the challenge metrics for each task using the trained models run:
 ```bash
@@ -67,4 +67,6 @@ python3 evaluate_baseline_task1.py
 python3 evaluate_baseline_task2.py
 ```
 
-## Useful features
+## Submission validation
+The file **validate_submission.py** provides functions to assess wether the files to be submitted for the 2 tasks have the correct naming, format, and shape.
+TO BE CONTINUED...
