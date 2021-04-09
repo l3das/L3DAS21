@@ -62,8 +62,8 @@ def enhance_sound(predictors, model, device, length, overlap):
 
         #compute model's output here
         cut_x = cut_x.to(device)
-        print ('start ', start, 'end ', end)
-        print ('aaaaaaiudnfoiwenfwief', cut_x.shape)
+        #print ('start ', start, 'end ', end)
+        #print (cut_x.shape)
         predicted_x = model(cut_x, torch.tensor([0.]))
         #predicted_x = predicted_x[:,0,:].cpu().numpy()
         predicted_x = predicted_x.cpu().numpy()
@@ -74,7 +74,7 @@ def enhance_sound(predictors, model, device, length, overlap):
             recon = xfade(recon, predicted_x, overlap_len)
 
     #undo final pad
-    recon = recon[:,:total_len]
+    recon = recon[:,:,:total_len]
 
     return recon
 
