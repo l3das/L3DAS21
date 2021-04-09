@@ -25,7 +25,7 @@ def enhance_sound(predictors, model, device, length, overlap):
 
     def pad(x, d):
         #zeropad to desired length
-        pad = np.zeros((x.shape[0], x.shape[1], d))
+        pad = torch.zeros((x.shape[0], x.shape[1], d))
         pad[:,:,:x.shape[-1]] = x
         return pad
 
