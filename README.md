@@ -36,9 +36,9 @@ Run these commands to obtain the matrices needed for our baseline models:
 ```bash
 python3 preprocessing.py --task 1 --input_path DATASETS/Task1 --training_set train100 --processsing_type waveform --num_mics 1 --segmentation_len 2
 python3 preprocessing.py --task 2 --input_path DATASETS/Task2 --processsing_type stft --num_mics 1 --frame_len 100
-
 ```
 
+To obtain our baseline results for Task 1, do not download the train3600 set.
 The two tasks of the challenge require different pre-processing.
 
 For **Task1** the function returns 2 numpy arrays contatining:
