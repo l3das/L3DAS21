@@ -134,7 +134,7 @@ def main(args):
     METRIC = 0.
     count = 0
     model.eval()
-    with tqdm(total=len(dataloader) // 1) as pbar, torch.no_grad():
+    with tqdm(total=len(dataloader) // 1, leave=True, position=0) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
 
             outputs = enhance_sound(x, model, device, args.segment_length, args.segment_overlap)
