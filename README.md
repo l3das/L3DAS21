@@ -75,3 +75,4 @@ TO BE CONTINUED..
 ## Submission shape validation
 The file **validate_submission.py** provides functions to assess wether the files to be submitted for the 2 tasks have the correct naming, format, and shape.
 TO BE CONTINUED... 
+
