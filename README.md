@@ -29,7 +29,7 @@ These scripts automatically extract the archives and delete the zip files.
 
 Alternatively, it is possible to manually download the dataset from [zenodo](https://zenodo.org/record/4642005#.YGcX-hMzaAx).
 
-To obtain our baseline results for Task 1, do not download the train360 set.
+To obtain our baseline results for Task 1, do not download the train360 set. 
 
 
 ## Pre-processing
