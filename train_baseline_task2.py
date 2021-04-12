@@ -256,6 +256,9 @@ if __name__ == '__main__':
     parser.add_argument('--loss', type=str, default="L2",
                         help="L1 or L2")
     #model parameters
+    parser.architecture('--architecture', type=str, default='vgg16',
+                        help="model's architecture")
+
     parser.add_argument('--input_channels', type=int, default=4,
                         help="4 for 1-mic or 8 for 2-mics configuration")
 
