@@ -3,7 +3,7 @@ This repository supports the L3DAS21 challenge and is aimed at downloading the d
 We provide easy-to-use instruction to produce the results included in our paper.
 Moreover, we extensively commented our code for easy customization.
 
-For further information please refer to the challenge [website](https://sites.google.com/uniroma1.it/l3das/home?authuser=0).
+For further information please refer to the challenge [website](https://www.l3das.com/mlsp2021/index.html).
 
 
 
@@ -27,7 +27,7 @@ python3 download_dataset.py --task Task2 --set_type dev --output_path DATASETS/T
 ```
 These scripts automatically extract the archives and delete the zip files.
 
-Alternatively, it is possible to manually download the dataset from [zenodo](https://zenodo.org/record/4642005#.YGcX-hMzaAx).
+Alternatively, it is possible to manually download the dataset from [Zenodo](https://doi.org/10.5281/zenodo.4642005).
 
 To obtain our baseline results for Task 1, do not download the train360 set.
 
