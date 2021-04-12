@@ -95,6 +95,7 @@ def main(args):
     val_data = utils.DataLoader(val_dataset, args.batch_size, shuffle=False, pin_memory=True)
     test_data = utils.DataLoader(test_dataset, args.batch_size, shuffle=False, pin_memory=True)
 
+    sys.exit(0)
     #LOAD MODEL
     if args.architecture == 'fasnet':
         model = FaSNet_origin(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
@@ -230,12 +231,12 @@ if __name__ == '__main__':
     parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task2_predictors_test.pkl')
     parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task2_target_test.pkl')
     '''
-    parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task2_mini/task1_predictors_train.pkl')
-    parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/task2_mini/task1_target_train.pkl')
-    parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/task2_mini/task1_predictors_validation.pkl')
-    parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/task2_mini/task1_target_validation.pkl')
-    parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task2_mini/task1_predictors_test.pkl')
-    parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task2_mini/task1_target_test.pkl')
+    parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/Task2_mini/task2_predictors_train.pkl')
+    parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/Task2_mini/task2_target_train.pkl')
+    parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/Task2_mini/task2_predictors_validation.pkl')
+    parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/Task2_mini/task2_target_validation.pkl')
+    parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/Task2_mini/task2_predictors_test.pkl')
+    parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/Task2_mini/task2_target_test.pkl')
 
     #training parameters
     parser.add_argument('--gpu_id', type=int, default=0)
