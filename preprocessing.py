@@ -64,7 +64,7 @@ def preprocessing_task1(args):
                         B_sound_path = sound_path.replace('A', 'B')
                         samples_B, sr = librosa.load(B_sound_path, sr_task1, mono=False)
                         #samples_B = pad(samples_B)
-                        samples = np.vstack((samples,samples_B))
+                        samples = np.concatenate((samples,samples_B), axis=-2)
                     samples_target, sr = librosa.load(target_path, sr_task1, mono=False)
                     samples_target = samples_target.reshape((1, samples_target.shape[0]))
                     #samples_target = pad(samples_target)
@@ -185,7 +185,7 @@ def preprocessing_task2(args):
                 #stack the additional 4 channels to get a (8, samples) shape
                 B_sound_path = sound_path.replace('A', 'B')
                 samples_B, sr = librosa.load(B_sound_path, sr_task2, mono=False)
-                samples = np.vstack((samples,samples_B))
+                samples = np.concatenate((samples,samples_B), axis=-2)
             predictors.append(samples)
 
             label = get_label_task2(target_path,0.1,file_size,sr_task2,
