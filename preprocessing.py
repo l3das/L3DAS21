@@ -264,7 +264,7 @@ if __name__ == '__main__':
     parser.add_argument('--segmentation_len', type=float, default=None,
                         help='length of segmented frames in seconds')
     #task2 only parameters
-    parser.add_argument('--frame_len', type=str, default=100,
+    parser.add_argument('--frame_len', type=int, default=100,
                         help='frame length for SELD evaluation (in msecs)')
 
     args = parser.parse_args()
