@@ -256,7 +256,7 @@ if __name__ == '__main__':
     parser.add_argument('--loss', type=str, default="L2",
                         help="L1 or L2")
     #model parameters
-    parser.architecture('--architecture', type=str, default='vgg16',
+    parser.add_argument('--architecture', type=str, default='vgg16',
                         help="model's architecture")
 
     parser.add_argument('--input_channels', type=int, default=4,
