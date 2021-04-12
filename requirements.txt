@@ -3,7 +3,6 @@ jiwer
 librosa
 numpy
 pandas
-pickle
 pystoi
 scipy
 soundfile
@@ -11,4 +10,3 @@ torch
 transformers
 tqdm
 wget
-zipfile
