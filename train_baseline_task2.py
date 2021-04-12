@@ -30,7 +30,7 @@ def evaluate(model, device, criterion, dataloader):
     test_loss = 0.
     with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
-            x = x[:,:,:,:7500]
+            #x = x[:,:,:,:7500]
             target = torch.flatten(target, start_dim=1)
             target = target.to(device)
             x = x.to(device)
@@ -112,7 +112,12 @@ def main(args):
                                     stride=(1, 1), padding=(1, 1))
         model.classifier[6] =nn.Linear(in_features=4096,
                                     out_features=features_dim, bias=True)
-
+    if args.architecture == 'vgg13':
+        model = models.vgg13()
+        model.features[0] = nn.Conv2d(args.input_channels, 64, kernel_size=(3, 3),
+                                    stride=(1, 1), padding=(1, 1))
+        model.classifier[6] =nn.Linear(in_features=4096,
+                                    out_features=features_dim, bias=True)
 
 
     if args.use_cuda:
@@ -155,7 +160,7 @@ def main(args):
         train_loss = 0.
         with tqdm(total=len(tr_dataset) // args.batch_size) as pbar:
             for example_num, (x, target) in enumerate(tr_data):
-                x = x[:,:,:,:7500]
+                #x = x[:,:,:,:7500]
                 target = torch.flatten(target, start_dim=1)
 
                 target = target.to(device)
@@ -262,7 +267,7 @@ if __name__ == '__main__':
     parser.add_argument('--loss', type=str, default="L2",
                         help="L1 or L2")
     #model parameters
-    parser.add_argument('--architecture', type=str, default='vgg16',
+    parser.add_argument('--architecture', type=str, default='vgg13',
                         help="model's architecture")
     parser.add_argument('--input_channels', type=int, default=4,
                         help="4 for 1-mic or 8 for 2-mics configuration")
