@@ -30,7 +30,7 @@ def evaluate(model, device, criterion, dataloader):
         for example_num, (x, target) in enumerate(dataloader):
             target = target.to(device)
             x = x.to(device)
-            outputs = model(x, torch.tensor([0.]))
+            outputs = model(x)
             loss = criterion(outputs, target)
             test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
             pbar.set_description("Current loss: {:.4f}".format(test_loss))
@@ -118,7 +118,6 @@ def main(args):
     #compute number of parameters
     model_params = sum([np.prod(p.size()) for p in model.parameters()])
     print ('Total paramters: ' + str(model_params))
-    sys.exit(0)
     #set up the loss function
     if args.loss == "L1":
         criterion = nn.L1Loss()
@@ -157,7 +156,7 @@ def main(args):
                 t = time.time()
                 # Compute loss for each instrument/model
                 optimizer.zero_grad()
-                outputs = model(x, torch.tensor([0.]))
+                outputs = model(x)
                 loss = criterion(outputs, target)
                 loss.backward()
 
