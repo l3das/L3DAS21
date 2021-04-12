@@ -191,7 +191,7 @@ def preprocessing_task2(args):
             #compute stft
             samples = spectrum_fast(samples, nparseg=args.stft_nparseg,
                                     noverlap=args.stft_noverlap,
-                                    window=args.stft_window)
+                                    window=args.stft_window) 
 
             samples = np.reshape(samples, (samples.shape[1], samples.shape[0],
                                  samples.shape[2]))
