@@ -1,114 +1,266 @@
-import torch
-from torch import nn
-from torch import randn
-from torch import optim
-from torch import reshape
-from torch import stack
-from torch import tensor
+import sys, os
+import time
+import json
+import pickle
+import argparse
+from tqdm import tqdm
 import numpy as np
-from L3DAS.data import Dataset
-from L3DAS.audio_processing import fft_set
+import torch
+import torch.nn as nn
+from torch.optim import Adam
+import torch.utils.data as utils
+from FaSNet import FaSNet_origin, FaSNet_TAC
+from utility_functions import load_model, save_model
 
-class GinNet(nn.Module):
-    def __init__(self, n_frames, lstm_h, num_classes, num_locations):
+'''
+Train our baseline model for the Task2 of the L3DAS21 challenge.
+This script saves the best model checkpoint, as well as a dict containing
+the results (loss and history). To evaluate the performance of the trained model
+according to the challenge metrics, please use evaluate_baseline_task2.py.
+Command line arguments define the model parameters, the dataset to use and
+where to save the obtained results.
+'''
 
-        super(GinNet, self).__init__()
-        self.n_frames=n_frames
-        self.lstm_h=lstm_h
+def evaluate(model, device, criterion, dataloader):
+    #compute loss without backprop
+    model.eval()
+    test_loss = 0.
+    with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
+        for example_num, (x, target) in enumerate(dataloader):
+            target = target.to(device)
+            x = x.to(device)
+            outputs = model(x, torch.tensor([0.]))
+            loss = criterion(outputs, target)
+            test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
+            pbar.set_description("Current loss: {:.4f}".format(test_loss))
+            pbar.update(1)
+    return test_loss
 
-        self.conv1=nn.Conv2d(n_frames,n_frames,(10,1))
-        self.conv2=nn.Conv2d(n_frames,n_frames,(10,1))
-        self.conv3=nn.Conv2d(n_frames,n_frames,(10,1))
+def main(args):
+    if args.use_cuda:
+        device = 'cuda:' + str(args.gpu_id)
+    else:
+        device = 'cpu'
 
-        self.gru=nn.GRU(17424,lstm_h,num_layers=1,bidirectional=False,batch_first=True)
-        self.dense1_y1 = nn.Linear(lstm_h, num_classes)
-        self.dense1_y2 = nn.Linear(lstm_h, num_locations)
+    if args.fixed_seed:
+        seed = 1
+        np.random.seed(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
 
-        self.last_sigmoid = nn.Sigmoid()
-        self.last_tanh = nn.Tanh()
+    #LOAD DATASET
+    print ('\nLoading dataset')
 
-    def forward(self, x):
-        out_conv1=self.conv1(x)
-        out_conv2=self.conv2(out_conv1)
-        out_conv3=self.conv3(out_conv2)
+    with open(args.training_predictors_path, 'rb') as f:
+        training_predictors = pickle.load(f)
+    with open(args.training_target_path, 'rb') as f:
+        training_target = pickle.load(f)
+    with open(args.validation_predictors_path, 'rb') as f:
+        validation_predictors = pickle.load(f)
+    with open(args.validation_target_path, 'rb') as f:
+        validation_target = pickle.load(f)
+    with open(args.test_predictors_path, 'rb') as f:
+        test_predictors = pickle.load(f)
+    with open(args.test_target_path, 'rb') as f:
+        test_target = pickle.load(f)
 
-        gru_input=reshape(out_conv3,(out_conv3.shape[0],out_conv3.shape[1],out_conv3.shape[2]*out_conv3.shape[3]))
+    training_predictors = np.array(training_predictors)
+    training_target = np.array(training_target)
+    validation_predictors = np.array(validation_predictors)
+    validation_target = np.array(validation_target)
+    test_predictors = np.array(test_predictors)
+    test_target = np.array(test_target)
 
-        gru_out, _ =self.gru(gru_input)
+    print ('\nShapes:')
+    print ('Training predictors: ', training_predictors.shape)
+    print ('Validation predictors: ', validation_predictors.shape)
+    print ('Test predictors: ', test_predictors.shape)
 
-        time_distributed_batch_y1 = []
-        time_distributed_batch_y2 = []
-        time_distributed_sample_y1 = []
-        time_distributed_sample_y2 = []
-        for i in range(gru_out.shape[0]):
+    #convert to tensor
+    training_predictors = torch.tensor(training_predictors).float()
+    validation_predictors = torch.tensor(validation_predictors).float()
+    test_predictors = torch.tensor(test_predictors).float()
+    training_target = torch.tensor(training_target).float()
+    validation_target = torch.tensor(validation_target).float()
+    test_target = torch.tensor(test_target).float()
+    #build dataset from tensors
+    tr_dataset = utils.TensorDataset(training_predictors, training_target)
+    val_dataset = utils.TensorDataset(validation_predictors, validation_target)
+    test_dataset = utils.TensorDataset(test_predictors, test_target)
+    #build data loader from dataset
+    tr_data = utils.DataLoader(tr_dataset, args.batch_size, shuffle=True, pin_memory=True)
+    val_data = utils.DataLoader(val_dataset, args.batch_size, shuffle=False, pin_memory=True)
+    test_data = utils.DataLoader(test_dataset, args.batch_size, shuffle=False, pin_memory=True)
 
-            for j in range(self.n_frames):
-                time_distributed_sample_y1.append(self.dense1_y1(gru_out[i][j]))
-                time_distributed_sample_y2.append(self.dense1_y2(gru_out[i][j]))
+    #LOAD MODEL
+    if args.architecture == 'fasnet':
+        model = FaSNet_origin(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
+                              hidden_dim=args.hidden_dim, layer=args.layer,
+                              segment_size=args.segment_size, nspk=args.nspk,
+                              win_len=args.win_len, context_len=args.context_len,
+                              sr=args.sr)
+    elif args.architecture == 'tac':
+        model = FaSNet_TAC(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
+                              hidden_dim=args.hidden_dim, layer=args.layer,
+                              segment_size=args.segment_size, nspk=args.nspk,
+                              win_len=args.win_len, context_len=args.context_len,
+                              sr=args.sr)
 
-            time_distributed_sample_y1=stack(time_distributed_sample_y1)
-            time_distributed_sample_y2=stack(time_distributed_sample_y2)
+    if args.use_cuda:
+        print("Moving model to gpu")
+    model = model.to(device)
 
-            time_distributed_batch_y1.append(time_distributed_sample_y1)
-            time_distributed_batch_y2.append(time_distributed_sample_y2)
+    #compute number of parameters
+    model_params = sum([np.prod(p.size()) for p in model.parameters()])
+    print ('Total paramters: ' + str(model_params))
 
-            time_distributed_sample_y1=[]
-            time_distributed_sample_y2=[]
+    #set up the loss function
+    if args.loss == "L1":
+        criterion = nn.L1Loss()
+    elif args.loss == "L2":
+        criterion = nn.MSELoss()
+    else:
+        raise NotImplementedError("Couldn't find this loss!")
 
-        time_distributed_batch_y1=stack(time_distributed_batch_y1)
-        time_distributed_batch_y1=self.last_sigmoid(time_distributed_batch_y1)
+    #set up optimizer
+    optimizer = Adam(params=model.parameters(), lr=args.lr)
 
-        time_distributed_batch_y2=stack(time_distributed_batch_y2)
-        time_distributed_batch_y2=self.last_tanh(time_distributed_batch_y2)*10
+    #set up training state dict that will also be saved into checkpoints
+    state = {"step" : 0,
+             "worse_epochs" : 0,
+             "epochs" : 0,
+             "best_loss" : np.Inf}
 
-        return time_distributed_batch_y1, time_distributed_batch_y2
+    #load model checkpoint if desired
+    if args.load_model is not None:
+        print("Continuing training full model from checkpoint " + str(args.load_model))
+        state = load_model(model, optimizer, args.load_model, args.use_cuda)
+
+    #TRAIN MODEL
+    print('TRAINING START')
+    train_loss_hist = []
+    val_loss_hist = []
+    while state["worse_epochs"] < args.patience:
+        print("Training one epoch from iteration " + str(state["step"]))
+        avg_time = 0.
+        model.train()
+        train_loss = 0.
+        with tqdm(total=len(tr_dataset) // args.batch_size) as pbar:
+            for example_num, (x, target) in enumerate(tr_data):
+                target = target.to(device)
+                x = x.to(device)
+                t = time.time()
+                # Compute loss for each instrument/model
+                optimizer.zero_grad()
+                outputs = model(x, torch.tensor([0.]))
+                loss = criterion(outputs, target)
+                loss.backward()
+
+                train_loss += (1. / float(example_num + 1)) * (loss - train_loss)
+                optimizer.step()
+                state["step"] += 1
+                t = time.time() - t
+                avg_time += (1. / float(example_num + 1)) * (t - avg_time)
+
+                pbar.update(1)
+
+            #PASS VALIDATION DATA
+            val_loss = evaluate(model, device, criterion, val_data)
+            print("VALIDATION FINISHED: LOSS: " + str(val_loss))
+
+            # EARLY STOPPING CHECK
+            checkpoint_path = os.path.join(args.checkpoint_dir, "checkpoint")
+
+            if val_loss >= state["best_loss"]:
+                state["worse_epochs"] += 1
+            else:
+                print("MODEL IMPROVED ON VALIDATION SET!")
+                state["worse_epochs"] = 0
+                state["best_loss"] = val_loss
+                state["best_checkpoint"] = checkpoint_path
+
+                # CHECKPOINT
+                print("Saving model...")
+                save_model(model, optimizer, state, checkpoint_path)
+
+            state["epochs"] += 1
+            #state["worse_epochs"] = 200
+            train_loss_hist.append(train_loss.cpu().detach().numpy())
+            val_loss_hist.append(val_loss.cpu().detach().numpy())
+
+    #LOAD BEST MODEL AND COMPUTE LOSS FOR ALL SETS
+    print("TESTING")
+    # Load best model based on validation loss
+    state = load_model(model, None, state["best_checkpoint"], args.use_cuda)
+    #compute loss on all set_output_size
+    train_loss = evaluate(model, device, criterion, tr_data)
+    val_loss = evaluate(model, device, criterion, val_data)
+    test_loss = evaluate(model, device, criterion, test_data)
+
+    #PRINT AND SAVE RESULTS
+    results = {'train_loss': train_loss.cpu().detach().numpy(),
+               'val_loss': val_loss.cpu().detach().numpy(),
+               'test_loss': test_loss.cpu().detach().numpy(),
+               'train_loss_hist': train_loss_hist,
+               'val_loss_hist': val_loss_hist}
+
+    print ('RESULTS')
+    for i in results:
+        if 'hist' not in i:
+            print (i, results[i])
+    out_path = os.path.join(args.results_path, 'results_dict.json')
+    np.save(out_path, results)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    #saving parameters
+    parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test',
+                        help='Folder to write results dicts into')
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/Task2_test',
+                        help='Folder to write checkpoints into')
+    #dataset parameters
+    '''
+    parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task2_predictors_train.pkl')
+    parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/task2_target_train.pkl')
+    parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/task2_predictors_validation.pkl')
+    parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/task2_target_validation.pkl')
+    parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task2_predictors_test.pkl')
+    parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task2_target_test.pkl')
+    '''
+    parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task2_mini/task1_predictors_train.pkl')
+    parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/task2_mini/task1_target_train.pkl')
+    parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/task2_mini/task1_predictors_validation.pkl')
+    parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/task2_mini/task1_target_validation.pkl')
+    parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task2_mini/task1_predictors_test.pkl')
+    parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task2_mini/task1_target_test.pkl')
+
+    #training parameters
+    parser.add_argument('--gpu_id', type=int, default=0)
+    parser.add_argument('--use_cuda', type=str, default='True')
+    parser.add_argument('--early_stopping', type=str, default='True')
+    parser.add_argument('--fixed_seed', type=str, default='False')
+    parser.add_argument('--load_model', type=str, default=None,
+                        help='Reload a previously trained model (whole task model)')
+    parser.add_argument('--lr', type=float, default=0.00001)
+    parser.add_argument('--batch_size', type=int, default=20,
+                        help="Batch size")
+    parser.add_argument('--sr', type=int, default=16000,
+                        help="Sampling rate")
+    parser.add_argument('--patience', type=int, default=15,
+                        help="Patience for early stopping on validation set")
+    parser.add_argument('--loss', type=str, default="L2",
+                        help="L1 or L2")
+    #model parameters
 
 
-num_samples=30
-dataset = Dataset('Task2',num_samples=num_samples,frame_len=0.2,set_type='train',mic='A',domain='freq', spectrum='s')
-audio, classes, location = dataset.get_dataset()
+    args = parser.parse_args()
 
-del dataset
-print(end='\n\n')
-audio=tensor(audio)
-classes=tensor(classes)
-location=tensor(location)
+    #eval string args
+    args.use_cuda = eval(args.use_cuda)
+    args.early_stopping = eval(args.early_stopping)
+    args.fixed_seed = eval(args.fixed_seed)
 
-step=1
-batch_size=3
-epochs=100
-n_frames=audio.shape[1]
-lstm_h=100
-num_classes=classes.shape[-1]
-num_locations=location.shape[-1]
-
-model = GinNet(n_frames, lstm_h, num_classes,num_locations)
-
-bc = nn.BCELoss()
-mse = nn.MSELoss()
-
-optimizer = optim.SGD(model.parameters(), lr=1e-2)
-current_epoch = 1
-mark_batch=0
-
-while(True):
-    batch=audio[mark_batch:mark_batch+batch_size]
-    y1_pred, y2_pred = model(batch.float())
-    loss_y1 = bc(y1_pred, classes[mark_batch:mark_batch+batch_size].float())
-    loss_y2 = mse(y2_pred, location[mark_batch:mark_batch+batch_size].float())
-    loss = loss_y1 + loss_y2
-    print("Epoch: %2d   Timestep: %3d   Classification Loss: %5.5f   Localization Loss: %5.5f   Total Loss: %5.5f" %(current_epoch, step,loss_y1,loss_y2,loss))
-
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-    mark_batch+=batch_size
-    step+=1
-    if mark_batch>=num_samples:
-        mark_batch=0
-        current_epoch+=1
-        step=1
-        print()
-    if current_epoch>epochs:
-        break
-torch.save(model.state_dict(), 'model.pt')
+    main(args)

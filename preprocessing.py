@@ -121,17 +121,17 @@ def preprocessing_task1(args):
         os.makedirs(args.output_path)
 
     with open(os.path.join(args.output_path,'task1_predictors_train.pkl'), 'wb') as f:
-        pickle.dump(predictors_training, f)
+        pickle.dump(predictors_training, f, protocol=4)
     with open(os.path.join(args.output_path,'task1_predictors_validation.pkl'), 'wb') as f:
-        pickle.dump(predictors_validation, f)
+        pickle.dump(predictors_validation, f, protocol=4)
     with open(os.path.join(args.output_path,'task1_predictors_test.pkl'), 'wb') as f:
-        pickle.dump(predictors_test, f)
+        pickle.dump(predictors_test, f, protocol=4)
     with open(os.path.join(args.output_path,'task1_target_train.pkl'), 'wb') as f:
-        pickle.dump(target_training, f)
+        pickle.dump(target_training, f, protocol=4)
     with open(os.path.join(args.output_path,'task1_target_validation.pkl'), 'wb') as f:
-        pickle.dump(target_validation, f)
+        pickle.dump(target_validation, f, protocol=4)
     with open(os.path.join(args.output_path,'task1_target_test.pkl'), 'wb') as f:
-        pickle.dump(target_test, f)
+        pickle.dump(target_test, f, protocol=4)
 
     if args.segmentation_len is not None:
         #if segmenting, generate also a test set matrix without segmenting, just for the evaluation
@@ -222,17 +222,17 @@ def preprocessing_task2(args):
         os.makedirs(args.output_path)
 
     with open(os.path.join(args.output_path,'task2_predictors_train.pkl'), 'wb') as f:
-        pickle.dump(predictors_training, f)
+        pickle.dump(predictors_training, f, protocol=4)
     with open(os.path.join(args.output_path,'task2_predictors_validation.pkl'), 'wb') as f:
-        pickle.dump(predictors_validation, f)
+        pickle.dump(predictors_validation, f, protocol=4)
     with open(os.path.join(args.output_path,'task2_predictors_test.pkl'), 'wb') as f:
-        pickle.dump(predictors_test, f)
+        pickle.dump(predictors_test, f, protocol=4)
     with open(os.path.join(args.output_path,'task2_target_train.pkl'), 'wb') as f:
-        pickle.dump(target_training, f)
+        pickle.dump(target_training, f, protocol=4)
     with open(os.path.join(args.output_path,'task2_target_validation.pkl'), 'wb') as f:
-        pickle.dump(target_validation, f)
+        pickle.dump(target_validation, f, protocol=4)
     with open(os.path.join(args.output_path,'task2_target_test.pkl'), 'wb') as f:
-        pickle.dump(target_test, f)
+        pickle.dump(target_test, f, protocol=4)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
