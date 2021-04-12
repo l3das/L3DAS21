@@ -28,6 +28,7 @@ def evaluate(model, device, criterion, dataloader):
     test_loss = 0.
     with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
+            target = torch.flatten(target, start_dim=1)
             target = target.to(device)
             x = x.to(device)
             outputs = model(x)
@@ -151,6 +152,7 @@ def main(args):
         train_loss = 0.
         with tqdm(total=len(tr_dataset) // args.batch_size) as pbar:
             for example_num, (x, target) in enumerate(tr_data):
+                target = torch.flatten(target, start_dim=1)
                 target = target.to(device)
                 x = x.to(device)
                 t = time.time()
@@ -257,7 +259,6 @@ if __name__ == '__main__':
     #model parameters
     parser.add_argument('--architecture', type=str, default='vgg16',
                         help="model's architecture")
-
     parser.add_argument('--input_channels', type=int, default=4,
                         help="4 for 1-mic or 8 for 2-mics configuration")
 
