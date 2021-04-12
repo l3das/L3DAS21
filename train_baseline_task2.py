@@ -83,6 +83,8 @@ def main(args):
     print ('Validation target: ', validation_target.shape)
     print ('Test target: ', test_target.shape)
 
+    features_dim = int(test_target.shape[-2] * test_target.shape[-1])
+
     #convert to tensor
     training_predictors = torch.tensor(training_predictors).float()
     validation_predictors = torch.tensor(validation_predictors).float()
@@ -99,12 +101,14 @@ def main(args):
     val_data = utils.DataLoader(val_dataset, args.batch_size, shuffle=False, pin_memory=True)
     test_data = utils.DataLoader(test_dataset, args.batch_size, shuffle=False, pin_memory=True)
 
-    sys.exit(0)
     #LOAD MODEL
     if args.architecture == 'vgg16':
         model = models.vgg16()
         model.features[0] = nn.Conv2d(args.input_channels, 64, kernel_size=(3, 3),
                                     stride=(1, 1), padding=(1, 1))
+        model.classifier[6] =nn.Linear(in_features=4096,
+                                    out_features=features_dim, bias=True)
+
 
 
     if args.use_cuda:
@@ -114,7 +118,7 @@ def main(args):
     #compute number of parameters
     model_params = sum([np.prod(p.size()) for p in model.parameters()])
     print ('Total paramters: ' + str(model_params))
-
+    sys.exit(0)
     #set up the loss function
     if args.loss == "L1":
         criterion = nn.L1Loss()
