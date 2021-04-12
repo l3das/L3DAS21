@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.optim import Adam
+from torchvision import models
 import torch.utils.data as utils
 from FaSNet import FaSNet_origin, FaSNet_TAC
 from utility_functions import load_model, save_model
@@ -78,6 +79,9 @@ def main(args):
     print ('Training predictors: ', training_predictors.shape)
     print ('Validation predictors: ', validation_predictors.shape)
     print ('Test predictors: ', test_predictors.shape)
+    print ('Training target: ', training_target.shape)
+    print ('Validation target: ', validation_target.shape)
+    print ('Test target: ', test_target.shape)
 
     #convert to tensor
     training_predictors = torch.tensor(training_predictors).float()
@@ -97,18 +101,11 @@ def main(args):
 
     sys.exit(0)
     #LOAD MODEL
-    if args.architecture == 'fasnet':
-        model = FaSNet_origin(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
-                              hidden_dim=args.hidden_dim, layer=args.layer,
-                              segment_size=args.segment_size, nspk=args.nspk,
-                              win_len=args.win_len, context_len=args.context_len,
-                              sr=args.sr)
-    elif args.architecture == 'tac':
-        model = FaSNet_TAC(enc_dim=args.enc_dim, feature_dim=args.feature_dim,
-                              hidden_dim=args.hidden_dim, layer=args.layer,
-                              segment_size=args.segment_size, nspk=args.nspk,
-                              win_len=args.win_len, context_len=args.context_len,
-                              sr=args.sr)
+    if args.architecture == 'vgg16':
+        model = models.vgg16()
+        model.features[0] = nn.Conv2d(args.input_channels, 64, kernel_size=(3, 3),
+                                    stride=(1, 1), padding=(1, 1))
+
 
     if args.use_cuda:
         print("Moving model to gpu")
@@ -255,6 +252,8 @@ if __name__ == '__main__':
     parser.add_argument('--loss', type=str, default="L2",
                         help="L1 or L2")
     #model parameters
+    parser.add_argument('--input_channels', type=int, default=4,
+                        help="4 for 1-mic or 8 for 2-mics configuration")
 
 
     args = parser.parse_args()
