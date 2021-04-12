@@ -11,15 +11,15 @@ from FaSNet import FaSNet_origin
 from utility_functions import load_model, save_model
 
 '''
-Load pretrained FasNet model and compute the metric for
-the Task 1 of the L3DAS21 challenge.
-The metric is: (STOI+(1-WER))/2
+Load pretrained model and compute the metrics for Task 1
+of the L3DAS21 challenge. The metric is: (STOI+(1-WER))/2
+Command line arguments define the model parameters, the dataset to use and
+where to save the obtained results.
 '''
-
 
 def enhance_sound(predictors, model, device, length, overlap):
     '''
-    compute enhanced waveform using a trained model,
+    Compute enhanced waveform using a trained model,
     applying a sliding crossfading window
     '''
 
@@ -45,7 +45,6 @@ def enhance_sound(predictors, model, device, length, overlap):
 
     overlap_len = int(length*overlap)  #in samples
     total_len = predictors.shape[-1]
-    #print ('t ', total_len, ' ol ', overlap_len)
     starts = np.arange(0,total_len, overlap_len)  #points to cut
     #iterate the sliding frames
     for i in range(len(starts)):
@@ -55,18 +54,14 @@ def enhance_sound(predictors, model, device, length, overlap):
             cut_x = predictors[:,:,start:end]
         else:
             #zeropad the last frame
-
             end = total_len
             cut_x = pad(predictors[:,:,start:end], length)
 
-
-        #compute model's output here
+        #compute model's output
         cut_x = cut_x.to(device)
-        #print ('start ', start, 'end ', end)
-        #print (cut_x.shape)
         predicted_x = model(cut_x, torch.tensor([0.]))
-        #predicted_x = predicted_x[:,0,:].cpu().numpy()
         predicted_x = predicted_x.cpu().numpy()
+
         #reconstruct sound crossfading segments
         if i == 0:
             recon = predicted_x
@@ -167,7 +162,7 @@ def main(args):
             else:
                 print ('No voice activity on this frame')
             pbar.set_description('M:' +  str(np.round(METRIC,decimals=3)) +
-                   ',W:' + str(np.round(WER,decimals=3)) + ', S: ' + str(np.round(STOI,decimals=3)))
+                   ', W:' + str(np.round(WER,decimals=3)) + ', S: ' + str(np.round(STOI,decimals=3)))
             pbar.update(1)
             count += 1
 
@@ -197,7 +192,6 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', type=str, default='RESULTS/Task1/checkpoint')
     parser.add_argument('--results_path', type=str, default='RESULTS/Task1/metrics')
     parser.add_argument('--save_sounds_freq', type=int, default=None)
-
     #dataset parameters
     parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task1_predictors_test_uncut.pkl')
     parser.add_argument('--target_path', type=str, default='DATASETS/processed/task1_target_test_uncut.pkl')

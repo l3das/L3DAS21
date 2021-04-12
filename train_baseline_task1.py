@@ -13,23 +13,24 @@ from FaSNet import FaSNet_origin, FaSNet_TAC
 from utility_functions import load_model, save_model
 
 '''
-Train out baseline model for the Task 1 of the L3DAS21 challenge.
-The script saves the best model checkpoint as well as a dict containing
-the results (loss and hstory). To evaluate the performance of the trained model
+Train our baseline model for the Task1 of the L3DAS21 challenge.
+This script saves the best model checkpoint, as well as a dict containing
+the results (loss and history). To evaluate the performance of the trained model
 according to the challenge metrics, please use evaluate_baseline_task1.py.
+Command line arguments define the model parameters, the dataset to use and
+where to save the obtained results.
 '''
 
 def evaluate(model, device, criterion, dataloader):
+    #compute loss without backprop
     model.eval()
     test_loss = 0.
     with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
-            #x, target = dyn_pad(x, target)
             target = target.to(device)
             x = x.to(device)
             outputs = model(x, torch.tensor([0.]))
             loss = criterion(outputs, target)
-            #loss = criterion(outputs[:,0,:], target)
             test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
             pbar.set_description("Current loss: {:.4f}".format(test_loss))
             pbar.update(1)
@@ -124,9 +125,7 @@ def main(args):
     else:
         raise NotImplementedError("Couldn't find this loss!")
 
-    #criterion = batch_SDR_torch
-
-    #set up optimiser
+    #set up optimizer
     optimizer = Adam(params=model.parameters(), lr=args.lr)
 
     #set up training state dict that will also be saved into checkpoints
@@ -135,12 +134,12 @@ def main(args):
              "epochs" : 0,
              "best_loss" : np.Inf}
 
-    # LOAD MODEL CHECKPOINT IF DESIRED
+    #load model checkpoint if desired
     if args.load_model is not None:
         print("Continuing training full model from checkpoint " + str(args.load_model))
         state = load_model(model, optimizer, args.load_model, args.use_cuda)
 
-
+    #TRAIN MODEL
     print('TRAINING START')
     train_loss_hist = []
     val_loss_hist = []
@@ -151,7 +150,6 @@ def main(args):
         train_loss = 0.
         with tqdm(total=len(tr_dataset) // args.batch_size) as pbar:
             for example_num, (x, target) in enumerate(tr_data):
-                #x, target = dyn_pad(x, target)
                 target = target.to(device)
                 x = x.to(device)
                 t = time.time()
@@ -159,8 +157,8 @@ def main(args):
                 optimizer.zero_grad()
                 outputs = model(x, torch.tensor([0.]))
                 loss = criterion(outputs, target)
-                #loss = criterion(outputs[:,0,:], target)
                 loss.backward()
+
                 train_loss += (1. / float(example_num + 1)) * (loss - train_loss)
                 optimizer.step()
                 state["step"] += 1
@@ -174,7 +172,6 @@ def main(args):
             print("VALIDATION FINISHED: LOSS: " + str(val_loss))
 
             # EARLY STOPPING CHECK
-            #checkpoint_path = os.path.join(args.checkpoint_dir, "checkpoint_" + str(state["step"]))
             checkpoint_path = os.path.join(args.checkpoint_dir, "checkpoint")
 
             if val_loss >= state["best_loss"]:
@@ -194,7 +191,7 @@ def main(args):
             train_loss_hist.append(train_loss.cpu().detach().numpy())
             val_loss_hist.append(val_loss.cpu().detach().numpy())
 
-    #### TESTING ####
+    #LOAD BEST MODEL AND COMPUTE LOSS FOR ALL SETS
     print("TESTING")
     # Load best model based on validation loss
     state = load_model(model, None, state["best_checkpoint"], args.use_cuda)
@@ -203,6 +200,7 @@ def main(args):
     val_loss = evaluate(model, device, criterion, val_data)
     test_loss = evaluate(model, device, criterion, test_data)
 
+    #PRINT AND SAVE RESULTS
     results = {'train_loss': train_loss.cpu().detach().numpy(),
                'val_loss': val_loss.cpu().detach().numpy(),
                'test_loss': test_loss.cpu().detach().numpy(),
@@ -215,22 +213,21 @@ def main(args):
             print (i, results[i])
     out_path = os.path.join(args.results_path, 'results_dict.json')
     np.save(out_path, results)
-    #writer.add_scalar("test_loss", test_loss, state["step"])
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='RESULTS/fasnet_fulltrain100_nspk1',
+    parser.add_argument('--results_path', type=str, default='RESULTS/Task1',
                         help='Folder to write results dicts into')
-    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/fasnet_fulltrain100_nspk1',
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/Task1',
                         help='Folder to write checkpoints into')
     #dataset parameters
-    parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1_100/task1_predictors_train.pkl')
-    parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/task1_100/task1_target_train.pkl')
-    parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/task1_100/task1_predictors_validation.pkl')
-    parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/task1_100/task1_target_validation.pkl')
-    parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task1_100/task1_predictors_test.pkl')
-    parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1_100/task1_target_test.pkl')
+    parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1_predictors_train.pkl')
+    parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/task1_target_train.pkl')
+    parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/task1_predictors_validation.pkl')
+    parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/task1_target_validation.pkl')
+    parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task1_predictors_test.pkl')
+    parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1_target_test.pkl')
     '''
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1_mini/task1_predictors_train.pkl')
     parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/task1_mini/task1_target_train.pkl')

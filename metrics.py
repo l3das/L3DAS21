@@ -60,11 +60,13 @@ def task1_metric(clean_speech, denoised_speech, sr=16000):
         STOI = None
     return metric, WER, STOI
 
-def task1_average_metric(predicted_folder, truth_folder, fs=16000):
+def compute_se_metrics(predicted_folder, truth_folder, fs=16000):
     '''
     Load all submitted sounds for task 1 and compute the average metric
     '''
-    metrics = []
+    METRIC = []
+    WER = []
+    STOI = []
     predicted_list = [s for s in os.listdir(predicted_folder) if '.wav' in s]
     truth_list = [s for s in os.listdir(truth_folder) if '.wav' in s]
     n_sounds = len(predicted_list)
@@ -74,12 +76,20 @@ def task1_average_metric(predicted_folder, truth_folder, fs=16000):
         truth_temp_path = os.path.join(truth_folder, name)
         predicted = librosa.load(predicted_temp_path, sr=fs)
         truth = librosa.load(truth_temp_path, sr=fs)
-        temp_metric, wer, stoi = task1_metric(truth, predicted)
-        metrics.append(temp_metric)
-        print (predicted_temp_path)
+        metric, wer, stoi = task1_metric(truth, predicted)
+        METRIC.append(metric)
+        WER.append(wer)
+        STOI.append(stoi)
 
-    average_metric = np.mean(metrics)
-    print ('Average metric: ', average_metric)
+    average_metric = np.mean(METRIC)
+    average_wer = np.mean(WER)
+    average_stoi = np.mean(STOI)
+
+
+    print ('*******************************')
+    print ('Task 1 metric: ', average_metric)
+    print ('Word error rate: ', average_wer)
+    print ('Stoi: ', average_stoi)
 
     return average_metric
 
@@ -152,7 +162,7 @@ def location_sensitive_detection(pred_path, true_path,
 
     return TP, FP, FN
 
-def compute_seld_metric(predicted_folder, truth_folder, n_frames=100, spatial_threshold=0.3):
+def compute_seld_metrics(predicted_folder, truth_folder, n_frames=100, spatial_threshold=0.3):
     '''
     compute F1 score for the whole set of submitted results based on the
     location sensitive detection metric
