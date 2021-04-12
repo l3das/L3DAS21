@@ -29,7 +29,7 @@ These scripts automatically extract the archives and delete the zip files.
 
 Alternatively, it is possible to manually download the dataset from [zenodo](https://zenodo.org/record/4642005#.YGcX-hMzaAx).
 
-To obtain our baseline results for Task 1, do not download the train360 set. 
+To obtain our baseline results for Task 1, do not download the train360 set.
 
 
 ## Pre-processing
@@ -37,8 +37,8 @@ The file **preprocessing.py** provides automated routines that load the raw audi
 
 Run these commands to obtain the matrices needed for our baseline models:
 ```bash
-python3 preprocessing.py --task 1 --input_path DATASETS/Task1 --training_set train100 --processsing_type waveform --num_mics 1 --segmentation_len 2
-python3 preprocessing.py --task 2 --input_path DATASETS/Task2 --processsing_type stft --num_mics 1 --frame_len 100
+python3 preprocessing.py --task 1 --input_path DATASETS/Task1 --training_set train100 --num_mics 1 --segmentation_len 2
+python3 preprocessing.py --task 2 --input_path DATASETS/Task2 --num_mics 1 --frame_len 100
 ```
 The two tasks of the challenge require different pre-processing.
 
@@ -74,5 +74,4 @@ TO BE CONTINUED..
 
 ## Submission shape validation
 The file **validate_submission.py** provides functions to assess wether the files to be submitted for the 2 tasks have the correct naming, format, and shape.
-TO BE CONTINUED... 
-
+TO BE CONTINUED...

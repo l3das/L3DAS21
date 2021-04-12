@@ -4,7 +4,7 @@ import numpy as np
 import librosa
 import pickle
 import random
-from utility_functions import get_label_task2, segment_waveforms
+from utility_functions import get_label_task2, segment_waveforms, spectrum_fast
 
 '''
 Process the unzipped dataset folders and output numpy matrices (.pkl files)
@@ -65,6 +65,7 @@ def preprocessing_task1(args):
                         samples_B, sr = librosa.load(B_sound_path, sr_task1, mono=False)
                         #samples_B = pad(samples_B)
                         samples = np.concatenate((samples,samples_B), axis=-2)
+
                     samples_target, sr = librosa.load(target_path, sr_task1, mono=False)
                     samples_target = samples_target.reshape((1, samples_target.shape[0]))
                     #samples_target = pad(samples_target)
@@ -186,8 +187,18 @@ def preprocessing_task2(args):
                 B_sound_path = sound_path.replace('A', 'B')
                 samples_B, sr = librosa.load(B_sound_path, sr_task2, mono=False)
                 samples = np.concatenate((samples,samples_B), axis=-2)
+
+            #compute stft
+            samples = spectrum_fast(samples, nparseg=args.stft_nparseg,
+                                    noverlap=args.stft.noverlap,
+                                    window=args.stft_window)
+
+            samples = np.reshape(samples, (samples.shape[1], samples.shape[0],
+                                 samples.shape[2]))
+
             predictors.append(samples)
 
+            #compute matrix label
             label = get_label_task2(target_path,0.1,file_size,sr_task2,
                                     sound_classes,int(file_size/(args.frame_len/1000.)))
 
@@ -244,20 +255,13 @@ if __name__ == '__main__':
     parser.add_argument('--output_path', type=str, default='DATASETS/processed',
                         help='where to save the numpy matrices')
     #processing type
-    parser.add_argument('--processsing_type', type=str, default='waveform',
-                        help='stft or waveform')
     parser.add_argument('--train_val_split', type=float, default=0.7,
                         help='perc split between train and validation sets')
     parser.add_argument('--num_mics', type=int, default=1,
                         help='how many ambisonics mics (1 or 2)')
     parser.add_argument('--num_data', type=int, default=None,
                         help='how many datapoints per set. 0 means all available data')
-    parser.add_argument('--stft_nparseg', type=int, default=256,
-                        help='num of stft frames')
-    parser.add_argument('--stft_noverlap', type=int, default=128,
-                        help='num of overlapping samples for stft')
-    parser.add_argument('--stft_window', type=str, default='hamming',
-                        help='stft window_type')
+
     #task1 only parameters
     parser.add_argument('--training_set', type=str, default='train100',
                         help='which training set: train100, train360 or both')
@@ -266,6 +270,12 @@ if __name__ == '__main__':
     #task2 only parameters
     parser.add_argument('--frame_len', type=int, default=100,
                         help='frame length for SELD evaluation (in msecs)')
+    parser.add_argument('--stft_nparseg', type=int, default=256,
+                        help='num of stft frames')
+    parser.add_argument('--stft_noverlap', type=int, default=128,
+                        help='num of overlapping samples for stft')
+    parser.add_argument('--stft_window', type=str, default='hamming',
+                        help='stft window_type')
 
     args = parser.parse_args()
 
