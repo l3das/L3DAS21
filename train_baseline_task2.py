@@ -152,9 +152,9 @@ def main(args):
         train_loss = 0.
         with tqdm(total=len(tr_dataset) // args.batch_size) as pbar:
             for example_num, (x, target) in enumerate(tr_data):
-                print ('PRIMA', target.size)
+                print ('PRIMA', target.shape)
                 target = torch.flatten(target, start_dim=1)
-                print ('DOPO', target.size)
+                print ('DOPO', target.shape)
 
                 target = target.to(device)
                 x = x.to(device)
