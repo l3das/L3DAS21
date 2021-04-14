@@ -123,7 +123,7 @@ def main(args):
                     output_classes=args.output_classes, pool_size=args.pool_size,
                     pool_time=args.pool_time, rnn_size=args.rnn_size, n_rnn=args.n_rnn,
                     fc_size=args.fc_size, dropout_perc=args.dropout_perc,
-                    n_cnn_filters=args.n_cnn_filters, verbose=args.verbose):
+                    n_cnn_filters=args.n_cnn_filters, verbose=args.verbose)
 
 
     if args.use_cuda:
@@ -277,6 +277,8 @@ if __name__ == '__main__':
                         help="model's architecture, can be vgg13, vgg16 or seldnet")
     parser.add_argument('--input_channels', type=int, default=8,
                         help="4 for 1-mic or 8 for 2-mics configuration")
+    #the following parameters produce a prediction for each 100-msecs frame
+    parser.add_argument('--time_dim', type=int, default=4800)
     parser.add_argument('--freq_dim', type=int, default=256)
     parser.add_argument('--output_classes', type=int, default=14)
     parser.add_argument('--pool_size', type=str, default='[[8,2],[8,2],[2,2]]')

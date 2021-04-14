@@ -165,6 +165,7 @@ def preprocessing_task2(args):
              'Laughter','Male_speech_and_man_speaking',
              'Printer','Scissors','Telephone','Writing']
     file_size=60.0
+    max_label_distance = 2.  #maximum xyz value (serves for normalization)
 
     def process_folder(folder, args):
         print ('Processing ' + folder + ' folder...')
@@ -202,7 +203,8 @@ def preprocessing_task2(args):
 
             #compute matrix label
             label = get_label_task2(target_path,0.1,file_size,sr_task2,
-                                    sound_classes,int(file_size/(args.frame_len/1000.)))
+                                    sound_classes,int(file_size/(args.frame_len/1000.),
+                                    max_label_distance))
 
             target.append(label)
             count += 1
