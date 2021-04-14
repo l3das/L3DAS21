@@ -47,7 +47,7 @@ def seld_loss(x, target, model, criterion_sed, criterion_doa):
     target_doa = target[:,:,args.output_classes*3:]
     #compute loss
     sed, doa = model(x)
-    print ('TARGET IN: ', sed, target_sed, doa, target_doa)
+    print ('TARGET IN: ', sed.shape, target_sed.shape, doa.shape, target_doa.shape)
     loss_sed = criterion_sed(sed, target_sed) * args.sed_loss_weight
     loss_doa = criterion_doa(doa, target_doa) * args.doa_loss_weight
 
