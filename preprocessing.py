@@ -198,7 +198,6 @@ def preprocessing_task2(args):
             #samples = np.reshape(samples, (samples.shape[1], samples.shape[0],
             #                     samples.shape[2]))
 
-            #print (samples.shape)
             predictors.append(samples)
 
             #compute matrix label
@@ -207,6 +206,8 @@ def preprocessing_task2(args):
                                     max_label_distance))
 
             target.append(label)
+            print (samples.shape, np.max(label), np.min(label))
+
             count += 1
             if args.num_data is not None and count >= args.num_data:
                 break
