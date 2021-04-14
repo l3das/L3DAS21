@@ -280,12 +280,12 @@ if __name__ == '__main__':
                         help='num of overlapping samples for stft')
     parser.add_argument('--stft_window', type=str, default='hamming',
                         help='stft window_type')
-    parser.add_argument('--output_phase', type=str, default=True,
+    parser.add_argument('--output_phase', type=str, default='True',
                         help='concatenate phase channels to stft matrix')
 
     args = parser.parse_args()
 
-    #args.output_phase = eval(args.output_phase)
+    args.output_phase = eval(args.output_phase)
 
     if args.task == 1:
         preprocessing_task1(args)

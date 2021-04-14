@@ -10,7 +10,7 @@ import torch.nn as nn
 from torch.optim import Adam
 from torchvision import models
 import torch.utils.data as utils
-from FaSNet import FaSNet_origin, FaSNet_TAC
+from SELDNet import Seldnet_vanilla
 from utility_functions import load_model, save_model
 
 '''
@@ -118,6 +118,12 @@ def main(args):
                                     stride=(1, 1), padding=(1, 1))
         model.classifier[6] =nn.Linear(in_features=4096,
                                     out_features=features_dim, bias=True)
+    if args.architecture == 'seldnet':
+        model = Seldnet_vanilla(time_dim=args.time_dim, freq_dim=args.freq_dim,
+                    output_classes=args.output_classes, pool_size=args.pool_size,
+                    pool_time=args.pool_time, rnn_size=args.rnn_size, n_rnn=args.n_rnn,
+                    fc_size=args.fc_size, dropout_perc=args.dropout_perc,
+                    n_cnn_filters=args.n_cnn_filters, verbose=args.verbose):
 
 
     if args.use_cuda:
@@ -235,7 +241,7 @@ if __name__ == '__main__':
     parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/Task2_test',
                         help='Folder to write checkpoints into')
     #dataset parameters
-
+    '''
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task2_predictors_train.pkl')
     parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/task2_target_train.pkl')
     parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/task2_predictors_validation.pkl')
@@ -244,14 +250,12 @@ if __name__ == '__main__':
     parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task2_target_test.pkl')
     '''
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/Task2_mini/task2_predictors_train.pkl')
-    parser.add_argument('--training_target_path', type=str, default='DATASETS/processed
-
-    /Task2_mini/task2_target_train.pkl')
+    parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/Task2_mini/task2_target_train.pkl')
     parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/Task2_mini/task2_predictors_validation.pkl')
     parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/Task2_mini/task2_target_validation.pkl')
     parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/Task2_mini/task2_predictors_test.pkl')
     parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/Task2_mini/task2_target_test.pkl')
-    '''
+
     #training parameters
     parser.add_argument('--gpu_id', type=int, default=0)
     parser.add_argument('--use_cuda', type=str, default='True')
@@ -269,17 +273,30 @@ if __name__ == '__main__':
     parser.add_argument('--loss', type=str, default="L2",
                         help="L1 or L2")
     #model parameters
-    parser.add_argument('--architecture', type=str, default='vgg13',
-                        help="model's architecture")
-    parser.add_argument('--input_channels', type=int, default=4,
+    parser.add_argument('--architecture', type=str, default='seldnet',
+                        help="model's architecture, can be vgg13, vgg16 or seldnet")
+    parser.add_argument('--input_channels', type=int, default=8,
                         help="4 for 1-mic or 8 for 2-mics configuration")
+    parser.add_argument('--freq_dim', type=int, default=256)
+    parser.add_argument('--output_classes', type=int, default=14)
+    parser.add_argument('--pool_size', type=str, default='[[8,2],[8,2],[2,2]]')
+    parser.add_argument('--pool_time', type=str, default='False')
+    parser.add_argument('--rnn_size', type=int, default=128)
+    parser.add_argument('--n_rnn', type=int, default=2)
+    parser.add_argument('--fc_size', type=int, default=128)
+    parser.add_argument('--dropout_perc', type=float, default=0.)
+    parser.add_argument('--n_cnn_filters', type=float, default=64)
+    parser.add_argument('--verbose', type=str, default='False')
 
 
     args = parser.parse_args()
 
-    #eval string args
+    #eval string bools and lists
     args.use_cuda = eval(args.use_cuda)
     args.early_stopping = eval(args.early_stopping)
     args.fixed_seed = eval(args.fixed_seed)
+    args.pool_size= eval(args.pool_size)
+    args.pool_time = eval(args.pool_time)
+    args.verbose = eval(args.verbose)
 
     main(args)
