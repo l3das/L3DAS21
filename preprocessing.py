@@ -189,9 +189,10 @@ def preprocessing_task2(args):
                 samples = np.concatenate((samples,samples_B), axis=-2)
 
             #compute stft
-            samples = spectrum_fast(samples, nparseg=args.stft_nparseg,
+            samples = spectrum_fast(samples, nperseg=args.stft_nperseg,
                                     noverlap=args.stft_noverlap,
-                                    window=args.stft_window)
+                                    window=args.stft_window,
+                                    output_phase=args.output_phase)
 
             samples = np.reshape(samples, (samples.shape[1], samples.shape[0],
                                  samples.shape[2]))
@@ -273,7 +274,7 @@ if __name__ == '__main__':
                         help='frame length for SELD evaluation (in msecs)')
     #the following stft parameters produce 8 stft fframes per each label frame
     #if label frames are 100msecs, stft frames are 12.5 msecs
-    parser.add_argument('--stft_nparseg', type=int, default=512,
+    parser.add_argument('--stft_nperseg', type=int, default=512,
                         help='num of stft frames')
     parser.add_argument('--stft_noverlap', type=int, default=112,
                         help='num of overlapping samples for stft')
