@@ -275,16 +275,16 @@ if __name__ == '__main__':
     #if label frames are 100msecs, stft frames are 12.5 msecs
     parser.add_argument('--stft_nparseg', type=int, default=512,
                         help='num of stft frames')
-    parser.add_argument('--output_phase', type=str, default=True,
-                        help='concatenate phase channels to stft matrix')
     parser.add_argument('--stft_noverlap', type=int, default=112,
                         help='num of overlapping samples for stft')
     parser.add_argument('--stft_window', type=str, default='hamming',
                         help='stft window_type')
+    parser.add_argument('--output_phase', type=str, default=True,
+                        help='concatenate phase channels to stft matrix')
 
     args = parser.parse_args()
 
-    args.output_phase = eval(args.output_phase)
+    #args.output_phase = eval(args.output_phase)
 
     if args.task == 1:
         preprocessing_task1(args)
