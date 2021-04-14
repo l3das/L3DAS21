@@ -176,7 +176,7 @@ def get_label_task2(path,frame_len,file_size,sample_rate,classes_,num_frames,
     class_vec = np.array(class_vec)
     loc_vec = np.array(loc_vec)
 
-    loc_vec = loc_vec / max_label_distance  #normalize xyz (to use sigmoid in the model)
+    #loc_vec = loc_vec / max_label_distance  #normalize xyz (to use sigmoid in the model)
 
     stacked = np.zeros((class_vec.shape[0],class_vec.shape[1]+loc_vec.shape[1]))
     stacked[:,:class_vec.shape[1]] = class_vec
