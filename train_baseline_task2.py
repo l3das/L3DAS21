@@ -296,7 +296,7 @@ if __name__ == '__main__':
     parser.add_argument('--freq_dim', type=int, default=256)
     parser.add_argument('--output_classes', type=int, default=14)
     parser.add_argument('--pool_size', type=str, default='[[8,2],[8,2],[2,2]]')
-    parser.add_argument('--pool_time', type=str, default='False')
+    parser.add_argument('--pool_time', type=str, default='True')
     parser.add_argument('--rnn_size', type=int, default=128)
     parser.add_argument('--n_rnn', type=int, default=2)
     parser.add_argument('--fc_size', type=int, default=128)
