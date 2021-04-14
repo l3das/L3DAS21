@@ -60,7 +60,6 @@ def seld_loss(x, target, model, criterion_sed, criterion_doa):
     return loss_sed + loss_doa
 
 
-
 def main(args):
     if args.use_cuda:
         device = 'cuda:' + str(args.gpu_id)
