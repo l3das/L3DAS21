@@ -202,8 +202,8 @@ def preprocessing_task2(args):
 
             #compute matrix label
             label = get_label_task2(target_path,0.1,file_size,sr_task2,
-                                    sound_classes,int(file_size/(args.frame_len/1000.),
-                                    max_label_distance))
+                                    sound_classes,int(file_size/(args.frame_len/1000.)),
+                                    max_label_distance)
 
             target.append(label)
             print (samples.shape, np.max(label), np.min(label))
