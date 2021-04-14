@@ -48,6 +48,11 @@ def seld_loss(x, target, model, criterion_sed, criterion_doa):
     #compute loss
     sed, doa = model(x)
     print ('TARGET IN: ', sed.shape, target_sed.shape, doa.shape, target_doa.shape)
+    sed = torch.flatten(sed, start_dim=1)
+    doa = torch.flatten(doa, start_dim=1)
+    target_sed = torch.flatten(target_sed, start_dim=1)
+    target_doa = torch.flatten(target_doa, start_dim=1)
+
     loss_sed = criterion_sed(sed, target_sed) * args.sed_loss_weight
     loss_doa = criterion_doa(doa, target_doa) * args.doa_loss_weight
 
