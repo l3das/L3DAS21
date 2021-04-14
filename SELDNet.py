@@ -70,13 +70,13 @@ class Seldnet(nn.Module):
                     nn.Linear(256, fc_size),
                     nn.Dropout(dropout_perc),
                     nn.Linear(fc_size, doa_output_size),
-                    nn.Tanh())
+                    nn.Sigmoid())
 
         self.doa = nn.Sequential(
                     nn.Linear(256, fc_size),
                     nn.Dropout(dropout_perc),
                     nn.Linear(fc_size, sed_output_size),
-                    nn.Sigmoid())
+                    nn.Tanh())
 
     def forward(self, x):
         x = self.cnn(x)
