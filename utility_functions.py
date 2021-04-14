@@ -5,6 +5,7 @@ import math
 import pandas as pd
 import torch
 from scipy.signal import stft
+import librosa
 
 '''
 Miscellaneous utilities
@@ -51,22 +52,56 @@ def load_model(model, optimizer, path, cuda):
     return state
 
 
-def spectrum_fast(x, nparseg=256, noverlap=128, window='hamming'):
+def spectrum_fast(x, nperseg=512, noverlap=128, window='hamming', cut_dc=True,
+                  output_phase=True, cut_last_timeframe=True):
     '''
-    compute magnitude spectra from monophonic signal
+    Compute magnitude spectra from monophonic signal
     '''
 
     f, t, seg_stft = stft(x,
                         window=window,
-                        nperseg=nparseg,
+                        nperseg=nperseg,
                         noverlap=noverlap)
 
-    return np.rot90(np.abs(seg_stft))
+    #seg_stft = librosa.stft(x, n_fft=nparseg, hop_length=noverlap)
 
+    output = np.abs(seg_stft)
+
+    if output_phase:
+        phase = np.angle(seg_stft)
+        output = np.concatenate((output,phase), axis=-3)
+
+    if cut_dc:
+        output = output[:,1:,:]
+
+    if cut_last_timeframe:
+        output = output[:,:,:-1]
+
+    #return np.rot90(np.abs(seg_stft))
+    return output
+
+def matrix_to_label_task2(classes,locations,length=60.0):
+    '''
+    Process SELDNet output matrix and create submittable list of frame-wise
+    active sounds in the form
+    [frame, sound_class, x, y, z]
+    '''
+    classes=np.reshape(classes,(classes.shape[1],classes.shape[2]))
+    locations=np.reshape(locations,(locations.shape[1],locations.shape[2]))
+    len_step=length/(classes.shape[0])
+    tot_numpy=[]
+    for i, (c, l) in enumerate(zip(classes, locations)):
+        time=np.asarray([i,len_step*i,len_step*(i+1)])
+        cl=np.concatenate((time,c,l),axis=-1)
+        tot_numpy.append(cl)
+    tot_numpy=np.asarray(tot_numpy)
+    pd.DataFrame(tot_numpy).to_csv("foo.csv",header=False,index=False)
+
+    return tot_numpy
 
 def get_label_task2(path,frame_len,file_size,sample_rate,classes_,num_frames):
     '''
-    process input csv file and output a matrix containing
+    Process input csv file and output a matrix containing
     the class ids of all sounds present in each data-point and
     their location coordinates, divided in 100 milliseconds frames.
     '''

@@ -175,7 +175,7 @@ def preprocessing_task2(args):
 
         data = os.listdir(data_path)
         data = [i for i in data if i.split('.')[0].split('_')[-1]=='A']
-        count = 0 
+        count = 0
         for sound in data:
             target_name = 'label_' + sound.replace('_A', '').replace('.wav', '.csv')
             sound_path = os.path.join(data_path, sound)
@@ -270,14 +270,20 @@ if __name__ == '__main__':
     #task2 only parameters
     parser.add_argument('--frame_len', type=int, default=100,
                         help='frame length for SELD evaluation (in msecs)')
-    parser.add_argument('--stft_nparseg', type=int, default=256,
+    #the following stft parameters produce 8 stft fframes per each label frame
+    #if label frames are 100msecs, stft frames are 12.5 msecs
+    parser.add_argument('--stft_nparseg', type=int, default=512,
                         help='num of stft frames')
-    parser.add_argument('--stft_noverlap', type=int, default=128,
+    parser.add_argument('--output_phase', type=str, default=True,
+                        help='concatenate phase channels to stft matrix')
+    parser.add_argument('--stft_noverlap', type=int, default=112,
                         help='num of overlapping samples for stft')
     parser.add_argument('--stft_window', type=str, default='hamming',
                         help='stft window_type')
 
     args = parser.parse_args()
+
+    args.output_phase = eval(args.output_phase)
 
     if args.task == 1:
         preprocessing_task1(args)
