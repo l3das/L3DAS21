@@ -28,11 +28,12 @@ def evaluate(model, device, criterion_sed, criterion_doa, dataloader):
     test_loss = 0.
     with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
-            target = torch.flatten(target, start_dim=1)
             target = target.to(device)
             x = x.to(device)
-            outputs = model(x)
-            loss = criterion(outputs, target)
+            t = time.time()
+            # Compute loss for each instrument/model
+            sed, doa = model(x)
+            loss = seld_loss(x, target, model, criterion_sed, criterion_doa)
             test_loss += (1. / float(example_num + 1)) * (loss - test_loss)
             pbar.set_description("Current loss: {:.4f}".format(test_loss))
             pbar.update(1)
