@@ -194,8 +194,8 @@ def preprocessing_task2(args):
                                     window=args.stft_window,
                                     output_phase=args.output_phase)
 
-            samples = np.reshape(samples, (samples.shape[1], samples.shape[0],
-                                 samples.shape[2]))
+            #samples = np.reshape(samples, (samples.shape[1], samples.shape[0],
+            #                     samples.shape[2]))
 
             print (samples.shape)
             predictors.append(samples)
