@@ -22,13 +22,12 @@ Command line arguments define the model parameters, the dataset to use and
 where to save the obtained results.
 '''
 
-def evaluate(model, device, criterion, dataloader):
+def evaluate(model, device, criterion_sed, criterion_doa, dataloader):
     #compute loss without backprop
     model.eval()
     test_loss = 0.
     with tqdm(total=len(dataloader) // args.batch_size) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
-            #x = x[:,:,:,:7500]
             target = torch.flatten(target, start_dim=1)
             target = target.to(device)
             x = x.to(device)
@@ -48,6 +47,7 @@ def seld_loss(x, target, model, criterion_sed, criterion_doa):
     target_doa = target[:,:,args.output_classes*3:]
     #compute loss
     sed, doa = model(x)
+    print ('TARGET IN: ', sed, target_sed, doa, target_doa)
     loss_sed = criterion_sed(sed, target_sed) * args.sed_loss_weight
     loss_doa = criterion_doa(doa, target_doa) * args.doa_loss_weight
 
@@ -178,9 +178,6 @@ def main(args):
         train_loss = 0.
         with tqdm(total=len(tr_dataset) // args.batch_size) as pbar:
             for example_num, (x, target) in enumerate(tr_data):
-                #x = x[:,:,:,:7500]
-                #target = torch.flatten(target, start_dim=1)
-                print (target.shape)
                 target = target.to(device)
                 x = x.to(device)
                 t = time.time()
