@@ -46,13 +46,9 @@ def seld_loss(x, target, model, criterion_sed, criterion_doa):
     #divide labels into sed and doa  (which are joint from the preprocessing)
     target_sed = target[:,:,:args.output_classes*3]
     target_doa = target[:,:,args.output_classes*3:]
-    print ('FWEIFJNWEKJFN ')
-    print (torch.min(target_sed), torch.max(target_sed))
-    print (torch.min(target_doa), torch.max(target_doa))
 
     #compute loss
     sed, doa = model(x)
-    print ('TARGET IN: ', sed.shape, target_sed.shape, doa.shape, target_doa.shape)
     sed = torch.flatten(sed, start_dim=1)
     doa = torch.flatten(doa, start_dim=1)
     target_sed = torch.flatten(target_sed, start_dim=1)
