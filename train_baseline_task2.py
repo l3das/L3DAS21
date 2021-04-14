@@ -179,8 +179,8 @@ def main(args):
         with tqdm(total=len(tr_dataset) // args.batch_size) as pbar:
             for example_num, (x, target) in enumerate(tr_data):
                 #x = x[:,:,:,:7500]
-                target = torch.flatten(target, start_dim=1)
-
+                #target = torch.flatten(target, start_dim=1)
+                print (target.shape)
                 target = target.to(device)
                 x = x.to(device)
                 t = time.time()

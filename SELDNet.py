@@ -116,7 +116,7 @@ def test_model():
     print (model)
     print ('Input shape: ', sp.shape)
     sed, doa = model(sp)
-    print ('SED shape: ', sed.shape, "| DOA shape: ", doa.shape)    #target shape sed=[batch,600(label frames),42] doa=[batch, 600(label frames), 126
+    print ('SED shape: ', sed.shape, "| DOA shape: ", doa.shape)    #target shape sed=[batch,600(label frames),42] doa=[batch, 600(label frames),126
 
 if __name__ == '__main__':
     test_model()
