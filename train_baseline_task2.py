@@ -39,6 +39,21 @@ def evaluate(model, device, criterion, dataloader):
             pbar.update(1)
     return test_loss
 
+def seld_loss(x, target, model, criterion_sed, criterion_doa):
+    '''
+    compute seld loss as weighted sum of sed (BCE) and doa (MSE) losses
+    '''
+    #divide labels into sed and doa  (which are joint from the preprocessing)
+    target_sed = target[:,:,:args.output_classes*3]
+    target_doa = target[:,:,args.output_classes*3:]
+    #compute loss
+    sed, doa = model(x)
+    loss_sed = criterion_sed(sed, target_sed) * args.sed_loss_weight
+    loss_doa = criterion_doa(sed, target_doa) * args.doa_loss_weight
+
+    return loss_sed + loss_doa
+
+
 
 def main(args):
     if args.use_cuda:
@@ -132,13 +147,10 @@ def main(args):
     #compute number of parameters
     model_params = sum([np.prod(p.size()) for p in model.parameters()])
     print ('Total paramters: ' + str(model_params))
-    #set up the loss function
-    if args.loss == "L1":
-        criterion = nn.L1Loss()
-    elif args.loss == "L2":
-        criterion = nn.MSELoss()
-    else:
-        raise NotImplementedError("Couldn't find this loss!")
+
+    #set up the loss functions
+    criterion_sed = nn.BCELoss()
+    criterion_doa = nn.MSELoss()
 
     #set up optimizer
     optimizer = Adam(params=model.parameters(), lr=args.lr)
@@ -158,8 +170,9 @@ def main(args):
     print('TRAINING START')
     train_loss_hist = []
     val_loss_hist = []
+    epoch = 0
     while state["worse_epochs"] < args.patience:
-        print("Training one epoch from iteration " + str(state["step"]))
+        print("Training one epoch from epoch " + str(epoch))
         avg_time = 0.
         model.train()
         train_loss = 0.
@@ -173,8 +186,9 @@ def main(args):
                 t = time.time()
                 # Compute loss for each instrument/model
                 optimizer.zero_grad()
-                outputs = model(x)
-                loss = criterion(outputs, target)
+                sed, doa = model(x)
+
+                loss = seld_loss(x, target, model, criterion_sed, criterion_doa)
                 loss.backward()
 
                 train_loss += (1. / float(example_num + 1)) * (loss - train_loss)
@@ -186,7 +200,7 @@ def main(args):
                 pbar.update(1)
 
             #PASS VALIDATION DATA
-            val_loss = evaluate(model, device, criterion, val_data)
+            val_loss = evaluate(model, device, criterion_sed, criterion_doa, val_data)
             print("VALIDATION FINISHED: LOSS: " + str(val_loss))
 
             # EARLY STOPPING CHECK
@@ -208,15 +222,16 @@ def main(args):
             #state["worse_epochs"] = 200
             train_loss_hist.append(train_loss.cpu().detach().numpy())
             val_loss_hist.append(val_loss.cpu().detach().numpy())
+            epoch += 1
 
     #LOAD BEST MODEL AND COMPUTE LOSS FOR ALL SETS
     print("TESTING")
     # Load best model based on validation loss
     state = load_model(model, None, state["best_checkpoint"], args.use_cuda)
     #compute loss on all set_output_size
-    train_loss = evaluate(model, device, criterion, tr_data)
-    val_loss = evaluate(model, device, criterion, val_data)
-    test_loss = evaluate(model, device, criterion, test_data)
+    train_loss = evaluate(model, device, criterion_sed, criterion_doa, tr_data)
+    val_loss = evaluate(model, device, criterion_sed, criterion_doa, val_data)
+    test_loss = evaluate(model, device, criterion_sed, criterion_doa, test_data)
 
     #PRINT AND SAVE RESULTS
     results = {'train_loss': train_loss.cpu().detach().numpy(),
@@ -262,21 +277,21 @@ if __name__ == '__main__':
     parser.add_argument('--fixed_seed', type=str, default='False')
     parser.add_argument('--load_model', type=str, default=None,
                         help='Reload a previously trained model (whole task model)')
-    parser.add_argument('--lr', type=float, default=0.00001)
+    parser.add_argument('--lr', type=float, default=0.001)
     parser.add_argument('--batch_size', type=int, default=3,
                         help="Batch size")
     parser.add_argument('--sr', type=int, default=32000,
                         help="Sampling rate")
-    parser.add_argument('--patience', type=int, default=40,
+    parser.add_argument('--patience', type=int, default=100,
                         help="Patience for early stopping on validation set")
-    parser.add_argument('--loss', type=str, default="L2",
-                        help="L1 or L2")
+
     #model parameters
     parser.add_argument('--architecture', type=str, default='seldnet',
                         help="model's architecture, can be vgg13, vgg16 or seldnet")
     parser.add_argument('--input_channels', type=int, default=8,
                         help="4/8 for 1/2 mics, multiply x2 if using also phase information")
     #the following parameters produce a prediction for each 100-msecs frame
+    #everithing as in the original SELDNet implementation, but the time pooling and time dim
     parser.add_argument('--time_dim', type=int, default=4800)
     parser.add_argument('--freq_dim', type=int, default=256)
     parser.add_argument('--output_classes', type=int, default=14)
@@ -288,6 +303,8 @@ if __name__ == '__main__':
     parser.add_argument('--dropout_perc', type=float, default=0.)
     parser.add_argument('--n_cnn_filters', type=float, default=64)
     parser.add_argument('--verbose', type=str, default='False')
+    parser.add_argument('--sed_loss_weight', type=float, default=1.)
+    parser.add_argument('--doa_loss_weight', type=float, default=50.)
 
 
     args = parser.parse_args()
