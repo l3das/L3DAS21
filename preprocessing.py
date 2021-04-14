@@ -206,7 +206,7 @@ def preprocessing_task2(args):
                                     max_label_distance)
 
             target.append(label)
-            print (samples.shape, np.max(label), np.min(label))
+            #print (samples.shape, np.max(label), np.min(label))
 
             count += 1
             if args.num_data is not None and count >= args.num_data:

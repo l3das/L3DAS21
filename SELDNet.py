@@ -28,13 +28,11 @@ class Fake_Seldnet(nn.Module):
         return x
 
 
-class Seldnet_vanilla(nn.Module):
-    def __init__(self, time_dim, freq_dim=256, output_classes=14,
-                 pool_size=[[8,2],[8,2],[2,2]], pool_time=False,
-                 rnn_size=128, n_rnn=2,
-                 fc_size=128, dropout_perc=0., n_cnn_filters=64,
-                 verbose=True):
-        super(Seldnet_vanilla, self).__init__()
+class Seldnet(nn.Module):
+    def __init__(self, time_dim, freq_dim=256, input_channels=8, output_classes=14,
+                 pool_size=[[8,2],[8,2],[2,2]], pool_time=False,  n_cnn_filters=64,
+                 rnn_size=128, n_rnn=2,fc_size=128, dropout_perc=0., verbose=False):
+        super(Seldnet, self).__init__()
         self.verbose = verbose
         self.time_dim = time_dim
         self.freq_dim = freq_dim
@@ -46,7 +44,7 @@ class Seldnet_vanilla(nn.Module):
             self.time_pooled_size = time_dim
         #building CNN feature extractor
         conv_layers = []
-        in_chans = 4
+        in_chans = input_channels
         for p in pool_size:
             curr_chans = n_cnn_filters
             if pool_time:
@@ -99,32 +97,26 @@ class Seldnet_vanilla(nn.Module):
             print ('sed prediction:  ', sed.shape)  #target dim: [batch, time, sed_output_size]
             print ('doa prediction: ', doa.shape)  #target dim: [batch, time, doa_output_size]
 
-        return x
+        return sed, doa
 
 def test_model():
+    '''
+    Test model's i/o shapes with the default prepocessing parameters
+    '''
+    #create dummy input spectrogram
     sample = np.ones((4,32000*60))
-
     nperseg = 512
     noverlap = 112
-
-    sp = uf.spectrum_fast(sample, nperseg=nperseg, noverlap=noverlap, output_phase=False)
-    #sp = np.reshape(sp, (sp.shape[1], sp.shape[0], sp.shape[2]))
+    sp = uf.spectrum_fast(sample, nperseg=nperseg, noverlap=noverlap, output_phase=True)
     sp = torch.tensor(sp.reshape(1,sp.shape[0],sp.shape[1],sp.shape[2])).float()
-
-    time_dim = 512
-    freq_dim = 256
-    x = torch.rand(1, 4, freq_dim, time_dim)
-    print ('In shapes ', sp.shape, x.shape)
-    print (sp.shape[-1])
-    print
-    model = Seldnet_vanilla(time_dim, pool_time=False)
-    model2 = Seldnet_vanilla(sp.shape[-1],pool_time=True)
-    #print (model)
-    x1 = model(x)
-    print ('SP')
-    x1 = model2(sp)
-
-    print (x1.shape)
+    #create model
+    #the dimension of the input spectrogram and the pooling/processing dimension of the model
+    #create 1 prediction (sed and doa) for each 100-milliseconds label frame
+    model = Seldnet(sp.shape[-1],pool_time=True, verbose=True)
+    print (model)
+    print ('Input shape: ', sp.shape)
+    sed, doa = model(sp)
+    print ('SED shape: ', sed.shape, "| DOA shape: ", doa.shape)    #target shape sed=[batch,600(label frames),42] doa=[batch, 600(label frames), 126
 
 if __name__ == '__main__':
     test_model()

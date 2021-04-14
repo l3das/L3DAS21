@@ -10,7 +10,7 @@ import torch.nn as nn
 from torch.optim import Adam
 from torchvision import models
 import torch.utils.data as utils
-from SELDNet import Seldnet_vanilla
+from SELDNet import Seldnet
 from utility_functions import load_model, save_model
 
 '''
@@ -21,8 +21,6 @@ according to the challenge metrics, please use evaluate_baseline_task2.py.
 Command line arguments define the model parameters, the dataset to use and
 where to save the obtained results.
 '''
-
-
 
 def evaluate(model, device, criterion, dataloader):
     #compute loss without backprop
@@ -40,6 +38,7 @@ def evaluate(model, device, criterion, dataloader):
             pbar.set_description("Current loss: {:.4f}".format(test_loss))
             pbar.update(1)
     return test_loss
+
 
 def main(args):
     if args.use_cuda:
@@ -119,7 +118,7 @@ def main(args):
         model.classifier[6] =nn.Linear(in_features=4096,
                                     out_features=features_dim, bias=True)
     if args.architecture == 'seldnet':
-        model = Seldnet_vanilla(time_dim=args.time_dim, freq_dim=args.freq_dim,
+        model = Seldnet(time_dim=args.time_dim, freq_dim=args.freq_dim, input_channels=args.input_channels,
                     output_classes=args.output_classes, pool_size=args.pool_size,
                     pool_time=args.pool_time, rnn_size=args.rnn_size, n_rnn=args.n_rnn,
                     fc_size=args.fc_size, dropout_perc=args.dropout_perc,
@@ -276,7 +275,7 @@ if __name__ == '__main__':
     parser.add_argument('--architecture', type=str, default='seldnet',
                         help="model's architecture, can be vgg13, vgg16 or seldnet")
     parser.add_argument('--input_channels', type=int, default=8,
-                        help="4 for 1-mic or 8 for 2-mics configuration")
+                        help="4/8 for 1/2 mics, multiply x2 if using also phase information")
     #the following parameters produce a prediction for each 100-msecs frame
     parser.add_argument('--time_dim', type=int, default=4800)
     parser.add_argument('--freq_dim', type=int, default=256)
