@@ -92,10 +92,13 @@ def main(args):
             TP += tp
             FP += fp
             FN += fn
+
             count += 1
+            '''
             if count % args.save_preds_freq == 0:
                 pass
                 #save preds
+            '''
             pbar.update(1)
     #compute total F score
     precision = TP / (TP + FP + sys.float_info.epsilon)
