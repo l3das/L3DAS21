@@ -156,7 +156,7 @@ if __name__ == '__main__':
     #model parameters
     parser.add_argument('--use_cuda', type=str, default='True')
     parser.add_argument('--gpu_id', type=int, default=0)
-    parser.add_argument('--architecture', type=str, default='seldnet',
+    parser.add_argument('--architecture', type=str, default='vgg16',
                         help="model's architecture, can be vgg13, vgg16 or seldnet")
     parser.add_argument('--input_channels', type=int, default=8,
                         help="4/8 for 1/2 mics, multiply x2 if using also phase information")
