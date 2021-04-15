@@ -86,7 +86,7 @@ def main(args):
             prediction = gen_submit_list(sed, doa)
             target = gen_submit_list(target[:,:args.num_classes*3], target[:,args.num_classes*3:])
 
-            tp, fp, fn = location_sensitive_detection(prediction, target, args.num_frames,
+            tp, fp, fn = location_sensitive_detection(target, target, args.num_frames,
                                                       args.spatial_threshold, False)
 
             TP += tp
@@ -103,31 +103,26 @@ def main(args):
     #compute total F score
     precision = TP / (TP + FP + sys.float_info.epsilon)
     recall = TP / (TP + FN + sys.float_info.epsilon)
+    F_score = (2 * precision * recall) / (precision + recall + sys.float_info.epsilon)
 
     print ('*******************************')
-    F_score = (2 * precision * recall) / (precision + recall + sys.float_info.epsilon)
     print ('F score: ', F_score)
     print ('Precision: ', precision)
     print ('Recall: ', recall)
 
     #visualize and save results
-    results = {'word error rate': WER,
-               'stoi': STOI,
-               'task 1 metric': METRIC
+    results = {'F score': F_score,
+               'Precision': precision,
+               'Recall': recall
                }
 
     print ('RESULTS')
     for i in results:
         print (i, results[i])
-    out_path = os.path.join(args.results_path, 'task1_metrics_dict.json')
+    out_path = os.path.join(args.results_path, 'task2_metrics_dict.json')
     np.save(out_path, results)
 
-    '''
-    baseline results
-    word error rate 0.4957875215172642
-    stoi 0.7070443256051635
-    task 1 metric 0.6056284020439507
-    '''
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
