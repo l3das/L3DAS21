@@ -255,7 +255,7 @@ if __name__ == '__main__':
     parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test_seldnet_lr0.00001',
                         help='Folder to write results dicts into')
     parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/Task2_test_seldnet0.00001',
-                        help='Folder to write checkpoints into')
+                        help='Folder to write checkpoints into') 
     #dataset parameters
 
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task2_predictors_train.pkl')
