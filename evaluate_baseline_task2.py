@@ -145,12 +145,12 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #i/o parameters
-    parser.add_argument('--model_path', type=str, default='RESULTS/Task2_test/checkpoint')
-    parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test/metrics')
+    parser.add_argument('--model_path', type=str, default='RESULTS/Task2_test_seldnet0.00001/checkpoint')
+    parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test_seldnet0.00001/metrics')
     parser.add_argument('--save_sounds_freq', type=int, default=None)
     #dataset parameters
-    parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task2_nophase/task2_predictors_test.pkl')
-    parser.add_argument('--target_path', type=str, default='DATASETS/processed/task2_nophase/task2_target_test.pkl')
+    parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task2_predictors_test.pkl')
+    parser.add_argument('--target_path', type=str, default='DATASETS/processed/task2_target_test.pkl')
     parser.add_argument('--sr', type=int, default=32000)
     parser.add_argument('--max_label_distance', type=float, default=2,
                          help='max value of target loc labels (since the model learnt to predict normalized loc labels)')
@@ -160,9 +160,9 @@ if __name__ == '__main__':
     #model parameters
     parser.add_argument('--use_cuda', type=str, default='True')
     parser.add_argument('--gpu_id', type=int, default=0)
-    parser.add_argument('--architecture', type=str, default='vgg13',
+    parser.add_argument('--architecture', type=str, default='seldnet',
                         help="model's architecture, can be vgg13, vgg16 or seldnet")
-    parser.add_argument('--input_channels', type=int, default=4,
+    parser.add_argument('--input_channels', type=int, default=8,
                         help="4/8 for 1/2 mics, multiply x2 if using also phase information")
     parser.add_argument('--num_classes', type=int, default=14)
     #the following parameters produce a prediction for each 100-msecs frame
