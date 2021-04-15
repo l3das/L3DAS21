@@ -151,8 +151,8 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #i/o parameters
-    parser.add_argument('--model_path', type=str, default='RESULTS/Task2_test_seldnet0.00001/checkpoint')
-    parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test_seldnet0.00001/metrics')
+    parser.add_argument('--model_path', type=str, default='RESULTS/Task2_test_seldnet/checkpoint')
+    parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test_seldnet/metrics')
     parser.add_argument('--save_sounds_freq', type=int, default=None)
     #dataset parameters
     parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task2_predictors_test.pkl')
