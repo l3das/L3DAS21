@@ -51,12 +51,14 @@ def main(args):
 
     #LOAD MODEL
     if args.architecture == 'vgg16':
+        features_dim = int(test_target.shape[-2] * test_target.shape[-1])
         model = models.vgg16()
         model.features[0] = nn.Conv2d(args.input_channels, 64, kernel_size=(3, 3),
                                     stride=(1, 1), padding=(1, 1))
         model.classifier[6] =nn.Linear(in_features=4096,
                                     out_features=features_dim, bias=True)
     if args.architecture == 'vgg13':
+        features_dim = int(test_target.shape[-2] * test_target.shape[-1])
         model = models.vgg13()
         model.features[0] = nn.Conv2d(args.input_channels, 64, kernel_size=(3, 3),
                                     stride=(1, 1), padding=(1, 1))
