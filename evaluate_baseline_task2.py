@@ -155,8 +155,8 @@ if __name__ == '__main__':
     parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test_seldnet0.00001/metrics')
     parser.add_argument('--save_sounds_freq', type=int, default=None)
     #dataset parameters
-    parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task2_predictors_test.pkl')
-    parser.add_argument('--target_path', type=str, default='DATASETS/processed/task2_target_test.pkl')
+    parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task2_predictors_train.pkl')
+    parser.add_argument('--target_path', type=str, default='DATASETS/processed/task2_target_train.pkl')
     parser.add_argument('--sr', type=int, default=32000)
     parser.add_argument('--max_label_distance', type=float, default=2,
                          help='max value of target loc labels (since the model learnt to predict normalized loc labels)')
