@@ -80,7 +80,7 @@ def spectrum_fast(x, nperseg=512, noverlap=128, window='hamming', cut_dc=True,
     #return np.rot90(np.abs(seg_stft))
     return output
 
-def matrix_to_label_task2(classes,locations,length=60.0):
+def matrix_to_submission_task2(classes,locations,length=60.0):
     '''
     Process SELDNet output matrix and create submittable list of frame-wise
     active sounds in the form
