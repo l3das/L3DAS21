@@ -150,7 +150,7 @@ if __name__ == '__main__':
     #the following parameters produce a prediction for each 100-msecs frame
     #everithing as in the original SELDNet implementation, but the time pooling and time dim
     parser.add_argument('--spatial_treshold', type=float, default=0.3,
-                        help="location threshold for considering a predicted sound correct"
+                        help="location threshold for considering a predicted sound correct")
 
 
     parser.add_argument('--time_dim', type=int, default=4800)
