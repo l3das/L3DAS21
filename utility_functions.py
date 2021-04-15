@@ -105,25 +105,57 @@ def gen_submission_list_task2(sed, doa, max_loc_value=2.,num_frames=600, num_cla
     return np.array(output)
 
 
-
-def label_to_submitlist(classes,locations,length=60.0):
+def csv_to_matrix_task2(path, class_dict, dur=60, step=0.1, max_overlap=3,
+                        max_loc_value=2.):
     '''
-    Process SELDNet output matrix and create submittable list of frame-wise
-    active sounds in the form
-    [frame, sound_class, x, y, z]
+    Read label csv file fro task 2 and
+    Output a matrix containing 100msecs frames, each filled with
+    the class ids of all sounds present and their location coordinates.
     '''
-    classes=np.reshape(classes,(classes.shape[1],classes.shape[2]))
-    locations=np.reshape(locations,(locations.shape[1],locations.shape[2]))
-    len_step=length/(classes.shape[0])
-    tot_numpy=[]
-    for i, (c, l) in enumerate(zip(classes, locations)):
-        time=np.asarray([i,len_step*i,len_step*(i+1)])
-        cl=np.concatenate((time,c,l),axis=-1)
-        tot_numpy.append(cl)
-    tot_numpy=np.asarray(tot_numpy)
-    pd.DataFrame(tot_numpy).to_csv("foo.csv",header=False,index=False)
+    tot_steps =int(dur/step)
+    num_classes = len(class_dict)
+    num_frames = int(dur/step)
+    cl = np.zeros((tot_steps, num_classes, max_overlap))
+    loc = np.zeros((tot_steps, num_classes, max_overlap, 3))
+    #quantize time stamp to step resolution
+    quantize = lambda x: round(float(x) / step) * step
+    #from quantized time resolution to output frame
+    get_frame = lambda x: int(np.interp(x, (0,dur),(0,num_frames)))
 
-    return tot_numpy
+    df = pd.read_csv(path)
+    print(df)
+    for index, s in df.iterrows():  #iterate each sound in the list
+        print (s)
+        #compute start and end frame position (quantizing)
+        start = quantize(s['Start'])
+        end = quantize(s['End'])
+        start_frame = get_frame(start)
+        end_frame = get_frame(end)
+        class_id = class_dict[s['Class']]  #int ID of sound class name
+        #print (s['Class'], class_id, start_frame, end_frame)
+        #write velues in the output matrix
+        sound_frames = np.arange(start_frame, end_frame+1)
+        for f in sound_frames:
+            pos = int(np.sum(cl[f][class_id])) #how many sounds of current class are present in current frame
+            cl[f][class_id][pos] = 1.      #write detection label
+            #write loc labels
+            loc[f][class_id][pos][0] = s['X']
+            loc[f][class_id][pos][1] = s['Y']
+            loc[f][class_id][pos][2] = s['Z']
+            #print (cl[f][class_id])
+
+    #reshape arrays
+    cl = np.reshape(cl, (num_frames, num_classes * max_overlap))
+    loc = np.reshape(loc, (num_frames, num_classes * max_overlap * 3))
+
+    loc = loc / max_loc_value  #normalize xyz (to use tanh in the model)
+
+    stacked = np.zeros((cl.shape[0],cl.shape[1]+loc.shape[1]))
+    stacked[:,:cl.shape[1]] = cl
+    stacked[:,cl.shape[1]:] = loc
+
+    return stacked
+
 
 def get_label_task2(path,frame_len,file_size,sample_rate,classes_,num_frames,
                     max_label_distance):

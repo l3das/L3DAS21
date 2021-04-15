@@ -4,7 +4,7 @@ import numpy as np
 import librosa
 import pickle
 import random
-from utility_functions import get_label_task2, segment_waveforms, spectrum_fast
+from utility_functions import get_label_task2, segment_waveforms, spectrum_fast, csv_to_matrix_task2
 
 '''
 Process the unzipped dataset folders and output numpy matrices (.pkl files)
@@ -12,6 +12,21 @@ containing the pre-processed data for task1 and task2, separately.
 Separate training, validation and test matrices are saved.
 Command line inputs define which task to process and its parameters.
 '''
+
+sound_classes_dict_task2 = {'Chink_and_clink':0,
+                           'Computer_keyboard':1,
+                           'Cupboard_open_or_close':2,
+                           'Drawer_open_or_close':3,
+                           'Female_speech_and_woman_speaking':4,
+                           'Finger_snapping':5,
+                           'Keys_jangling':6,
+                           'Knock':7,
+                           'Laughter':8,
+                           'Male_speech_and_man_speaking':9,
+                           'Printer':10,
+                           'Scissors':11,
+                           'Telephone':12,
+                           'Writing':13}
 
 def preprocessing_task1(args):
     '''
@@ -201,9 +216,12 @@ def preprocessing_task2(args):
             predictors.append(samples)
 
             #compute matrix label
+            label = csv_to_matrix_task2(target_path, sound_classes_dict_task2)
+            '''
             label = get_label_task2(target_path,0.1,file_size,sr_task2,
                                     sound_classes,int(file_size/(args.frame_len/1000.)),
                                     max_label_distance)
+            '''
 
             target.append(label)
             #print (samples.shape, np.max(label), np.min(label))
