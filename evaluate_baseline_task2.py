@@ -128,11 +128,18 @@ def main(args):
     recall = TP / (TP + FN + sys.float_info.epsilon)
     F_score = (2 * precision * recall) / (precision + recall + sys.float_info.epsilon)
 
+    results = {'precision': precision,
+               'recall': recall,
+               'F score': F_score
+               }
+
     print ('*******************************')
     print ('F score: ', F_score)
     print ('Precision: ', precision)
     print ('Recall: ', recall)
-
+    print  ('TP': , TP)
+    print  ('FP': , FP)
+    print  ('FN': , FP)
     #visualize and save results
     print ('RESULTS')
     for i in results:
