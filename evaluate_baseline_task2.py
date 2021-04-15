@@ -8,7 +8,7 @@ import torch
 import torch.utils.data as utils
 from metrics import location_sensitive_detection
 from SELDNet import Seldnet
-from utility_functions import load_model, save_model, gen_submit_list
+from utility_functions import load_model, save_model, gen_submission_list_task2
 
 '''
 Load pretrained model and compute the metrics for Task 1
@@ -48,6 +48,19 @@ def main(args):
         os.makedirs(args.results_path)
 
     #LOAD MODEL
+    if args.architecture == 'vgg16':
+        model = models.vgg16()
+        model.features[0] = nn.Conv2d(args.input_channels, 64, kernel_size=(3, 3),
+                                    stride=(1, 1), padding=(1, 1))
+        model.classifier[6] =nn.Linear(in_features=4096,
+                                    out_features=features_dim, bias=True)
+    if args.architecture == 'vgg13':
+        model = models.vgg13()
+        model.features[0] = nn.Conv2d(args.input_channels, 64, kernel_size=(3, 3),
+                                    stride=(1, 1), padding=(1, 1))
+        model.classifier[6] =nn.Linear(in_features=4096,
+                                    out_features=features_dim, bias=True)
+
     if args.architecture == 'seldnet':
         model = Seldnet(time_dim=args.time_dim, freq_dim=args.freq_dim, input_channels=args.input_channels,
                     output_classes=args.output_classes, pool_size=args.pool_size,
@@ -72,7 +85,13 @@ def main(args):
     with tqdm(total=len(dataloader) // 1) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
             x = x.to(device)
-            sed, doa = model(x)
+
+            if args.architecture == 'seldnet':
+                sed, doa = model(x)
+            else:
+                x = model(x)
+                sed = x[:,:args.num_classes*3]
+                doa = x[:,args.num_classes*3:]
             sed = sed.cpu().numpy().squeeze()
             doa = doa.cpu().numpy().squeeze()
             target = target.numpy().squeeze()
@@ -111,11 +130,6 @@ def main(args):
     print ('Recall: ', recall)
 
     #visualize and save results
-    results = {'F score': F_score,
-               'Precision': precision,
-               'Recall': recall
-               }
-
     print ('RESULTS')
     for i in results:
         print (i, results[i])
@@ -127,8 +141,8 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #i/o parameters
-    parser.add_argument('--model_path', type=str, default='RESULTS/Task2_test_seldnet/checkpoint')
-    parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test_seldnet/metrics')
+    parser.add_argument('--model_path', type=str, default='RESULTS/Task2_test/checkpoint')
+    parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test/metrics')
     parser.add_argument('--save_sounds_freq', type=int, default=None)
     #dataset parameters
     parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task2_predictors_test.pkl')

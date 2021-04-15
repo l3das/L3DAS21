@@ -80,7 +80,12 @@ def spectrum_fast(x, nperseg=512, noverlap=128, window='hamming', cut_dc=True,
     #return np.rot90(np.abs(seg_stft))
     return output
 
-def gen_submit_list(sed, doa, max_loc_value=2.,num_frames=600, num_classes=14, max_overlaps=3):
+def gen_submission_list_task2(sed, doa, max_loc_value=2.,num_frames=600, num_classes=14, max_overlaps=3):
+    '''
+    Process sed and doa output matrices (model's output) and generate a list of active sounds
+    and their location for every frame. The list has the correct format for the Challenge results
+    submission.
+    '''
     output = []
     for i, (c, l) in enumerate(zip(sed, doa)):  #iterate all time frames
         c = np.round(c)  #turn to 0/1 the class predictions with threshold 0.5
@@ -93,11 +98,9 @@ def gen_submit_list(sed, doa, max_loc_value=2.,num_frames=600, num_classes=14, m
                 if e != 0:  #if an avent is predicted
                     #append list to output: [time_frame, sound_class, x, y, z]
                     predicted_class = int(j/max_overlaps)
-                    print (predicted_class)
                     num_event = int(j%max_overlaps)
                     curr_list = [i, predicted_class, l[predicted_class][num_event][0], l[predicted_class][num_event][1], l[predicted_class][num_event][2]]
                     output.append(curr_list)
-                    #print (curr_list)
 
     return np.array(output)
 
