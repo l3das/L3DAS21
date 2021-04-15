@@ -6,7 +6,7 @@ import numpy as np
 import soundfile as sf
 import torch
 import torch.utils.data as utils
-from metrics import task1_metric
+from metrics import location_sensitive_detection
 from FaSNet import FaSNet_origin
 from utility_functions import load_model, save_model
 
@@ -125,6 +125,8 @@ if __name__ == '__main__':
     parser.add_argument('--sr', type=int, default=32000)
 
     #model parameters
+    parser.add_argument('--use_cuda', type=str, default=True)
+
     parser.add_argument('--architecture', type=str, default='seldnet',
                         help="model's architecture, can be vgg13, vgg16 or seldnet")
     parser.add_argument('--input_channels', type=int, default=8,
