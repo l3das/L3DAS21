@@ -80,7 +80,27 @@ def spectrum_fast(x, nperseg=512, noverlap=128, window='hamming', cut_dc=True,
     #return np.rot90(np.abs(seg_stft))
     return output
 
-def matrix_to_submission_task2(classes,locations,length=60.0):
+def gen_submit_list(sed, doa, max_loc_value=2.,num_frames=600, num_classes=14, max_overlaps=3):
+    output = []
+    for i, (c, l) in enumerate(zip(sed, doa)):  #iterate all time frames
+        c = np.round(c)  #turn to 0/1 the class predictions with threshold 0.5
+        l = l * max_loc_value  #turn back locations between -2,2 as in the original dataset
+        l = l.reshape(num_classes*max_overlaps, 3)
+        if np.sum(c) == 0:  #if no sounds are detected in a frame
+            pass            #don't append
+        else:
+            for j, e in enumerate(c):  #iterate all events
+                if e != 0:  #if an avent is predicted
+                    #append list to output: [time_frame, sound_class, x, y, z]
+                    predicted_class = int(j/max_overlaps)
+                    curr_list = [i, predicted_class, l[j][0], l[j][1], l[j][2]]
+                    output.append(curr_list)
+                    #print (curr_list)
+    return output
+
+
+
+def label_to_submitlist(classes,locations,length=60.0):
     '''
     Process SELDNet output matrix and create submittable list of frame-wise
     active sounds in the form

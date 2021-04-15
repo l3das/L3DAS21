@@ -8,7 +8,7 @@ import torch
 import torch.utils.data as utils
 from metrics import location_sensitive_detection
 from SELDNet import Seldnet
-from utility_functions import load_model, save_model, matrix_to_submission_task2
+from utility_functions import load_model, save_model, gen_submit_list
 
 '''
 Load pretrained model and compute the metrics for Task 1
@@ -82,8 +82,8 @@ def main(args):
             prediction[:,:sed.shape[1]] = sed
             prediction[:,sed.shape[1]:] = doa
             '''
-            prediction = matrix_to_submission_task2(sed, doa, length=60.0)
-            target = matrix_to_submission_task2(target[:,:args.num_classes*3], target[:,args.num_classes*3:], doa, length=60.0)
+            prediction = gen_submit_list(sed, doa)
+            target = gen_submit_list(target[:,:args.num_classes*3], target[:,args.num_classes*3:])
 
             tp, fp, fn = location_sensitive_detection(prediction, target, args.num_frames,
                                                       args.spatial_threshold, False)
