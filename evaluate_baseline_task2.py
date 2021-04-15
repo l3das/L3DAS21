@@ -106,8 +106,8 @@ def main(args):
             prediction[:,:sed.shape[1]] = sed
             prediction[:,sed.shape[1]:] = doa
             '''
-            prediction = gen_submit_list(sed, doa)
-            target = gen_submit_list(target[:,:args.num_classes*3], target[:,args.num_classes*3:])
+            prediction = gen_submission_list_task2(sed, doa)
+            target = gen_submission_list_task2(target[:,:args.num_classes*3], target[:,args.num_classes*3:])
 
             tp, fp, fn = location_sensitive_detection(prediction, target, args.num_frames,
                                                       args.spatial_threshold, False)
@@ -169,7 +169,6 @@ if __name__ == '__main__':
     #everithing as in the original SELDNet implementation, but the time pooling and time dim
     parser.add_argument('--spatial_threshold', type=float, default=0.5,
                         help="location threshold for considering a predicted sound correct")
-
 
     parser.add_argument('--time_dim', type=int, default=4800)
     parser.add_argument('--freq_dim', type=int, default=256)
