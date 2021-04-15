@@ -85,7 +85,7 @@ def gen_submit_list(sed, doa, max_loc_value=2.,num_frames=600, num_classes=14, m
     for i, (c, l) in enumerate(zip(sed, doa)):  #iterate all time frames
         c = np.round(c)  #turn to 0/1 the class predictions with threshold 0.5
         l = l * max_loc_value  #turn back locations between -2,2 as in the original dataset
-        l = l.reshape(num_classes*max_overlaps, 3)
+        l = l.reshape(num_classes, max_overlaps, 3)
         if np.sum(c) == 0:  #if no sounds are detected in a frame
             pass            #don't append
         else:
@@ -93,9 +93,11 @@ def gen_submit_list(sed, doa, max_loc_value=2.,num_frames=600, num_classes=14, m
                 if e != 0:  #if an avent is predicted
                     #append list to output: [time_frame, sound_class, x, y, z]
                     predicted_class = int(j/max_overlaps)
-                    curr_list = [i, predicted_class, l[j][0], l[j][1], l[j][2]]
+                    num_event = int(j%max_overlaps)
+                    curr_list = [i, predicted_class, l[predicted_class][num_event][0], l[j][num_event][1], l[j][num_event][2]]
                     output.append(curr_list)
                     #print (curr_list)
+
     return np.array(output)
 
 
