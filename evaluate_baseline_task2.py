@@ -126,7 +126,7 @@ if __name__ == '__main__':
 
     #model parameters
     parser.add_argument('--use_cuda', type=str, default='True')
-
+    parser.add_argument('--gpu_id', type=int, default=0)
     parser.add_argument('--architecture', type=str, default='seldnet',
                         help="model's architecture, can be vgg13, vgg16 or seldnet")
     parser.add_argument('--input_channels', type=int, default=8,
