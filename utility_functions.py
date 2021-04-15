@@ -99,7 +99,7 @@ def gen_submit_list(sed, doa, max_loc_value=2.,num_frames=600, num_classes=14, m
                     output.append(curr_list)
                     #print (curr_list)
 
-    return np.array(output)
+    return np.array(output) 
 
 
 
