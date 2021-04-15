@@ -96,8 +96,8 @@ def compute_se_metrics(predicted_folder, truth_folder, fs=16000):
 
 #TASK 2 METRICS
 
-def location_sensitive_detection(pred_path, true_path,
-                                 n_frames=100, spatial_threshold=0.3):
+def location_sensitive_detection(pred, true,
+                                 n_frames=100, spatial_threshold=0.3, from_csv=false):
     '''
     Compute TP, FP, FN of a single data point using
     location sensitive detection
@@ -105,11 +105,12 @@ def location_sensitive_detection(pred_path, true_path,
     TP = 0   #true positives
     FP = 0   #false positives
     FN = 0   #false negatives
-    #read csv files into numpy matrices
-    pred = pd.read_csv(pred_path, sep=',',header=None)
-    true = pd.read_csv(true_path, sep=',',header=None)
-    pred = pred.values
-    true = true.values
+    #read csv files into numpy matrices if required
+    if from_csv:
+        pred = pd.read_csv(pred, sep=',',header=None)
+        true = pd.read_csv(true, sep=',',header=None)
+        pred = pred.values
+        true = true.values
     #build empty dict with a key for each time frame
     frames = {}
     for i in range(n_frames):

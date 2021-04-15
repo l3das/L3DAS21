@@ -8,7 +8,7 @@ import torch
 import torch.utils.data as utils
 from metrics import location_sensitive_detection
 from SELDNet import Seldnet
-from utility_functions import load_model, save_model
+from utility_functions import load_model, save_model, matrix_to_submission_task2
 
 '''
 Load pretrained model and compute the metrics for Task 1
@@ -19,7 +19,6 @@ where to save the obtained results.
 
 
 def main(args):
-    max_label_distance = 2. #max value of target loc labels (since the model learnt to predict normalized loc labels)
     if args.use_cuda:
         device = 'cuda:' + str(args.gpu_id)
     else:
@@ -66,9 +65,8 @@ def main(args):
     #COMPUTING METRICS
     print("COMPUTING TASK 2 METRICS")
     TP = 0
-    FP = 0
+    FP_ = 0
     FN = 0
-    count = 0
     model.eval()
     with tqdm(total=len(dataloader) // 1) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
@@ -78,25 +76,34 @@ def main(args):
             doa = doa.cpu().numpy().squeeze()
             target = target.numpy().squeeze()
 
-            doa = doa * max_label_distance  #de-normalize xyz (we used tanh in the model)
-
+            doa = doa * args.max_label_distance  #de-normalize xyz (we used tanh in the model)
+            '''
             prediction = np.zeros((sed.shape[0],sed.shape[1]+doa.shape[1]))
             prediction[:,:sed.shape[1]] = sed
             prediction[:,sed.shape[1]:] = doa
+            '''
+            prediction = matrix_to_submission_task2(sed, doa, length=60.0)
+            target = matrix_to_submission_task2(target[:,:args.num_classes*3], target[:,args.num_classes*3:], doa, length=60.0)
 
-            print ('AAAAAAAAAA', sed.shape, doa.shape, prediction.shape, target.shape)
-            sys.exit(0)
-            if count % args.save_sounds_freq == 0:
-                sf.write(os.path.join(sounds_dir, str(example_num)+'.wav'), outputs, 16000, 'PCM_16')
-                print ('metric: ', metric, 'wer: ', wer, 'stoi: ', stoi)
+            tp, fp, fn = location_sensitive_detection(prediction, target, args.num_frames)
 
-            else:
-                print ('No voice activity on this frame')
-            pbar.set_description('M:' +  str(np.round(METRIC,decimals=3)) +
-                   ', W:' + str(np.round(WER,decimals=3)) + ', S: ' + str(np.round(STOI,decimals=3)))
+            TP += tp
+            FP += fp
+            FN += fn
+
+            if count % args.save_preds_freq == 0:
+                pass
+                #save preds
             pbar.update(1)
-            count += 1
+    #compute total F score
+    precision = TP / (TP + FP + sys.float_info.epsilon)
+    recall = TP / (TP + FN + sys.float_info.epsilon)
 
+    print ('*******************************')
+    F_score = (2 * precision * recall) / (precision + recall + sys.float_info.epsilon)
+    print ('F score: ', F_score)
+    print ('Precision: ', precision)
+    print ('Recall: ', recall)
 
     #visualize and save results
     results = {'word error rate': WER,
@@ -127,6 +134,10 @@ if __name__ == '__main__':
     parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task2_predictors_test.pkl')
     parser.add_argument('--target_path', type=str, default='DATASETS/processed/task2_target_test.pkl')
     parser.add_argument('--sr', type=int, default=32000)
+    parser.add_argument('--max_label_distance', type=float, default=2,
+                         help='max value of target loc labels (since the model learnt to predict normalized loc labels)')
+    parser.add_argument('--num_frames', type=int, default=600,
+                        help='total number of time frames in the predicted seld matrices. (600 for 1-minute sounds with 100msecs frames)')
 
     #model parameters
     parser.add_argument('--use_cuda', type=str, default='True')
@@ -135,8 +146,11 @@ if __name__ == '__main__':
                         help="model's architecture, can be vgg13, vgg16 or seldnet")
     parser.add_argument('--input_channels', type=int, default=8,
                         help="4/8 for 1/2 mics, multiply x2 if using also phase information")
+    parser.add_argument('--num_classes', type=int, default=14)
     #the following parameters produce a prediction for each 100-msecs frame
     #everithing as in the original SELDNet implementation, but the time pooling and time dim
+
+
     parser.add_argument('--time_dim', type=int, default=4800)
     parser.add_argument('--freq_dim', type=int, default=256)
     parser.add_argument('--output_classes', type=int, default=14)
