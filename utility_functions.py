@@ -123,9 +123,9 @@ def csv_to_matrix_task2(path, class_dict, dur=60, step=0.1, max_overlap=3,
     get_frame = lambda x: int(np.interp(x, (0,dur),(0,num_frames)))
 
     df = pd.read_csv(path)
-    print(df)
+    #print(df)
     for index, s in df.iterrows():  #iterate each sound in the list
-        print (s)
+        #print (s)
         #compute start and end frame position (quantizing)
         start = quantize(s['Start'])
         end = quantize(s['End'])
