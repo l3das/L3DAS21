@@ -65,7 +65,7 @@ def main(args):
     #COMPUTING METRICS
     print("COMPUTING TASK 2 METRICS")
     TP = 0
-    FP_ = 0
+    FP = 0
     FN = 0
     model.eval()
     with tqdm(total=len(dataloader) // 1) as pbar, torch.no_grad():
