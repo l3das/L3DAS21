@@ -137,9 +137,9 @@ def main(args):
     print ('F score: ', F_score)
     print ('Precision: ', precision)
     print ('Recall: ', recall)
-    print  ('TP': , TP)
-    print  ('FP': , FP)
-    print  ('FN': , FP)
+    print  ('TP: ' , TP)
+    print  ('FP: ' , FP)
+    print  ('FN: ' , FN)
     #visualize and save results
     print ('RESULTS')
     for i in results:
