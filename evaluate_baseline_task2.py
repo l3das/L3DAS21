@@ -19,6 +19,7 @@ where to save the obtained results.
 
 
 def main(args):
+    max_label_distance = 2. #max value of target loc labels (since the model learnt to predict normalized loc labels)
     if args.use_cuda:
         device = 'cuda:' + str(args.gpu_id)
     else:
@@ -63,11 +64,7 @@ def main(args):
     state = load_model(model, None, args.model_path, args.use_cuda)
 
     #COMPUTING METRICS
-    print("COMPUTING AVERAGE METRICS")
-    print ('M: Final Task 1 metric')
-    print ('W: Word Error Rate')
-    print ('S: Stoi')
-
+    print("COMPUTING TASK 2 METRICS")
     TP = 0
     FP = 0
     FN = 0
@@ -80,7 +77,14 @@ def main(args):
             sed = sed.cpu().numpy().squeeze()
             doa = doa.cpu().numpy().squeeze()
             target = target.numpy().squeeze()
-            print ('AAAAAAAAAA', sed.shape, doa.shape, target.shape)
+
+            doa = doa * max_label_distance  #de-normalize xyz (we used tanh in the model)
+
+            prediction = np.zeros((sed.shape[0],sed.shape[1]+doa.shape[1]))
+            prediction[:,:sed.shape[1]] = sed
+            prediction[:,sed.shape[1]:] = doa
+
+            print ('AAAAAAAAAA', sed.shape, doa.shape, prediction.shape, target.shape)
             sys.exit(0)
             if count % args.save_sounds_freq == 0:
                 sf.write(os.path.join(sounds_dir, str(example_num)+'.wav'), outputs, 16000, 'PCM_16')

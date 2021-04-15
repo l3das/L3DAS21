@@ -123,7 +123,7 @@ def main(args):
     state = load_model(model, None, args.model_path, args.use_cuda)
 
     #COMPUTING METRICS
-    print("COMPUTING AVERAGE METRICS")
+    print("COMPUTING TASK 1 METRICS")
     print ('M: Final Task 1 metric')
     print ('W: Word Error Rate')
     print ('S: Stoi')
