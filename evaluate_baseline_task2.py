@@ -5,6 +5,7 @@ from tqdm import tqdm
 import numpy as np
 import soundfile as sf
 import torch
+import torch.nn as nn
 import torch.utils.data as utils
 from torchvision import models
 from metrics import location_sensitive_detection
