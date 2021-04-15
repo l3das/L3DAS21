@@ -67,6 +67,7 @@ def main(args):
     TP = 0
     FP = 0
     FN = 0
+    count = 0
     model.eval()
     with tqdm(total=len(dataloader) // 1) as pbar, torch.no_grad():
         for example_num, (x, target) in enumerate(dataloader):
@@ -91,7 +92,7 @@ def main(args):
             TP += tp
             FP += fp
             FN += fn
-
+            count += 1
             if count % args.save_preds_freq == 0:
                 pass
                 #save preds

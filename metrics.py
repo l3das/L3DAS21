@@ -85,7 +85,6 @@ def compute_se_metrics(predicted_folder, truth_folder, fs=16000):
     average_wer = np.mean(WER)
     average_stoi = np.mean(STOI)
 
-
     print ('*******************************')
     print ('Task 1 metric: ', average_metric)
     print ('Word error rate: ', average_wer)
@@ -96,8 +95,8 @@ def compute_se_metrics(predicted_folder, truth_folder, fs=16000):
 
 #TASK 2 METRICS
 
-def location_sensitive_detection(pred, true,
-                                 n_frames=100, spatial_threshold=0.3, from_csv=False):
+def location_sensitive_detection(pred, true, n_frames=100, spatial_threshold=0.3,
+                                 from_csv=False verbose=False):
     '''
     Compute TP, FP, FN of a single data point using
     location sensitive detection
@@ -156,10 +155,11 @@ def location_sensitive_detection(pred, true,
         FN += fn
         FP += fp
 
-    print ('true positives: ', TP)
-    print ('false positives: ', FP)
-    print ('false negatives: ', FN)
-    print ('---------------------')
+    if verbose:
+        print ('true positives: ', TP)
+        print ('false positives: ', FP)
+        print ('false negatives: ', FN)
+        print ('---------------------')
 
     return TP, FP, FN
 
