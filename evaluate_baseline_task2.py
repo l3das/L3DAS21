@@ -7,7 +7,7 @@ import soundfile as sf
 import torch
 import torch.utils.data as utils
 from metrics import location_sensitive_detection
-from FaSNet import FaSNet_origin
+from SELDNet import Seldnet
 from utility_functions import load_model, save_model
 
 '''
