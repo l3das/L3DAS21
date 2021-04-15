@@ -164,7 +164,7 @@ def location_sensitive_detection(pred_path, true_path,
 
 def compute_seld_metrics(predicted_folder, truth_folder, n_frames=100, spatial_threshold=0.3):
     '''
-    compute F1 score for the whole set of submitted results based on the
+    compute F1 score from results folder of submitted results based on the
     location sensitive detection metric
     '''
     TP = 0
