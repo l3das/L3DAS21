@@ -97,7 +97,7 @@ def compute_se_metrics(predicted_folder, truth_folder, fs=16000):
 #TASK 2 METRICS
 
 def location_sensitive_detection(pred, true,
-                                 n_frames=100, spatial_threshold=0.3, from_csv=false):
+                                 n_frames=100, spatial_threshold=0.3, from_csv=False):
     '''
     Compute TP, FP, FN of a single data point using
     location sensitive detection

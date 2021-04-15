@@ -85,7 +85,8 @@ def main(args):
             prediction = matrix_to_submission_task2(sed, doa, length=60.0)
             target = matrix_to_submission_task2(target[:,:args.num_classes*3], target[:,args.num_classes*3:], doa, length=60.0)
 
-            tp, fp, fn = location_sensitive_detection(prediction, target, args.num_frames, args.spatial_threshold)
+            tp, fp, fn = location_sensitive_detection(prediction, target, args.num_frames,
+                                                      args.spatial_threshold, False)
 
             TP += tp
             FP += fp
