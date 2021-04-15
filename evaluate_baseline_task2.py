@@ -86,7 +86,7 @@ def main(args):
             prediction = gen_submit_list(sed, doa)
             target = gen_submit_list(target[:,:args.num_classes*3], target[:,args.num_classes*3:])
 
-            tp, fp, fn = location_sensitive_detection(target, target, args.num_frames,
+            tp, fp, fn = location_sensitive_detection(prediction, target, args.num_frames,
                                                       args.spatial_threshold, False)
 
             TP += tp
