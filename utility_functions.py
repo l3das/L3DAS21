@@ -95,7 +95,7 @@ def gen_submit_list(sed, doa, max_loc_value=2.,num_frames=600, num_classes=14, m
                     predicted_class = int(j/max_overlaps)
                     print (predicted_class)
                     num_event = int(j%max_overlaps)
-                    curr_list = [i, predicted_class, l[predicted_class][num_event][0], l[j][num_event][1], l[j][num_event][2]]
+                    curr_list = [i, predicted_class, l[predicted_class][num_event][0], l[predicted_class][num_event][1], l[predicted_class][num_event][2]]
                     output.append(curr_list)
                     #print (curr_list)
 
