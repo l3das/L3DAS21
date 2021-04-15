@@ -142,8 +142,7 @@ def main(args):
     print  ('FN: ' , FN)
     #visualize and save results
     print ('RESULTS')
-    for i in results:
-        print (i, results[i])
+
     out_path = os.path.join(args.results_path, 'task2_metrics_dict.json')
     np.save(out_path, results)
 
