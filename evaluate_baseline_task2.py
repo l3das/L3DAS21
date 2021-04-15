@@ -85,7 +85,7 @@ def main(args):
             prediction = matrix_to_submission_task2(sed, doa, length=60.0)
             target = matrix_to_submission_task2(target[:,:args.num_classes*3], target[:,args.num_classes*3:], doa, length=60.0)
 
-            tp, fp, fn = location_sensitive_detection(prediction, target, args.num_frames)
+            tp, fp, fn = location_sensitive_detection(prediction, target, args.num_frames, args.spatial_threshold)
 
             TP += tp
             FP += fp
@@ -149,6 +149,8 @@ if __name__ == '__main__':
     parser.add_argument('--num_classes', type=int, default=14)
     #the following parameters produce a prediction for each 100-msecs frame
     #everithing as in the original SELDNet implementation, but the time pooling and time dim
+    parser.add_argument('--spatial_treshold', type=float, default=0.3,
+                        help="location threshold for considering a predicted sound correct"
 
 
     parser.add_argument('--time_dim', type=int, default=4800)
