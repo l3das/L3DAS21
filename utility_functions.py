@@ -96,7 +96,7 @@ def gen_submit_list(sed, doa, max_loc_value=2.,num_frames=600, num_classes=14, m
                     curr_list = [i, predicted_class, l[j][0], l[j][1], l[j][2]]
                     output.append(curr_list)
                     #print (curr_list)
-    return output
+    return np.array(output)
 
 
 
