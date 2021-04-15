@@ -125,7 +125,7 @@ if __name__ == '__main__':
     parser.add_argument('--sr', type=int, default=32000)
 
     #model parameters
-    parser.add_argument('--use_cuda', type=str, default=True)
+    parser.add_argument('--use_cuda', type=str, default='True')
 
     parser.add_argument('--architecture', type=str, default='seldnet',
                         help="model's architecture, can be vgg13, vgg16 or seldnet")
