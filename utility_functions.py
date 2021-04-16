@@ -288,11 +288,6 @@ def segment_task2(predictors, target, predictors_len_segment=50*8, target_len_se
     cuts_predictors = np.arange(0,predictors.shape[-1], int(predictors_len_segment*overlap))  #points to cut
     cuts_target = np.arange(0,target.shape[-1], int(target_len_segment*overlap))  #points to cut
 
-    print (cuts_predictors)
-    print ('lflflflflflf')
-    print (cuts_target)
-    print (len(cuts_predictors), len(cuts_target))
-
     if len(cuts_predictors) != len(cuts_target):
         raise ValueError('Predictors and test frames should be selected to produce the same amount of frames')
     X = []
@@ -315,8 +310,8 @@ def segment_task2(predictors, target, predictors_len_segment=50*8, target_len_se
         X.append(cut_x)
         Y.append(cut_y)
 
-        print (start_p, end_p, '|', start_t, end_t)
-        print (cut_x.shape, cut_y.shape)
+        #print (start_p, end_p, '|', start_t, end_t)
+        #print (cut_x.shape, cut_y.shape)
 
     return X, Y
 
