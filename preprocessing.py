@@ -310,7 +310,7 @@ if __name__ == '__main__':
     #task2 only parameters
     #the following stft parameters produce 8 stft fframes per each label frame
     #if label frames are 100msecs, stft frames are 12.5 msecs
-    #data-points are segmented into 5-seconde windows (50 target frames, 50*8 stft frames)
+    #data-points are segmented into 15-seconde windows (150 target frames, 150*8 stft frames)
     parser.add_argument('--frame_len', type=int, default=100,
                         help='frame length for SELD evaluation (in msecs)')
 
