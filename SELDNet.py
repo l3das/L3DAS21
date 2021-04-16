@@ -109,6 +109,8 @@ def test_model():
     noverlap = 112
     sp = uf.spectrum_fast(sample, nperseg=nperseg, noverlap=noverlap, output_phase=True)
     sp = torch.tensor(sp.reshape(1,sp.shape[0],sp.shape[1],sp.shape[2])).float()
+    sp = sp[:,:,:,:50*8]  #segmented dimension
+
     #create model
     #the dimension of the input spectrogram and the pooling/processing dimension of the model
     #create 1 prediction (sed and doa) for each 100-milliseconds label frame
