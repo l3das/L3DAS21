@@ -41,6 +41,7 @@ Run these commands to obtain the matrices needed for our baseline models:
 python preprocessing.py --task 1 --input_path DATASETS/Task1 --training_set train100 --num_mics 1 --segmentation_len 2
 python preprocessing.py --task 2 --input_path DATASETS/Task2 --num_mics 1 --frame_len 100
 ```
+
 The two tasks of the challenge require different pre-processing.
 
 For **Task1** the function returns 2 numpy arrays contatining:
