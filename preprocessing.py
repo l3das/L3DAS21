@@ -4,8 +4,7 @@ import numpy as np
 import librosa
 import pickle
 import random
-from utility_functions import get_label_task2, segment_waveforms,
-                              spectrum_fast, csv_to_matrix_task2, segment_task2
+import utility_functions as uf
 
 '''
 Process the unzipped dataset folders and output numpy matrices (.pkl files)
@@ -91,7 +90,7 @@ def preprocessing_task1(args):
                         #segment longer file to shorter frames
                         #not padding if segmenting to avoid silence frames
                         segmentation_len_samps = int(sr_task1 * args.segmentation_len)
-                        predictors_cuts, target_cuts = segment_waveforms(samples, samples_target, segmentation_len_samps)
+                        predictors_cuts, target_cuts = uf.segment_waveforms(samples, samples_target, segmentation_len_samps)
                         for i in range(len(predictors_cuts)):
                             predictors.append(predictors_cuts[i])
                             target.append(target_cuts[i])
@@ -206,7 +205,7 @@ def preprocessing_task2(args):
                 samples = np.concatenate((samples,samples_B), axis=-2)
 
             #compute stft
-            stft = spectrum_fast(samples, nperseg=args.stft_nperseg,
+            stft = uf.spectrum_fast(samples, nperseg=args.stft_nperseg,
                                     noverlap=args.stft_noverlap,
                                     window=args.stft_window,
                                     output_phase=args.output_phase)
@@ -216,9 +215,9 @@ def preprocessing_task2(args):
 
 
             #compute matrix label
-            label = csv_to_matrix_task2(target_path, sound_classes_dict_task2)
+            label = uf.csv_to_matrix_task2(target_path, sound_classes_dict_task2)
             '''
-            label = get_label_task2(target_path,0.1,file_size,sr_task2,
+            label = uf.get_label_task2(target_path,0.1,file_size,sr_task2,
                                     sound_classes,int(file_size/(args.frame_len/1000.)),
                                     max_label_distance)
             '''
@@ -227,7 +226,7 @@ def preprocessing_task2(args):
             if args.predictors_len_segment is not None and args.target_len_segment is not None:
                 #segment longer file to shorter frames
                 #not padding if segmenting to avoid silence frames
-                predictors_cuts, target_cuts = segment_task2(stft, label, predictors_len_segment=args.predictors_len_segment,
+                predictors_cuts, target_cuts = uf.segment_task2(stft, label, predictors_len_segment=args.predictors_len_segment,
                                                 target_len_segment=args.target_len_segment, overlap=args.segment_overlap)
 
                 for i in range(len(predictors_cuts)):
