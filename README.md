@@ -11,7 +11,7 @@ For further information please refer to the challenge [website](https://www.l3da
 ## Installation
 Our code is based on Python 3.7.
 
-To install all Python dependencies run:
+To install all required dependencies run:
 ```bash
 pip install -r requirements.txt
 ```
