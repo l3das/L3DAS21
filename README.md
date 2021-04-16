@@ -54,7 +54,7 @@ For **Task2** the function returns 2 numpy arrays contatining:
 
 
 ## Baseline models
-We provide baseline models for both tasks, implemented in PyTorch. For task 1 we use a Filter and Sum Network (FaSNet) and for task 2 a SELDNet architecture. Please refer to the challenge paper [link] for additional information about our models.
+We provide baseline models for both tasks, implemented in PyTorch. For task 1 we use a Filter and Sum Network (FaSNet) and for task 2 a SELDNet architecture. 
 
 To train our baseline models with the default arguments run:
 ```bash
