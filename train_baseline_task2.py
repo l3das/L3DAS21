@@ -150,7 +150,7 @@ def main(args):
                     output_classes=args.output_classes, pool_size=args.pool_size,
                     pool_time=args.pool_time, rnn_size=args.rnn_size, n_rnn=args.n_rnn,
                     fc_size=args.fc_size, dropout_perc=args.dropout_perc,
-                    n_cnn_filters=args.n_cnn_filters, verbose=args.verbose)
+                    verbose=args.verbose)
 
 
     if args.use_cuda:
