@@ -260,9 +260,9 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test_seldnet_segmented_15secs',
+    parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test_seldnetaugmented',
                         help='Folder to write results dicts into')
-    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/Task2_test_seldnet_segmented_15secs',
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/Task2_test_seldnetaugmented',
                         help='Folder to write checkpoints into')
     #dataset parameters
 
