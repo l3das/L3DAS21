@@ -324,9 +324,9 @@ if __name__ == '__main__':
     parser.add_argument('--output_phase', type=str, default='True',
                         help='concatenate phase channels to stft matrix')
 
-    parser.add_argument('--predictors_len_segment', type=int, default=150*8,
+    parser.add_argument('--predictors_len_segment', type=int, default=None,
                         help='number of segmented frames for stft data')
-    parser.add_argument('--target_len_segment', type=int, default=150,
+    parser.add_argument('--target_len_segment', type=int, default=None,
                         help='number of segmented frames for stft data')
     parser.add_argument('--segment_overlap', type=float, default=1.,
                         help='overlap factor for segmentation')
