@@ -18,7 +18,17 @@ of the L3DAS21 challenge. The metric is: (STOI+(1-WER))/2
 Command line arguments define the model parameters, the dataset to use and
 where to save the obtained results.
 '''
-
+def predict_seld((predictors, model, device,
+                  predictors_len_segment=args.predictors_len_segment,
+                  target_len_segment=args.target_len_segment):
+    '''
+    Predict seld matrices for an audio file using a model that processes
+    shorter segments
+    '''
+    def pad(x, d):  #3d pad, padding last dim
+        pad = np.zeros((x.shape[0], x.shape[1], d))
+        pad[:,:,:x.shape[-1]] = x
+        return pad
 
 def main(args):
     if args.use_cuda:
@@ -175,6 +185,11 @@ if __name__ == '__main__':
     #everithing as in the original SELDNet implementation, but the time pooling and time dim
     parser.add_argument('--spatial_threshold', type=float, default=0.5,
                         help="location threshold for considering a predicted sound correct")
+
+    parser.add_argument('--predictors_len_segment', type=int, default=50*8,
+                        help='number of segmented frames for stft data')
+    parser.add_argument('--target_len_segment', type=int, default=50,
+                        help='number of segmented frames for stft data')
 
     parser.add_argument('--time_dim', type=int, default=4800)
     parser.add_argument('--freq_dim', type=int, default=256)

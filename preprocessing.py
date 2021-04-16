@@ -327,7 +327,7 @@ if __name__ == '__main__':
                         help='number of segmented frames for stft data')
     parser.add_argument('--target_len_segment', type=int, default=50,
                         help='number of segmented frames for stft data')
-    parser.add_argument('--segment_overlap', type=float, default=0.5,
+    parser.add_argument('--segment_overlap', type=float, default=1.,
                         help='overlap factor for segmentation')
 
     args = parser.parse_args()
