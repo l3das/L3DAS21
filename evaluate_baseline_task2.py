@@ -19,7 +19,7 @@ Command line arguments define the model parameters, the dataset to use and
 where to save the obtained results.
 '''
 def gen_segmented_prediction(predictors, model, device,
-                  length=args.predictors_len_segment):
+                  length):
     '''
     Predict seld matrices for an audio file using a model that processes
     shorter segments
