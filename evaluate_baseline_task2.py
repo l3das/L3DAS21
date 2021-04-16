@@ -18,7 +18,7 @@ of the L3DAS21 challenge. The metric is: (STOI+(1-WER))/2
 Command line arguments define the model parameters, the dataset to use and
 where to save the obtained results.
 '''
-def gen_segmented_prediction((predictors, model, device,
+def gen_segmented_prediction(predictors, model, device,
                   length=args.predictors_len_segment):
     '''
     Predict seld matrices for an audio file using a model that processes
