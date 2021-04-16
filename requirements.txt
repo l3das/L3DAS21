@@ -4,7 +4,7 @@ numpy==1.18.1
 pandas==1.0.3
 pystoi==0.3.3
 scipy==1.4.1
-soundfile
+soundfile==0.10.3.post1
 torch==1.0.1
 transformers==4.4.2
 tqdm==4.36.1
