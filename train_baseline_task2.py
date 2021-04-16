@@ -252,10 +252,10 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test_seldnet_lr0.00001',
+    parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test_seldnet_segmented',
                         help='Folder to write results dicts into')
-    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/Task2_test_seldnet0.00001',
-                        help='Folder to write checkpoints into') 
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/Task2_test_seldnet_segmented',
+                        help='Folder to write checkpoints into')
     #dataset parameters
 
     parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task2_predictors_train.pkl')
@@ -279,8 +279,8 @@ if __name__ == '__main__':
     parser.add_argument('--fixed_seed', type=str, default='False')
     parser.add_argument('--load_model', type=str, default=None,
                         help='Reload a previously trained model (whole task model)')
-    parser.add_argument('--lr', type=float, default=0.00001)
-    parser.add_argument('--batch_size', type=int, default=4,
+    parser.add_argument('--lr', type=float, default=0.001)
+    parser.add_argument('--batch_size', type=int, default=18,
                         help="Batch size")
     parser.add_argument('--sr', type=int, default=32000,
                         help="Sampling rate")
