@@ -75,5 +75,5 @@ Example:
 ```python
 import metrics
 task1_metric = metrics.task1_metric(prediction_vector, target_vector)
-task2_metric = metrics.location_sensitive_detection(prediction_vector, target_vector)
+_,_,_,task2_metric = metrics.location_sensitive_detection(prediction_vector, target_vector)
 ```
