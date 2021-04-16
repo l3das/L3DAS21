@@ -120,7 +120,7 @@ def csv_to_matrix_task2(path, class_dict, dur=60, step=0.1, max_overlap=3,
     #quantize time stamp to step resolution
     quantize = lambda x: round(float(x) / step) * step
     #from quantized time resolution to output frame
-    get_frame = lambda x: int(np.interp(x, (0,dur),(0,num_frames)))
+    get_frame = lambda x: int(np.interp(x, (0,dur),(0,num_frames-1)))
 
     df = pd.read_csv(path)
     #print(df)
@@ -273,6 +273,52 @@ def segment_waveforms(predictors, target, length):
         Y.append(cut_y)
     return X, Y
 
+def segment_task2(predictors, target, predictors_len_segment=50*8, target_len_segment=50, overlap=0.5):
+    '''
+    Segment input stft and target matrix of task 2 into shorter chunks.
+    Default parameters cut 5-seconds frames.
+    '''
+
+    def pad(x, d):  #3d pad, padding last dim
+        pad = np.zeros((x.shape[0], x.shape[1], d))
+        pad[:,:,:x.shape[-1]] = x
+        return pad
+
+    target = target.reshape(1, target.shape[-1], target.shape[0])  #add dim and invert target dims so that the dim to cut is the same of predictors
+    cuts_predictors = np.arange(0,predictors.shape[-1], int(predictors_len_segment*overlap))  #points to cut
+    cuts_target = np.arange(0,target.shape[-1], int(target_len_segment*overlap))  #points to cut
+
+    print (cuts_predictors)
+    print ('lflflflflflf')
+    print (cuts_target)
+    print (len(cuts_predictors), len(cuts_target))
+
+    if len(cuts_predictors) != len(cuts_target):
+        raise ValueError('Predictors and test frames should be selected to produce the same amount of frames')
+    X = []
+    Y = []
+    for i in range(len(cuts_predictors)):
+        start_p = cuts_predictors[i]
+        start_t = cuts_target[i]
+        end_p = start_p + predictors_len_segment
+        end_t = start_t + target_len_segment
+
+        if end_p <= predictors.shape[-1]:  #if chunk is not exceeding buffer size
+            cut_x = predictors[:,:,start_p:end_p]
+            cut_y = target[:,:,start_t:end_t]
+        else: #if exceeding, zero padding is needed
+            cut_x = pad(predictors[:,:,start_p:], predictors_len_segment)
+            cut_y = pad(target[:,:,start_t:], target_len_segment)
+
+        cut_y = np.reshape(cut_y, (cut_y.shape[-1], cut_y.shape[1]))  #unsqueeze and revert
+
+        X.append(cut_x)
+        Y.append(cut_y)
+
+        print (start_p, end_p, '|', start_t, end_t)
+        print (cut_x.shape, cut_y.shape)
+
+    return X, Y
 
 def gen_seld_out(n_frames, n_overlaps=3, n_classes=14):
     '''

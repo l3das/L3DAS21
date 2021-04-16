@@ -4,7 +4,8 @@ import numpy as np
 import librosa
 import pickle
 import random
-from utility_functions import get_label_task2, segment_waveforms, spectrum_fast, csv_to_matrix_task2
+from utility_functions import get_label_task2, segment_waveforms,
+                              spectrum_fast, csv_to_matrix_task2, segment_task2
 
 '''
 Process the unzipped dataset folders and output numpy matrices (.pkl files)
@@ -205,7 +206,7 @@ def preprocessing_task2(args):
                 samples = np.concatenate((samples,samples_B), axis=-2)
 
             #compute stft
-            samples = spectrum_fast(samples, nperseg=args.stft_nperseg,
+            stft = spectrum_fast(samples, nperseg=args.stft_nperseg,
                                     noverlap=args.stft_noverlap,
                                     window=args.stft_window,
                                     output_phase=args.output_phase)
@@ -213,7 +214,6 @@ def preprocessing_task2(args):
             #samples = np.reshape(samples, (samples.shape[1], samples.shape[0],
             #                     samples.shape[2]))
 
-            predictors.append(samples)
 
             #compute matrix label
             label = csv_to_matrix_task2(target_path, sound_classes_dict_task2)
@@ -223,7 +223,22 @@ def preprocessing_task2(args):
                                     max_label_distance)
             '''
 
-            target.append(label)
+            #segment into shorter frames
+            if args.predictors_len_segment is not None and args.target_len_segment is not None:
+                #segment longer file to shorter frames
+                #not padding if segmenting to avoid silence frames
+                predictors_cuts, target_cuts = segment_task2(stft, label, predictors_len_segment=args.predictors_len_segment,
+                                                target_len_segment=args.target_len_segment, overlap=args.segment_overlap)
+
+                for i in range(len(predictors_cuts)):
+                    predictors.append(predictors_cuts[i])
+                    target.append(target_cuts[i])
+                    #print (predictors_cuts[i].shape, target_cuts[i].shape)
+            else:
+
+                predictors.append(stft)
+                target.append(label)
+
             #print (samples.shape, np.max(label), np.min(label))
 
             count += 1
@@ -286,15 +301,20 @@ if __name__ == '__main__':
                         help='how many datapoints per set. 0 means all available data')
 
     #task1 only parameters
+    #the following parameters produce 2-seconds waveform frames without overlap,
+    #use only the train100 training set.
     parser.add_argument('--training_set', type=str, default='train100',
                         help='which training set: train100, train360 or both')
-    parser.add_argument('--segmentation_len', type=float, default=None,
+    parser.add_argument('--segmentation_len', type=float, default=2,
                         help='length of segmented frames in seconds')
+
     #task2 only parameters
-    parser.add_argument('--frame_len', type=int, default=100,
-                        help='frame length for SELD evaluation (in msecs)')
     #the following stft parameters produce 8 stft fframes per each label frame
     #if label frames are 100msecs, stft frames are 12.5 msecs
+    #data-points are segmented into 5-seconde windows (50 target frames, 50*8 stft frames)
+    parser.add_argument('--frame_len', type=int, default=100,
+                        help='frame length for SELD evaluation (in msecs)')
+
     parser.add_argument('--stft_nperseg', type=int, default=512,
                         help='num of stft frames')
     parser.add_argument('--stft_noverlap', type=int, default=112,
@@ -303,6 +323,13 @@ if __name__ == '__main__':
                         help='stft window_type')
     parser.add_argument('--output_phase', type=str, default='True',
                         help='concatenate phase channels to stft matrix')
+
+    parser.add_argument('--predictors_len_segment', type=int, default=50*8,
+                        help='number of segmented frames for stft data')
+    parser.add_argument('--target_len_segment', type=int, default=50,
+                        help='number of segmented frames for stft data')
+    parser.add_argument('--segment_overlap', type=float, default=0.5,
+                        help='overlap factor for segmentation')
 
     args = parser.parse_args()
 
