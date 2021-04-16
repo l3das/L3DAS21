@@ -102,7 +102,7 @@ class Seldnet(nn.Module):
 class Seldnet_augmented(nn.Module):
     def __init__(self, time_dim, freq_dim=256, input_channels=4, output_classes=14,
                  pool_size=[[8,2],[8,2],[2,2],[1,1]], cnn_filters=[64,128,256,512], pool_time=False,
-                 rnn_size=256, n_rnn=3, fc_size=1024, dropout_perc=0., verbose=False):
+                 rnn_size=256, n_rnn=3, fc_size=1024, dropout_perc=0.3, verbose=False):
         super(Seldnet_augmented, self).__init__()
         self.verbose = verbose
         self.time_dim = time_dim
@@ -189,7 +189,7 @@ def test_model():
     sample = np.ones((4,32000*60))
     nperseg = 512
     noverlap = 112
-    sp = uf.spectrum_fast(sample, nperseg=nperseg, noverlap=noverlap, output_phase=True)
+    sp = uf.spectrum_fast(sample, nperseg=nperseg, noverlap=noverlap, output_phase=False)
     sp = torch.tensor(sp.reshape(1,sp.shape[0],sp.shape[1],sp.shape[2])).float()
     #sp = sp[:,:,:,:50*8]  #segmented dimension
 
