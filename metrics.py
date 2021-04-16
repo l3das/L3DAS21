@@ -95,7 +95,7 @@ def compute_se_metrics(predicted_folder, truth_folder, fs=16000):
 
 #TASK 2 METRICS
 
-def location_sensitive_detection(pred, true, n_frames=100, spatial_threshold=0.3,
+def location_sensitive_detection(true, pred, n_frames=100, spatial_threshold=0.3,
                                  from_csv=False, verbose=False):
     '''
     Compute TP, FP, FN of a single data point using
@@ -155,13 +155,32 @@ def location_sensitive_detection(pred, true, n_frames=100, spatial_threshold=0.3
         FN += fn
         FP += fp
 
+    precision = TP / (TP + FP + sys.float_info.epsilon)
+    recall = TP / (TP + FN + sys.float_info.epsilon)
+    F_score = (2 * precision * recall) / (precision + recall + sys.float_info.epsilon)
+
+    results = {'precision': precision,
+               'recall': recall,
+               'F score': F_score
+               }
+
+
     if verbose:
         print ('true positives: ', TP)
         print ('false positives: ', FP)
         print ('false negatives: ', FN)
         print ('---------------------')
 
-    return TP, FP, FN
+
+        print ('*******************************')
+        print ('F score: ', F_score)
+        print ('Precision: ', precision)
+        print ('Recall: ', recall)
+        print  ('TP: ' , TP)
+        print  ('FP: ' , FP)
+        print  ('FN: ' , FN)
+
+    return TP, FP, FN, F_score
 
 def compute_seld_metrics(predicted_folder, truth_folder, n_frames=100, spatial_threshold=0.3):
     '''

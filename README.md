@@ -68,7 +68,14 @@ python evaluate_baseline_task1.py
 ```
 ## Evaluaton metrics
 Our evaluation metrics for both tasks are included in the **metrics.py** script.
+The function **location_sensitive_detection** and **task1_metric** compute the metric for task1 and task 2, respectively. The default arguments reflect the challenge requirements.
 
+Example:
+```python
+import metrics
+task1_metric = metrics.task1_metric(prediction_vector, target_vector)
+task2_metric = metrics.location_sensitive_detection(prediction_vector, target_vector)
+```
 
 ## Submission shape validation
 The file **validate_submission.py** provides functions to assess wether the files to be submitted for the 2 tasks have the correct naming, format, and shape.
