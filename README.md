@@ -3,7 +3,7 @@ This repository supports the L3DAS21 challenge and is aimed at downloading the d
 We provide easy-to-use instruction to produce the results included in our paper.
 Moreover, we extensively commented our code for easy customization.
 
-For further information please refer to the challenge [website](https://www.l3das.com/mlsp2021/index.html).
+For further information please refer to the challenge [website](https://www.l3das.com/mlsp2021/index.html) and to the challenge [paper](https://arxiv.org/abs/2104.05499).
 
 **THIS REPO IS STILL UNDER DEVELOPMENT. WE WILL RELEASE THE BASILINE AND EVALUATION CODE FOR THE TASK 2 VERY SOON!**
 
