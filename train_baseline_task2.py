@@ -146,10 +146,7 @@ def main(args):
                     n_cnn_filters=args.n_cnn_filters, verbose=args.verbose)
     if args.architecture == 'seldnet_augmented':
         n_time_frames = test_predictors.shape[-1]
-        model = Seldnet_augmented(time_dim=n_time_frames, freq_dim=args.freq_dim, input_channels=args.input_channels,
-                    output_classes=args.output_classes, pool_size=args.pool_size,
-                    pool_time=args.pool_time, rnn_size=args.rnn_size, n_rnn=args.n_rnn,
-                    fc_size=args.fc_size, dropout_perc=args.dropout_perc,
+        model = Seldnet_augmented(time_dim=n_time_frames,
                     verbose=args.verbose)
 
 
