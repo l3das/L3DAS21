@@ -18,7 +18,7 @@ of the L3DAS21 challenge. The metric is: (STOI+(1-WER))/2
 Command line arguments define the model parameters, the dataset to use and
 where to save the obtained results.
 '''
-def predict_seld((predictors, model, device,
+def gen_segmented_prediction((predictors, model, device,
                   length=args.predictors_len_segment):
     '''
     Predict seld matrices for an audio file using a model that processes
@@ -54,6 +54,8 @@ def predict_seld((predictors, model, device,
         else:
             recon_sed = np.concatenate((recon_sed, sed), axis=-1)
             recon_doa = np.concatenate((recon_sed, doa), axis=-1)
+
+    return recon_sed, recon_doa
 
 
 def main(args):
@@ -126,12 +128,15 @@ def main(args):
         for example_num, (x, target) in enumerate(dataloader):
             x = x.to(device)
 
+
             if args.architecture == 'seldnet':
                 sed, doa = model(x)
             else:
                 x = model(x)
                 sed = x[:,:args.num_classes*3]
                 doa = x[:,args.num_classes*3:]
+
+
             sed = sed.cpu().numpy().squeeze()
             doa = doa.cpu().numpy().squeeze()
             target = target.numpy().squeeze()
@@ -187,8 +192,8 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #i/o parameters
-    parser.add_argument('--model_path', type=str, default='RESULTS/Task2_test_seldnet/checkpoint')
-    parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test_seldnet/metrics')
+    parser.add_argument('--model_path', type=str, default='RESULTS/Task2_test_seldnet_segmented_15secs/checkpoint')
+    parser.add_argument('--results_path', type=str, default='RESULTS/Task2_test_seldnet_segmented_15secs/metrics')
     parser.add_argument('--save_sounds_freq', type=int, default=None)
     #dataset parameters
     parser.add_argument('--predictors_path', type=str, default='DATASETS/processed/task2_predictors_test.pkl')
@@ -212,9 +217,9 @@ if __name__ == '__main__':
     parser.add_argument('--spatial_threshold', type=float, default=0.5,
                         help="location threshold for considering a predicted sound correct")
 
-    parser.add_argument('--predictors_len_segment', type=int, default=50*8,
+    parser.add_argument('--predictors_len_segment', type=int, default=150*8,
                         help='number of segmented frames for stft data')
-    parser.add_argument('--target_len_segment', type=int, default=50,
+    parser.add_argument('--target_len_segment', type=int, default=150,
                         help='number of segmented frames for stft data')
 
     parser.add_argument('--time_dim', type=int, default=4800)
