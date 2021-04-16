@@ -104,7 +104,8 @@ def main(args):
                                     out_features=features_dim, bias=True)
 
     if args.architecture == 'seldnet':
-        model = Seldnet(time_dim=args.time_dim, freq_dim=args.freq_dim, input_channels=args.input_channels,
+        n_time_frames = test_predictors.shape[-1]
+        model = Seldnet(time_dim=n_time_frames, freq_dim=args.freq_dim, input_channels=args.input_channels,
                     output_classes=args.output_classes, pool_size=args.pool_size,
                     pool_time=args.pool_time, rnn_size=args.rnn_size, n_rnn=args.n_rnn,
                     fc_size=args.fc_size, dropout_perc=args.dropout_perc,
