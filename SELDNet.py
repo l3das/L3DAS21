@@ -101,7 +101,7 @@ class Seldnet(nn.Module):
 
 class Seldnet_augmented(nn.Module):
     def __init__(self, time_dim, freq_dim=256, input_channels=4, output_classes=14,
-                 pool_size=[[8,2],[8,2],[2,2],[1,1]], cnn_filters=[64,128,256,512], pool_time=False,
+                 pool_size=[[8,2],[8,2],[2,2],[1,1]], cnn_filters=[64,128,256,512], pool_time=True,
                  rnn_size=256, n_rnn=3, fc_size=1024, dropout_perc=0.3, verbose=False):
         super(Seldnet_augmented, self).__init__()
         self.verbose = verbose
