@@ -102,7 +102,7 @@ class Seldnet(nn.Module):
 class Seldnet_augmented(nn.Module):
     def __init__(self, time_dim, freq_dim=256, input_channels=8, output_classes=14,
                  pool_size=[[8,2],[8,2],[2,2],[1,1]], n_cnn_filters=[64,128,256,512], pool_time=False,
-                 rnn_size=128, n_rnn=2,fc_size=128, dropout_perc=0., verbose=False):
+                 rnn_size=256, n_rnn=3, fc_size=1024, dropout_perc=0., verbose=False):
         super(Seldnet_augmented, self).__init__()
         self.verbose = verbose
         self.time_dim = time_dim
@@ -127,7 +127,7 @@ class Seldnet_augmented(nn.Module):
                 nn.Sequential(
                     nn.Conv2d(in_chans, out_channels=curr_chans,
                                 kernel_size=3, stride=1, padding=1),  #padding 1 = same with kernel = 3
-                    nn.BatchNorm2d(n_cnn_filters),
+                    nn.BatchNorm2d(c),
                     nn.ReLU(),
                     nn.MaxPool2d(pool),
                     nn.Dropout(dropout_perc)))
@@ -135,17 +135,27 @@ class Seldnet_augmented(nn.Module):
 
         self.cnn = nn.Sequential(*conv_layers)
 
-        self.rnn = nn.GRU(128, rnn_size, num_layers=n_rnn, batch_first=True,
+        self.rnn = nn.GRU(1024, rnn_size, num_layers=n_rnn, batch_first=True,
                           bidirectional=True, dropout=dropout_perc)
 
         self.sed = nn.Sequential(
-                    nn.Linear(256, fc_size),
+                    nn.Linear(rnn_size*2, fc_size),
+                    nn.ReLU(),
+                    nn.Linear(fc_size, fc_size),
+                    nn.ReLU(),
+                    nn.Linear(fc_size, fc_size),
+                    nn.ReLU(),
                     nn.Dropout(dropout_perc),
                     nn.Linear(fc_size, doa_output_size),
                     nn.Sigmoid())
 
         self.doa = nn.Sequential(
-                    nn.Linear(256, fc_size),
+                    nn.Linear(rnn_size*2, fc_size),
+                    nn.ReLU(),
+                    nn.Linear(fc_size, fc_size),
+                    nn.ReLU(),
+                    nn.Linear(fc_size, fc_size),
+                    nn.ReLU(),
                     nn.Dropout(dropout_perc),
                     nn.Linear(fc_size, sed_output_size),
                     nn.Tanh())

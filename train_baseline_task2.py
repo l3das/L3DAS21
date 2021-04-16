@@ -10,7 +10,7 @@ import torch.nn as nn
 from torch.optim import Adam
 from torchvision import models
 import torch.utils.data as utils
-from SELDNet import Seldnet
+from SELDNet import Seldnet, Seldnet_augmented
 from utility_functions import load_model, save_model
 
 '''
@@ -140,6 +140,13 @@ def main(args):
     if args.architecture == 'seldnet':
         n_time_frames = test_predictors.shape[-1]
         model = Seldnet(time_dim=n_time_frames, freq_dim=args.freq_dim, input_channels=args.input_channels,
+                    output_classes=args.output_classes, pool_size=args.pool_size,
+                    pool_time=args.pool_time, rnn_size=args.rnn_size, n_rnn=args.n_rnn,
+                    fc_size=args.fc_size, dropout_perc=args.dropout_perc,
+                    n_cnn_filters=args.n_cnn_filters, verbose=args.verbose)
+    if args.architecture == 'seldnet_augmented':
+        n_time_frames = test_predictors.shape[-1]
+        model = Seldnet_augmented(time_dim=n_time_frames, freq_dim=args.freq_dim, input_channels=args.input_channels,
                     output_classes=args.output_classes, pool_size=args.pool_size,
                     pool_time=args.pool_time, rnn_size=args.rnn_size, n_rnn=args.n_rnn,
                     fc_size=args.fc_size, dropout_perc=args.dropout_perc,
@@ -289,9 +296,9 @@ if __name__ == '__main__':
                         help="Patience for early stopping on validation set")
 
     #model parameters
-    parser.add_argument('--architecture', type=str, default='seldnet',
+    parser.add_argument('--architecture', type=str, default='seldnet_augmented',
                         help="model's architecture, can be vgg13, vgg16 or seldnet")
-    parser.add_argument('--input_channels', type=int, default=8,
+    parser.add_argument('--input_channels', type=int, default=4,
                         help="4/8 for 1/2 mics, multiply x2 if using also phase information")
     #the following parameters produce a prediction for each 100-msecs frame
     #everithing as in the original SELDNet implementation, but the time pooling and time dim
