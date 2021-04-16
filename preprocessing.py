@@ -205,22 +205,23 @@ def preprocessing_task2(args):
                 samples = np.concatenate((samples,samples_B), axis=-2)
 
             #compute stft
+
             stft = uf.spectrum_fast(samples, nperseg=args.stft_nperseg,
                                     noverlap=args.stft_noverlap,
                                     window=args.stft_window,
                                     output_phase=args.output_phase)
 
-            #samples = np.reshape(samples, (samples.shape[1], samples.shape[0],
+            #stft = np.reshape(samples, (samples.shape[1], samples.shape[0],
             #                     samples.shape[2]))
 
 
             #compute matrix label
-            label = uf.csv_to_matrix_task2(target_path, sound_classes_dict_task2)
-            '''
-            label = uf.get_label_task2(target_path,0.1,file_size,sr_task2,
+            #label = uf.csv_to_matrix_task2(target_path, sound_classes_dict_task2)  #eric func
+
+            label = uf.get_label_task2(target_path,0.1,file_size,sr_task2,          #giuseppe func
                                     sound_classes,int(file_size/(args.frame_len/1000.)),
                                     max_label_distance)
-            '''
+
 
             #segment into shorter frames
             if args.predictors_len_segment is not None and args.target_len_segment is not None:

@@ -60,6 +60,7 @@ def validate_task2_submission(submission_folder):
     - Check if the folder contains all files to be submitted for task 2
     - Check if all files have the correct format
     '''
+    #TO BE UPDATED
     pass
 
 

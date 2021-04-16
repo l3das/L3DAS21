@@ -19,16 +19,42 @@ Command line arguments define the model parameters, the dataset to use and
 where to save the obtained results.
 '''
 def predict_seld((predictors, model, device,
-                  predictors_len_segment=args.predictors_len_segment,
-                  target_len_segment=args.target_len_segment):
+                  length=args.predictors_len_segment):
     '''
     Predict seld matrices for an audio file using a model that processes
     shorter segments
     '''
     def pad(x, d):  #3d pad, padding last dim
-        pad = np.zeros((x.shape[0], x.shape[1], d))
-        pad[:,:,:x.shape[-1]] = x
+        pad = np.zeros((x.shape[0], x.shape[1], x.shape[2], d))
+        pad[:,:,:,:x.shape[-1]] = x
         return pad
+
+    total_len = predictors.shape[-1]
+    starts = np.arange(0,total_len)  #points to cut
+
+    for i in range(len(starts)):
+        start = starts[i]
+        end = starts[i] + length
+        if end < total_len:
+            cut_x = predictors[:,:,:,start:end]
+        else:
+            #zeropad the last frame
+            end = total_len
+            cut_x = pad(predictors[:,:,:,start:end], length)
+
+        #compute model's output
+        cut_x = cut_x.to(device)
+        sed, doa = model(cut_x)
+        sed = sed.cpu().numpy()
+        doa = doa.cpu().numpy()
+
+        if i == 0:
+            recon_sed = sed
+            recon_doa = doa
+        else:
+            recon_sed = np.concatenate((recon_sed, sed), axis=-1)
+            recon_doa = np.concatenate((recon_sed, doa), axis=-1)
+
 
 def main(args):
     if args.use_cuda:
