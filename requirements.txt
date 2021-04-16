@@ -1,4 +1,3 @@
-argparse
 jiwer==2.2.0
 librosa==0.8.0
 numpy==1.18.1
