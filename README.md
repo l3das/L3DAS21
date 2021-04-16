@@ -5,6 +5,7 @@ Moreover, we extensively commented our code for easy customization.
 
 For further information please refer to the challenge [website](https://www.l3das.com/mlsp2021/index.html).
 
+**THIS REPO IS STILL UNDER DEVELOPMENT. WE WILL RELEASE SOON THE BASILINE AND EVALUATION CODE FOR THE TASK 2!**
 
 
 ## Installation
@@ -51,14 +52,12 @@ For **Task2** the function returns 2 numpy arrays contatining:
 * The class ids of all sounds present in each data-point and their location coordinates, divided in 100 milliseconds frames.
 
 
-
 ## Baseline models
 We provide baseline models for both tasks, implemented in PyTorch. For task 1 we use a Filter and Sum Network (FaSNet) and for task 2 a SELDNet architecture. Please refer to the challenge paper [link] for additional information about our models.
 
 To train our baseline models with the default arguments run:
 ```bash
 python train_baseline_task1.py
-python train_baseline_task2.py
 ```
 
 GPU is strongly recommended to avoid very long training times.
@@ -66,12 +65,10 @@ GPU is strongly recommended to avoid very long training times.
 To compute the challenge metrics for each task using the trained models run:
 ```bash
 python evaluate_baseline_task1.py
-python evaluate_baseline_task2.py
 ```
 ## Evaluaton metrics
 Our evaluation metrics for both tasks are included in the **metrics.py** script.
-TO BE CONTINUED..
+
 
 ## Submission shape validation
 The file **validate_submission.py** provides functions to assess wether the files to be submitted for the 2 tasks have the correct naming, format, and shape.
-TO BE CONTINUED...
