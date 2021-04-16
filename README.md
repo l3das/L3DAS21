@@ -5,7 +5,7 @@ Moreover, we extensively commented our code for easy customization.
 
 For further information please refer to the challenge [website](https://www.l3das.com/mlsp2021/index.html).
 
-**THIS REPO IS STILL UNDER DEVELOPMENT. WE WILL RELEASE SOON THE BASILINE AND EVALUATION CODE FOR THE TASK 2!**
+**THIS REPO IS STILL UNDER DEVELOPMENT. WE WILL RELEASE THE BASILINE AND EVALUATION CODE FOR THE TASK 2 VERY SOON!**
 
 
 ## Installation
