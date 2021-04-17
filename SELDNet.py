@@ -11,23 +11,6 @@ import utility_functions as uf
 Pytorch implementation of SELDNet: https://arxiv.org/pdf/1807.00129.pdf
 '''
 
-class Fake_Seldnet(nn.Module):
-    def __init__(self, dropout_perc=0.5):
-        super(Fake_Seldnet, self).__init__()
-        self.feat_extraction = models.vgg16.feature()
-
-        model.features[0] = nn.Conv2d(1, 64, kernel_size=(3, 3),
-                                stride=(1, 1), padding=(1, 1))
-
-                                #change num output classes
-        model.classifier[6] =nn.Linear(in_features=4096,
-                                out_features=p['output_classes'], bias=True)
-
-    def forward(x,self):
-        x = self.features(x)
-        return x
-
-
 class Seldnet(nn.Module):
     def __init__(self, time_dim, freq_dim=256, input_channels=8, output_classes=14,
                  pool_size=[[8,2],[8,2],[2,2]], pool_time=False,  n_cnn_filters=64,
