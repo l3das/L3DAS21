@@ -76,7 +76,7 @@ def preprocessing_task1(args):
                     #samples = pad(samples)
                     if args.num_mics == 2:  # if both ambisonics mics are wanted
                         #stack the additional 4 channels to get a (8, samples) shape
-                        B_sound_path = sound_path.replace('A', 'B')
+                        B_sound_path = sound_path.replace('_A', '_B')
                         samples_B, sr = librosa.load(B_sound_path, sr_task1, mono=False)
                         #samples_B = pad(samples_B)
                         samples = np.concatenate((samples,samples_B), axis=-2)
