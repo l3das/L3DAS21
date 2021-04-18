@@ -69,7 +69,7 @@ python evaluate_baseline_task1.py
 ```
 ## Evaluaton metrics
 Our evaluation metrics for both tasks are included in the **metrics.py** script.
-The functions **location_sensitive_detection** and **task1_metric** compute the evaluation metrics for task 1 and task 2, respectively. The default arguments reflect the challenge requirements.
+The functions **task1_metric** and **location_sensitive_detection** compute the evaluation metrics for task 1 and task 2, respectively. The default arguments reflect the challenge requirements.
 
 Example:
 ```python
