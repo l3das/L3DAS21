@@ -20,6 +20,7 @@ Command line arguments define the model parameters, the dataset to use and
 where to save the obtained results.
 '''
 
+
 def main(args):
     if args.use_cuda:
         device = 'cuda:' + str(args.gpu_id)

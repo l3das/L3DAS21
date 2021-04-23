@@ -19,8 +19,10 @@ Please, have a look at the "evaluation_baseline_taskX.py" scripts for detailed e
 on the use of these functions.
 '''
 
+
 #TASK 1 METRICS
 warnings.filterwarnings("ignore", category=FutureWarning)
+transformers.logging.set_verbosity_error()
 wer_tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h");
 wer_model = Wav2Vec2ForMaskedLM.from_pretrained("facebook/wav2vec2-base-960h");
 

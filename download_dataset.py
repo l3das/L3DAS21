@@ -9,6 +9,7 @@ Command line arguments define which dataset partition to download and where to
 save the unzipped folders.
 '''
 
+
 def download_l3das_dataset(task, set_type):
     if not os.path.exists(os.getcwd()+os.sep+'L3DAS_'+task+'_'+set_type+'.zip'):
         print ('Downloading')
