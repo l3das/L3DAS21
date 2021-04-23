@@ -7,7 +7,7 @@ import soundfile as sf
 import torch
 import torch.utils.data as utils
 from metrics import task1_metric
-from FaSNet import FaSNet_origin
+from models.FaSNet import FaSNet_origin, FaSNet_TAC
 from utility_functions import load_model, save_model
 
 '''
@@ -73,6 +73,7 @@ def enhance_sound(predictors, model, device, length, overlap):
 
     return recon
 
+
 def main(args):
     if args.use_cuda:
         device = 'cuda:' + str(args.gpu_id)
@@ -90,6 +91,7 @@ def main(args):
 
     print ('\nShapes:')
     print ('Predictors: ', predictors.shape)
+    print ('Target: ', target.shape)
 
     #convert to tensor
     predictors = torch.tensor(predictors).float()
@@ -166,13 +168,12 @@ def main(args):
             pbar.update(1)
             count += 1
 
-
     #visualize and save results
     results = {'word error rate': WER,
                'stoi': STOI,
                'task 1 metric': METRIC
                }
-
+    print ('*******************************')
     print ('RESULTS')
     for i in results:
         print (i, results[i])
@@ -181,9 +182,9 @@ def main(args):
 
     '''
     baseline results
-    word error rate 0.4957875215172642
-    stoi 0.7070443256051635
-    task 1 metric 0.6056284020439507
+    word error rate 0.46
+    stoi 0.72
+    task 1 metric 0.62
     '''
 
 if __name__ == '__main__':

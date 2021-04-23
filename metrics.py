@@ -1,5 +1,6 @@
 import numpy as np
 import csv
+import sys
 import pandas as pd
 import torch
 import jiwer
@@ -7,14 +8,21 @@ import librosa
 from pystoi import stoi
 from transformers import Wav2Vec2ForMaskedLM, Wav2Vec2Tokenizer
 import sys, os
-wer_tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h");
-wer_model = Wav2Vec2ForMaskedLM.from_pretrained("facebook/wav2vec2-base-960h");
+import warnings
 
 '''
 Functions to compute the metrics for the 2 tasks of the L3DAS21 challenge.
+- task1_metric returns the metric for task 1.
+- location_sensitive_detection returns the metric for task 1.
+Both functions require numpy matrices as input and can compute only 1 batch at time.
+Please, have a look at the "evaluation_baseline_taskX.py" scripts for detailed examples
+on the use of these functions.
 '''
 
 #TASK 1 METRICS
+warnings.filterwarnings("ignore", category=FutureWarning)
+wer_tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h");
+wer_model = Wav2Vec2ForMaskedLM.from_pretrained("facebook/wav2vec2-base-960h");
 
 def wer(clean_speech, denoised_speech):
     """
@@ -94,8 +102,22 @@ def compute_se_metrics(predicted_folder, truth_folder, fs=16000):
 
 
 #TASK 2 METRICS
+sound_classes_dict_task2 = {'Chink_and_clink':0,
+                           'Computer_keyboard':1,
+                           'Cupboard_open_or_close':2,
+                           'Drawer_open_or_close':3,
+                           'Female_speech_and_woman_speaking':4,
+                           'Finger_snapping':5,
+                           'Keys_jangling':6,
+                           'Knock':7,
+                           'Laughter':8,
+                           'Male_speech_and_man_speaking':9,
+                           'Printer':10,
+                           'Scissors':11,
+                           'Telephone':12,
+                           'Writing':13}
 
-def location_sensitive_detection(true, pred, n_frames=100, spatial_threshold=0.3,
+def location_sensitive_detection(pred, true, n_frames=100, spatial_threshold=2.,
                                  from_csv=False, verbose=False):
     '''
     Compute TP, FP, FN of a single data point using
@@ -157,7 +179,7 @@ def location_sensitive_detection(true, pred, n_frames=100, spatial_threshold=0.3
 
     precision = TP / (TP + FP + sys.float_info.epsilon)
     recall = TP / (TP + FN + sys.float_info.epsilon)
-    F_score = (2 * precision * recall) / (precision + recall + sys.float_info.epsilon)
+    F_score = 2 * ((precision * recall) / (precision + recall + sys.float_info.epsilon))
 
     results = {'precision': precision,
                'recall': recall,

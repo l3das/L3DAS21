@@ -19,6 +19,7 @@ def download_l3das_dataset(task, set_type):
     else:
         print("Existing folder\n")
 
+
 def extract_dataset(task, set_type,output_path):
     if not os.path.isdir(os.getcwd()+os.sep+output_path+os.sep+task+set_type+os.sep):
         print("Extracting the archive")

@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 from torch.optim import Adam
 import torch.utils.data as utils
-from FaSNet import FaSNet_origin, FaSNet_TAC
+from models.FaSNet import FaSNet_origin, FaSNet_TAC
 from utility_functions import load_model, save_model
 
 '''
@@ -35,6 +35,7 @@ def evaluate(model, device, criterion, dataloader):
             pbar.set_description("Current loss: {:.4f}".format(test_loss))
             pbar.update(1)
     return test_loss
+
 
 def main(args):
     if args.use_cuda:
@@ -143,8 +144,9 @@ def main(args):
     print('TRAINING START')
     train_loss_hist = []
     val_loss_hist = []
+    epoch = 1
     while state["worse_epochs"] < args.patience:
-        print("Training one epoch from iteration " + str(state["step"]))
+        print("Training epoch " + str(epoch))
         avg_time = 0.
         model.train()
         train_loss = 0.
@@ -190,7 +192,7 @@ def main(args):
             #state["worse_epochs"] = 200
             train_loss_hist.append(train_loss.cpu().detach().numpy())
             val_loss_hist.append(val_loss.cpu().detach().numpy())
-
+            epoch += 1
     #LOAD BEST MODEL AND COMPUTE LOSS FOR ALL SETS
     print("TESTING")
     # Load best model based on validation loss
@@ -214,6 +216,7 @@ def main(args):
     out_path = os.path.join(args.results_path, 'results_dict.json')
     np.save(out_path, results)
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #saving parameters
@@ -228,14 +231,6 @@ if __name__ == '__main__':
     parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/task1_target_validation.pkl')
     parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task1_predictors_test.pkl')
     parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1_target_test.pkl')
-    '''
-    parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1_mini/task1_predictors_train.pkl')
-    parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/task1_mini/task1_target_train.pkl')
-    parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/task1_mini/task1_predictors_validation.pkl')
-    parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/task1_mini/task1_target_validation.pkl')
-    parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task1_mini/task1_predictors_test.pkl')
-    parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1_mini/task1_target_test.pkl')
-    '''
     #training parameters
     parser.add_argument('--gpu_id', type=int, default=0)
     parser.add_argument('--use_cuda', type=str, default='True')
@@ -248,7 +243,7 @@ if __name__ == '__main__':
                         help="Batch size")
     parser.add_argument('--sr', type=int, default=16000,
                         help="Sampling rate")
-    parser.add_argument('--patience', type=int, default=15,
+    parser.add_argument('--patience', type=int, default=50,
                         help="Patience for early stopping on validation set")
     parser.add_argument('--loss', type=str, default="L2",
                         help="L1 or L2")

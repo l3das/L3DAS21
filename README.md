@@ -1,11 +1,10 @@
-# L3DAS21 Challenge supporting API
+# L3DAS21 challenge supporting API
 This repository supports the L3DAS21 challenge and is aimed at downloading the dataset, pre-processing the sound files and the metadata, training and evaluating the baseline models and validating the final results.
 We provide easy-to-use instruction to produce the results included in our paper.
 Moreover, we extensively commented our code for easy customization.
 
-For further information please refer to the challenge [website](https://www.l3das.com/mlsp2021/index.html) and to the cha [paper](https://arxiv.org/abs/2104.05499).
+For further information please refer to the challenge [website](https://www.l3das.com/mlsp2021/index.html) and to the challenge [paper](https://arxiv.org/abs/2104.05499).
 
-**THIS REPO IS STILL UNDER DEVELOPMENT. WE WILL RELEASE THE BASILINE AND EVALUATION CODE FOR THE TASK 2 VERY SOON!**
 
 
 ## Installation
@@ -16,9 +15,9 @@ To install all required dependencies run:
 pip install -r requirements.txt
 ```
 ## Dataset download
-The script **download_dataset.py** is aimed at the dataset download.
+It is possible to selectively download subsets of our dataset through the script **download_dataset.py**. This script downloads the data, extracts the archives and finally deletes the zip files.
 
-To download all dataset folders run:
+To download all subsets run these commands:
 ```bash
 python download_dataset.py --task Task1 --set_type train100 --output_path DATASETS/Task1
 python download_dataset.py --task Task1 --set_type train360 --output_path DATASETS/Task1
@@ -26,11 +25,9 @@ python download_dataset.py --task Task1 --set_type dev --output_path DATASETS/Ta
 python download_dataset.py --task Task2 --set_type train --output_path DATASETS/Task2
 python download_dataset.py --task Task2 --set_type dev --output_path DATASETS/Task2
 ```
-These scripts automatically extract the archives and delete the zip files.
+
 
 Alternatively, it is possible to manually download the dataset from [Zenodo](https://doi.org/10.5281/zenodo.4642005).
-
-To obtain our baseline results for Task 1, do not download the train360 set.
 
 
 ## Pre-processing
@@ -41,35 +38,41 @@ Run these commands to obtain the matrices needed for our baseline models:
 python preprocessing.py --task 1 --input_path DATASETS/Task1 --training_set train100 --num_mics 1 --segmentation_len 2
 python preprocessing.py --task 2 --input_path DATASETS/Task2 --num_mics 1 --frame_len 100
 ```
-
 The two tasks of the challenge require different pre-processing.
 
 For **Task1** the function returns 2 numpy arrays contatining:
-* The input multichannel audio waveforms (3d noise+speech scenarios)
-* The output monoaural audio waveforms (clean speech)
+* Input multichannel audio waveforms (3d noise+speech scenarios) - Shape: [n_data, n_channels, n_samples].
+* Output monoaural audio waveforms (clean speech) - Shape [n_data, 1, n_samples].
 
 For **Task2** the function returns 2 numpy arrays contatining:
-* The input multichannel audio spectra (3d acoustic scenarios)
-* The class ids of all sounds present in each data-point and their location coordinates, divided in 100 milliseconds frames.
+* Input multichannel audio spectra (3d acoustic scenarios): Shape: [n_data, n_channels, n_fft_bins, n_time_frames].
+* Output seld matrices containing the class ids of all sounds present in each 100-milliseconds frame alongside with their location coordinates - Shape: [n_data, n_frames, ((n_classes * n_class_overlaps) + (n_classes * n_class_overlaps * n_coordinates))], where n_class_overlaps is the maximum amount of possible simultaneous sounds of the same class (3) and n_coordinates refers to the spatial dimensions (3).
+
 
 
 ## Baseline models
-We provide baseline models for both tasks, implemented in PyTorch. For task 1 we use a Filter and Sum Network (FaSNet) and for task 2 a SELDNet architecture.
+We provide baseline models for both tasks, implemented in PyTorch. For task 1 we use a Filter and Sum Network (FaSNet) and for task 2 an augmented variant of the SELDNet architecture. Both models are based on the single-microphone dataset configuration. Moreover, for Task 1 we used only Train100 as training set.
 
-To train our baseline models with the default arguments run:
+To train our baseline models with the default parameters run:
 ```bash
 python train_baseline_task1.py
+python train_baseline_task2.py
 ```
+These models will produce the baseline results mentioned in the paper.
 
 GPU is strongly recommended to avoid very long training times.
 
-To compute the challenge metrics for each task using the trained models run:
+Alternatively, it is possible to download our pre-trained models with these commands:
 ```bash
-python evaluate_baseline_task1.py
+python download_baseline_models.py --task 1 --output_path RESULTS/Task1/pretrained
+python download_baseline_models.py --task 2 --output_path RESULTS/Task2/pretrained
 ```
+These models are also available for manual download [here](https://drive.google.com/drive/u/1/folders/1gZ0oO94VTDZDTh4T9xLHGIXG5VVF6dIl).
+
+
 ## Evaluaton metrics
 Our evaluation metrics for both tasks are included in the **metrics.py** script.
-The functions **task1_metric** and **location_sensitive_detection** compute the evaluation metrics for task 1 and task 2, respectively. The default arguments reflect the challenge requirements.
+The functions **task1_metric** and **location_sensitive_detection** compute the evaluation metrics for task 1 and task 2, respectively. The default arguments reflect the challenge requirements. Please refer to the above-linked challenge paper for additional information about the metrics and how to format the prediction and target vectors.
 
 Example:
 ```python
@@ -77,3 +80,18 @@ import metrics
 task1_metric = metrics.task1_metric(prediction_vector, target_vector)
 _,_,_,task2_metric = metrics.location_sensitive_detection(prediction_vector, target_vector)
 ```
+
+To compute the challenge metrics for our basiline models run:
+```bash
+python evaluate_baseline_task1.py
+python evaluate_baseline_task2.py
+```
+
+In case you want to evaluate our pre-trained models, please add
+`
+--model_path path/to/model
+`
+to the above commands.
+
+## Submission shape validation
+TO BE RELEASED SOON...
