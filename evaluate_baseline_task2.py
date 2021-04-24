@@ -7,7 +7,6 @@ import soundfile as sf
 import torch
 import torch.nn as nn
 import torch.utils.data as utils
-from torchvision import models
 from metrics import location_sensitive_detection
 from models.SELDNet import Seldnet_vanilla, Seldnet_augmented
 from utility_functions import load_model, save_model, gen_submission_list_task2
