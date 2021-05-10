@@ -17,7 +17,7 @@ def validate_task1_submission(submission_folder, test_folder):
     '''
     #this is just a draft
 
-    #read folders and sort them alphabetically
+    #read folders
     contents_submitted = sorted(os.listdir(submission_folder))
     contents_test = sorted(os.listdir(test_folder))
     contents_submitted = [i for i in contents_submitted if 'DS_Store' not in i]
@@ -68,7 +68,7 @@ def validate_task2_submission(submission_folder, test_folder):
     '''
     #this is just a draft
 
-    #read folders and sort them alphabetically
+    #read folders
     contents_submitted = sorted(os.listdir(submission_folder))
     contents_test = sorted(os.listdir(test_folder))
     contents_submitted = [i for i in contents_submitted if 'DS_Store' not in i]
