@@ -94,4 +94,18 @@ In case you want to evaluate our pre-trained models, please add
 to the above commands.
 
 ## Submission shape validation
-TO BE RELEASED SOON...
+The script **validate_submission.py** can be used to assess the validity of the submission files shape. Instructions about how to format the submission can be found in the L3das [website](https://www.l3das.com/mlsp2021/submission.html)
+Use these commands to validate your submissions:
+```bash
+python validate_submission.py --task 1 --submission_path path/to/task1_submission_folder --test_path path/to/task1_test_dataset_folder
+
+python validate_submission.py --task 2 --submission_path path/to/task2_submission_folder --test_path path/to/task2_test_dataset_folder
+```
+
+For each task, this script asserts if:
+* The number of sumbmitted files is correct
+* The naming of the submitted files is correct
+* Only the files to be submitted are present in the folder
+* The shape of each submission file is as expected
+
+Once you have valid submission folders, please follow the instructions on the link above to proceed with the submission.
