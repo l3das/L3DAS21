@@ -2,6 +2,7 @@ import os, sys
 import numpy as np
 import pandas as pd
 import argparse
+import librosa
 '''
 Check if the the submssion folders are valid: all files must have the
 correct format, shape and naming.
@@ -19,6 +20,10 @@ def validate_task1_submission(submission_folder, test_folder):
     #read folders and sort them alphabetically
     contents_submitted = sorted(os.listdir(submission_folder))
     contents_test = sorted(os.listdir(test_folder))
+    contents_submitted = [i for i in contents_submitted if 'DS_Store' not in i]
+    contents_test = [i for i in contents_test if 'DS_Store' not in i]
+    contents_test = [i for i in contents_test if '_B' not in i]
+    contents_test = [i.split('_')[0]+'.wav' for i in contents_test]
 
     #check if non.npy files are present
     non_npy = [x for x in contents_submitted if x[-4:] != '.npy']  #non .npy files
@@ -42,15 +47,14 @@ def validate_task1_submission(submission_folder, test_folder):
 
     #check shape file-by-file
     for i in contents_test:
-        submitted_path = os.path.join(submission_folder, i)
-        test_path = os.path.join(test_folder, i)
+        submitted_path = os.path.join(submission_folder, i.split('.')[0]+'.npy')
+        test_path = os.path.join(test_folder, i.split('.')[0]+'_A.wav')
         s = np.load(submitted_path, allow_pickle=True)
-        t = librosa.load(test_path, sr_task1, mono=False)
+        t, _ = librosa.load(test_path, 16000, mono=False)
         target_shape = t.shape[-1]
         if not s.shape == target_shape:
             raise AssertionError ('Wrong shape for :' + str(i) + '. Target: ' + str(target_shape) +
                                  ', detected:' + str(s.shape))
-
 
     print ('The shape of your submission for Task 1 is valid!')
 
@@ -67,6 +71,10 @@ def validate_task2_submission(submission_folder, test_folder):
     #read folders and sort them alphabetically
     contents_submitted = sorted(os.listdir(submission_folder))
     contents_test = sorted(os.listdir(test_folder))
+    contents_submitted = [i for i in contents_submitted if 'DS_Store' not in i]
+    contents_test = [i for i in contents_test if 'DS_Store' not in i]
+    contents_test = [i for i in contents_test if '_B' not in i]
+    contents_test = [i.split('_')[0]+'.wav' for i in contents_test]
 
     #check if non .csv files are present
     non_npy = [x for x in contents_submitted if x[-4:] != '.csv']  #non .csv files
@@ -140,4 +148,7 @@ if __name__ == '__main__':
                         help='Task number to validate')
     args = parser.parse_args()
     #dataset parameters
-    validate_task2_submission(args.submission_path, args.test_path)
+    if args.task == 1:
+        validate_task1_submission(args.submission_path, args.test_path)
+    elif args.task == 2:
+        validate_task2_submission(args.submission_path, args.test_path)
