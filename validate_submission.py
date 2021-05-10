@@ -53,7 +53,7 @@ def validate_task1_submission(submission_folder, test_folder):
         t, _ = librosa.load(test_path, 16000, mono=False)
         target_shape = t.shape[-1]
         if not s.shape == target_shape:
-            raise AssertionError ('Wrong shape for :' + str(i) + '. Target: ' + str(target_shape) +
+            raise AssertionError ('Wrong shape for: ' + str(i) + '. Target: ' + str(target_shape) +
                                  ', detected:' + str(s.shape))
 
     print ('The shape of your submission for Task 1 is valid!')
@@ -102,7 +102,7 @@ def validate_task2_submission(submission_folder, test_folder):
         #s = np.genfromtxt(submitted_path,delimiter=',',names=True, dtype=None, encoding=None)
         s = pd.read_csv(submitted_path, delimiter=',',sep='')
         if not s.shape[-1] == 5:
-            raise AssertionError ('Wrong shape for :' + str(i) + '. Target: ' + str(5) +
+            raise AssertionError ('Wrong shape for: ' + str(i) + '. Target: ' + str(5) +
                                  ', detected:' + str(s.shape))
         #check if each column contains the right data type
         for i in range(len(s)):
