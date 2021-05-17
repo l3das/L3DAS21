@@ -41,6 +41,8 @@ def validate_task1_submission(submission_folder, test_folder):
     #check files naming
     names_submitted = [i.split('.')[0] for i in contents_submitted]
     names_test = [i.split('.')[0] for i in contents_test]
+    names_submitted.sort()
+    names_test.sort()
     if not names_submitted == names_test:
         raise AssertionError ('Wrong file naming. Please name each output file '
                                'exactly as its input .wav file, but with .npy extension')
@@ -52,7 +54,7 @@ def validate_task1_submission(submission_folder, test_folder):
         s = np.load(submitted_path, allow_pickle=True)
         t, _ = librosa.load(test_path, 16000, mono=False)
         target_shape = t.shape[-1]
-        if not s.shape == target_shape:
+        if not s.shape[-1] == target_shape:
             raise AssertionError ('Wrong shape for: ' + str(i) + '. Target: ' + str(target_shape) +
                                  ', detected:' + str(s.shape))
 
@@ -92,6 +94,8 @@ def validate_task2_submission(submission_folder, test_folder):
     #check files naming
     names_submitted = [i.split('.')[0] for i in contents_submitted]
     names_test = [i.split('.')[0] for i in contents_test]
+    names_submitted.sort()
+    names_test.sort()
     if not names_submitted == names_test:
         raise AssertionError ('Wrong file naming. Please name each output file '
                                'exactly as its input .wav file, but with .csv extension')
